@@ -1,6 +1,8 @@
-hash: c2d0973112f143c0d95d4265e858954b638e17abe98aa91a652a208c7129b643
-updated: 2018-08-22T10:42:52.957656056-07:00
+hash: 9190285b49175300169ea0223e4f577b97e503e665d1ed7acb540deb800b5a38
+updated: 2018-08-22T12:02:51.829750826-07:00
 imports:
+- name: google.golang.org/grpc
+  version: 32fb0ac620c32ba40a4626ddf94d90d12cce3455
 - name: istio.io/api
   version: 123b0a79a4dba5bd653dcac09cf731b8002e5341
 - name: istio.io/istio

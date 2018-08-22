@@ -4,3 +4,5 @@ import:
   version: ~1.0.0
 - package: istio.io/api
   version: ~1.0.0
+- package: google.golang.org/grpc
+  version: ~1.14.0
