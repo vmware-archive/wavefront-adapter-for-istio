@@ -15,11 +15,11 @@ curl https://glide.sh/get | sh
 To add a dependency using `glide`, use the following command:
 
 ```shell
-glide get <package-uri>
+glide get <package-uri> --strip-vendor
 ```
 
 For example, you could add a dependency on `istio.io/istio` like so:
 
 ```shell
-glide get istio.io/istio
+glide get istio.io/istio --strip-vendor
 ```
