@@ -1,10 +1,93 @@
-hash: 9190285b49175300169ea0223e4f577b97e503e665d1ed7acb540deb800b5a38
-updated: 2018-08-22T12:02:51.829750826-07:00
+hash: b2ee8806e06a7acad78253933f8b824494d4d98090e7fa6a355f0edc8bf564cc
+updated: 2018-08-22T12:39:53.670509882-07:00
 imports:
+- name: github.com/gogo/googleapis
+  version: 8558fb44d2f1fc223118afc694129d2c2d2924d1
+  subpackages:
+  - google/rpc
+- name: github.com/gogo/protobuf
+  version: 636bf0302bc95575d69441b25a2603156ffdddf1
+  subpackages:
+  - gogoproto
+  - proto
+  - protoc-gen-gogo/descriptor
+  - sortkeys
+  - types
+- name: github.com/golang/protobuf
+  version: ab9f9a6dab164b7d1246e0e688b0ab7b94d8553e
+  subpackages:
+  - proto
+  - ptypes
+  - ptypes/any
+  - ptypes/duration
+  - ptypes/timestamp
+- name: github.com/hashicorp/errwrap
+  version: d6c0cd88035724dd42e0f335ae30161c20575ecc
+- name: github.com/hashicorp/go-multierror
+  version: 3d5d8f294aa03d8e98859feac328afbdf1ae0703
+- name: golang.org/x/net
+  version: 5ccada7d0a7ba9aeb5d3aca8d3501b4c2a509fec
+  subpackages:
+  - context
+  - http2
+  - http2/hpack
+  - idna
+  - internal/timeseries
+  - lex/httplex
+  - trace
+- name: golang.org/x/sys
+  version: acbc56fc7007d2a01796d5bde54f39e3b3e95945
+  subpackages:
+  - unix
+- name: golang.org/x/text
+  version: e19ae1496984b1c655b8044a65c0300a3c878dd3
+  subpackages:
+  - secure/bidirule
+  - transform
+  - unicode/bidi
+  - unicode/norm
+- name: google.golang.org/genproto
+  version: a8101f21cf983e773d0c1133ebc5424792003214
+  subpackages:
+  - googleapis/rpc/status
 - name: google.golang.org/grpc
   version: 32fb0ac620c32ba40a4626ddf94d90d12cce3455
+  subpackages:
+  - balancer
+  - balancer/base
+  - balancer/roundrobin
+  - codes
+  - connectivity
+  - credentials
+  - encoding
+  - encoding/proto
+  - grpclog
+  - internal
+  - internal/backoff
+  - internal/channelz
+  - internal/envconfig
+  - internal/grpcrand
+  - internal/transport
+  - keepalive
+  - metadata
+  - naming
+  - peer
+  - resolver
+  - resolver/dns
+  - resolver/passthrough
+  - stats
+  - status
+  - tap
 - name: istio.io/api
   version: 123b0a79a4dba5bd653dcac09cf731b8002e5341
+  subpackages:
+  - mixer/adapter/model/v1beta1
+  - policy/v1beta1
 - name: istio.io/istio
   version: 3a136c90ec5e308f236e0d7ebb5c4c5e405217f4
+  subpackages:
+  - mixer/pkg/adapter
+  - mixer/pkg/pool
+  - mixer/pkg/status
+  - mixer/template/metric
 testImports: []
