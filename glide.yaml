@@ -2,3 +2,5 @@ package: github.com/vmware/wavefront-istio-mixer-adapter
 import:
 - package: istio.io/istio
   version: ~1.0.0
+- package: istio.io/api
+  version: ~1.0.0

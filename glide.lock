@@ -1,6 +1,8 @@
-hash: 38b678c325eee7f5412b08220a67df75cdd202ece1b061eb8217eb8aa7293f21
-updated: 2018-08-22T10:41:52.355148172-07:00
+hash: c2d0973112f143c0d95d4265e858954b638e17abe98aa91a652a208c7129b643
+updated: 2018-08-22T10:42:52.957656056-07:00
 imports:
+- name: istio.io/api
+  version: 123b0a79a4dba5bd653dcac09cf731b8002e5341
 - name: istio.io/istio
   version: 3a136c90ec5e308f236e0d7ebb5c4c5e405217f4
 testImports: []
