@@ -42,3 +42,6 @@ You could format your code using the following command:
 ```shell
 make format
 ```
+
+## License
+The wavefront-istio-mixer-adapter project is licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for the full license text.
