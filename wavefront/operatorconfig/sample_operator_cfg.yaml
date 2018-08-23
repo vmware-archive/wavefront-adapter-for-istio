@@ -2,37 +2,44 @@
 apiVersion: "config.istio.io/v1alpha2"
 kind: handler
 metadata:
- name: h1
- namespace: istio-system
+  name: testhandler
+  namespace: istio-system
 spec:
- adapter: wavefront
- connection:
-   address: "{ADDRESS}" #replaces at runtime by the test
- params:
-   file_path: "out.txt"
+  adapter: wavefront
+  connection:
+    address: "{ADDRESS}" # replaced by the test at runtime
+  params:
+    domain: domain.wavefront.com
+    token: api-token
+    metrics:
+    - name: requestsize.metric.istio-system
+      type: COUNTER
 ---
 # instance for template metric
 apiVersion: "config.istio.io/v1alpha2"
-kind: instance
+kind: metric
 metadata:
- name: i1metric
- namespace: istio-system
+  name: requestsize
+  namespace: istio-system
 spec:
- template: metric
- params:
-   value: request.size | 0
-   dimensions:
-     response_code: "200"
+  value: request.size | 0
+  dimensions:
+    source_service: source.service | "unknown"
+    source_version: source.labels["version"] | "unknown"
+    destination_service: destination.service | "unknown"
+    destination_version: destination.labels["version"] | "unknown"
+    response_code: response.code | 200
+  monitored_resource_type: '"UNSPECIFIED"'
 ---
 # rule to dispatch to handler h1
 apiVersion: "config.istio.io/v1alpha2"
 kind: rule
 metadata:
- name: r1
- namespace: istio-system
+  name: testrule
+  namespace: istio-system
 spec:
- actions:
- - handler: h1.istio-system
-   instances:
-   - i1metric
+  actions:
+  - handler: testhandler.istio-system
+    instances:
+    - requestsize.metric
 ---
