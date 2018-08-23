@@ -17,14 +17,14 @@ limitations under the License.
 package v1
 
 import (
-	gojson "encoding/json"
+	"encoding/json"
 	"reflect"
 	"testing"
 
-	"k8s.io/apimachinery/pkg/runtime/serializer/json"
+	jsoniter "github.com/json-iterator/go"
 )
 
-func TestVerbsMarshalJSON(t *testing.T) {
+func TestVerbsUgorjiMarshalJSON(t *testing.T) {
 	cases := []struct {
 		input  APIResource
 		result string
@@ -35,7 +35,7 @@ func TestVerbsMarshalJSON(t *testing.T) {
 	}
 
 	for i, c := range cases {
-		result, err := gojson.Marshal(&c.input)
+		result, err := json.Marshal(&c.input)
 		if err != nil {
 			t.Errorf("[%d] Failed to marshal input: '%v': %v", i, c.input, err)
 		}
@@ -45,7 +45,7 @@ func TestVerbsMarshalJSON(t *testing.T) {
 	}
 }
 
-func TestVerbsJsonIterUnmarshalJSON(t *testing.T) {
+func TestVerbsUgorjiUnmarshalJSON(t *testing.T) {
 	cases := []struct {
 		input  string
 		result APIResource
@@ -56,10 +56,9 @@ func TestVerbsJsonIterUnmarshalJSON(t *testing.T) {
 		{`{"verbs":["delete"]}`, APIResource{Verbs: Verbs([]string{"delete"})}},
 	}
 
-	iter := json.CaseSensitiveJsonIterator()
 	for i, c := range cases {
 		var result APIResource
-		if err := iter.Unmarshal([]byte(c.input), &result); err != nil {
+		if err := jsoniter.ConfigCompatibleWithStandardLibrary.Unmarshal([]byte(c.input), &result); err != nil {
 			t.Errorf("[%d] Failed to unmarshal input '%v': %v", i, c.input, err)
 		}
 		if !reflect.DeepEqual(result, c.result) {
@@ -68,8 +67,8 @@ func TestVerbsJsonIterUnmarshalJSON(t *testing.T) {
 	}
 }
 
-// TestMarshalJSONWithOmit tests that we don't have regressions regarding nil and empty slices with "omit"
-func TestMarshalJSONWithOmit(t *testing.T) {
+// TestUgorjiMarshalJSONWithOmit tests that we don't have regressions regarding nil and empty slices with "omit"
+func TestUgorjiMarshalJSONWithOmit(t *testing.T) {
 	cases := []struct {
 		input  LabelSelector
 		result string
@@ -80,7 +79,7 @@ func TestMarshalJSONWithOmit(t *testing.T) {
 	}
 
 	for i, c := range cases {
-		result, err := gojson.Marshal(&c.input)
+		result, err := json.Marshal(&c.input)
 		if err != nil {
 			t.Errorf("[%d] Failed to marshal input: '%v': %v", i, c.input, err)
 		}
@@ -103,7 +102,7 @@ func TestVerbsUnmarshalJSON(t *testing.T) {
 
 	for i, c := range cases {
 		var result APIResource
-		if err := gojson.Unmarshal([]byte(c.input), &result); err != nil {
+		if err := json.Unmarshal([]byte(c.input), &result); err != nil {
 			t.Errorf("[%d] Failed to unmarshal input '%v': %v", i, c.input, err)
 		}
 		if !reflect.DeepEqual(result, c.result) {

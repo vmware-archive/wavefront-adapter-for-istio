@@ -17,11 +17,11 @@ limitations under the License.
 package v1
 
 import (
-	gojson "encoding/json"
+	"encoding/json"
 	"reflect"
 	"testing"
 
-	"k8s.io/apimachinery/pkg/runtime/serializer/json"
+	jsoniter "github.com/json-iterator/go"
 )
 
 type GroupVersionHolder struct {
@@ -40,15 +40,14 @@ func TestGroupVersionUnmarshalJSON(t *testing.T) {
 	for _, c := range cases {
 		var result GroupVersionHolder
 		// test golang lib's JSON codec
-		if err := gojson.Unmarshal([]byte(c.input), &result); err != nil {
+		if err := json.Unmarshal([]byte(c.input), &result); err != nil {
 			t.Errorf("JSON codec failed to unmarshal input '%v': %v", c.input, err)
 		}
 		if !reflect.DeepEqual(result.GV, c.expect) {
 			t.Errorf("JSON codec failed to unmarshal input '%s': expected %+v, got %+v", c.input, c.expect, result.GV)
 		}
 		// test the json-iterator codec
-		iter := json.CaseSensitiveJsonIterator()
-		if err := iter.Unmarshal(c.input, &result); err != nil {
+		if err := jsoniter.ConfigCompatibleWithStandardLibrary.Unmarshal(c.input, &result); err != nil {
 			t.Errorf("json-iterator codec failed to unmarshal input '%v': %v", c.input, err)
 		}
 		if !reflect.DeepEqual(result.GV, c.expect) {
@@ -68,7 +67,7 @@ func TestGroupVersionMarshalJSON(t *testing.T) {
 
 	for _, c := range cases {
 		input := GroupVersionHolder{c.input}
-		result, err := gojson.Marshal(&input)
+		result, err := json.Marshal(&input)
 		if err != nil {
 			t.Errorf("Failed to marshal input '%v': %v", input, err)
 		}

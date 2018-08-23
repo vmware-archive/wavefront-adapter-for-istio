@@ -2,13 +2,9 @@ package: github.com/vmware/wavefront-istio-mixer-adapter
 import:
 - package: istio.io/istio
   version: ~1.0.0
-- package: istio.io/api
-  version: ~1.0.0
-- package: google.golang.org/grpc
-  version: ~1.14.0
-- package: github.com/gogo/googleapis
-  version: ~1.1.0
-- package: go.uber.org/zap
-  version: ~1.9.1
-- package: github.com/ghodss/yaml
-  version: ~1.0.0
+- package: github.com/golang/protobuf
+  version: ~v1.1.0
+- package: github.com/gogo/protobuf
+  version: ~v1.1.1
+- package: golang.org/x/sys
+  version: 378d26f46672a356c46195c28f61bdb4c0a781dd
