@@ -23,8 +23,39 @@ option go_package="config";
 
 // config for wavefront
 message Params {
+
   // the wavefront domain
   string domain = 1;
+
   // the wavefront token
   string token = 2;
+
+  // the metrics
+  repeated MetricInfo metrics = 3;
+
+  // represents a metric
+  message MetricInfo {
+
+    // the metric name
+    string name = 1;
+
+    // the metric type
+    Type type = 2;
+
+    // represents metric types as in https://docs.wavefront.com/metric_types.html
+    enum Type {
+      // reserved for unknown metric types
+      UNKNOWN = 0;
+      // represents a gauge metric type
+      GAUGE = 1;
+      // represents a counter metric type
+      COUNTER = 2;
+      // represents a delta counter metric type
+      DELTA_COUNTER = 3;
+      // represents a histogram metric type
+      HISTOGRAM = 4;
+    }
+
+  }
+
 }

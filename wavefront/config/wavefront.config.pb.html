@@ -2,7 +2,7 @@
 title: wavefront.config
 layout: protoc-gen-docs
 generator: protoc-gen-docs
-number_of_entries: 1
+number_of_entries: 3
 ---
 <p>config for wavefront</p>
 
@@ -32,6 +32,96 @@ number_of_entries: 1
 <td><code>string</code></td>
 <td>
 <p>the wavefront token</p>
+
+</td>
+</tr>
+<tr id="Params-metrics">
+<td><code>metrics</code></td>
+<td><code><a href="#Params-MetricInfo">Params.MetricInfo[]</a></code></td>
+<td>
+<p>the metrics</p>
+
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+<h2 id="Params-MetricInfo">Params.MetricInfo</h2>
+<section>
+<p>represents a metric</p>
+
+<table class="message-fields">
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr id="Params-MetricInfo-name">
+<td><code>name</code></td>
+<td><code>string</code></td>
+<td>
+<p>the metric name</p>
+
+</td>
+</tr>
+<tr id="Params-MetricInfo-type">
+<td><code>type</code></td>
+<td><code><a href="#Params-MetricInfo-Type">Params.MetricInfo.Type</a></code></td>
+<td>
+<p>the metric type</p>
+
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+<h2 id="Params-MetricInfo-Type">Params.MetricInfo.Type</h2>
+<section>
+<p>represents metric types as in https://docs.wavefront.com/metric_types.html</p>
+
+<table class="enum-values">
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr id="Params-MetricInfo-Type-UNKNOWN">
+<td><code>UNKNOWN</code></td>
+<td>
+<p>reserved for unknown metric types</p>
+
+</td>
+</tr>
+<tr id="Params-MetricInfo-Type-GAUGE">
+<td><code>GAUGE</code></td>
+<td>
+<p>represents a gauge metric type</p>
+
+</td>
+</tr>
+<tr id="Params-MetricInfo-Type-COUNTER">
+<td><code>COUNTER</code></td>
+<td>
+<p>represents a counter metric type</p>
+
+</td>
+</tr>
+<tr id="Params-MetricInfo-Type-DELTA_COUNTER">
+<td><code>DELTA_COUNTER</code></td>
+<td>
+<p>represents a delta counter metric type</p>
+
+</td>
+</tr>
+<tr id="Params-MetricInfo-Type-HISTOGRAM">
+<td><code>HISTOGRAM</code></td>
+<td>
+<p>represents a histogram metric type</p>
 
 </td>
 </tr>

@@ -19,6 +19,8 @@ import fmt "fmt"
 import math "math"
 import _ "github.com/gogo/protobuf/gogoproto"
 
+import strconv "strconv"
+
 import strings "strings"
 import reflect "reflect"
 
@@ -35,12 +37,49 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion2 // please upgrade the proto package
 
+// represents metric types as in https://docs.wavefront.com/metric_types.html
+type Params_MetricInfo_Type int32
+
+const (
+	// reserved for unknown metric types
+	UNKNOWN Params_MetricInfo_Type = 0
+	// represents a gauge metric type
+	GAUGE Params_MetricInfo_Type = 1
+	// represents a counter metric type
+	COUNTER Params_MetricInfo_Type = 2
+	// represents a delta counter metric type
+	DELTA_COUNTER Params_MetricInfo_Type = 3
+	// represents a histogram metric type
+	HISTOGRAM Params_MetricInfo_Type = 4
+)
+
+var Params_MetricInfo_Type_name = map[int32]string{
+	0: "UNKNOWN",
+	1: "GAUGE",
+	2: "COUNTER",
+	3: "DELTA_COUNTER",
+	4: "HISTOGRAM",
+}
+var Params_MetricInfo_Type_value = map[string]int32{
+	"UNKNOWN":       0,
+	"GAUGE":         1,
+	"COUNTER":       2,
+	"DELTA_COUNTER": 3,
+	"HISTOGRAM":     4,
+}
+
+func (Params_MetricInfo_Type) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptorConfig, []int{0, 0, 0}
+}
+
 // config for wavefront
 type Params struct {
 	// the wavefront domain
 	Domain string `protobuf:"bytes,1,opt,name=domain,proto3" json:"domain,omitempty"`
 	// the wavefront token
 	Token string `protobuf:"bytes,2,opt,name=token,proto3" json:"token,omitempty"`
+	// the metrics
+	Metrics []*Params_MetricInfo `protobuf:"bytes,3,rep,name=metrics" json:"metrics,omitempty"`
 }
 
 func (m *Params) Reset()                    { *m = Params{} }
@@ -61,8 +100,50 @@ func (m *Params) GetToken() string {
 	return ""
 }
 
+func (m *Params) GetMetrics() []*Params_MetricInfo {
+	if m != nil {
+		return m.Metrics
+	}
+	return nil
+}
+
+// represents a metric
+type Params_MetricInfo struct {
+	// the metric name
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// the metric type
+	Type Params_MetricInfo_Type `protobuf:"varint,2,opt,name=type,proto3,enum=wavefront.config.Params_MetricInfo_Type" json:"type,omitempty"`
+}
+
+func (m *Params_MetricInfo) Reset()                    { *m = Params_MetricInfo{} }
+func (*Params_MetricInfo) ProtoMessage()               {}
+func (*Params_MetricInfo) Descriptor() ([]byte, []int) { return fileDescriptorConfig, []int{0, 0} }
+
+func (m *Params_MetricInfo) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *Params_MetricInfo) GetType() Params_MetricInfo_Type {
+	if m != nil {
+		return m.Type
+	}
+	return UNKNOWN
+}
+
 func init() {
 	proto.RegisterType((*Params)(nil), "wavefront.config.Params")
+	proto.RegisterType((*Params_MetricInfo)(nil), "wavefront.config.Params.MetricInfo")
+	proto.RegisterEnum("wavefront.config.Params_MetricInfo_Type", Params_MetricInfo_Type_name, Params_MetricInfo_Type_value)
+}
+func (x Params_MetricInfo_Type) String() string {
+	s, ok := Params_MetricInfo_Type_name[int32(x)]
+	if ok {
+		return s
+	}
+	return strconv.Itoa(int(x))
 }
 func (this *Params) Equal(that interface{}) bool {
 	if that == nil {
@@ -89,16 +170,65 @@ func (this *Params) Equal(that interface{}) bool {
 	if this.Token != that1.Token {
 		return false
 	}
+	if len(this.Metrics) != len(that1.Metrics) {
+		return false
+	}
+	for i := range this.Metrics {
+		if !this.Metrics[i].Equal(that1.Metrics[i]) {
+			return false
+		}
+	}
+	return true
+}
+func (this *Params_MetricInfo) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*Params_MetricInfo)
+	if !ok {
+		that2, ok := that.(Params_MetricInfo)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if this.Name != that1.Name {
+		return false
+	}
+	if this.Type != that1.Type {
+		return false
+	}
 	return true
 }
 func (this *Params) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 6)
+	s := make([]string, 0, 7)
 	s = append(s, "&config.Params{")
 	s = append(s, "Domain: "+fmt.Sprintf("%#v", this.Domain)+",\n")
 	s = append(s, "Token: "+fmt.Sprintf("%#v", this.Token)+",\n")
+	if this.Metrics != nil {
+		s = append(s, "Metrics: "+fmt.Sprintf("%#v", this.Metrics)+",\n")
+	}
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *Params_MetricInfo) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 6)
+	s = append(s, "&config.Params_MetricInfo{")
+	s = append(s, "Name: "+fmt.Sprintf("%#v", this.Name)+",\n")
+	s = append(s, "Type: "+fmt.Sprintf("%#v", this.Type)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -137,6 +267,47 @@ func (m *Params) MarshalTo(dAtA []byte) (int, error) {
 		i = encodeVarintConfig(dAtA, i, uint64(len(m.Token)))
 		i += copy(dAtA[i:], m.Token)
 	}
+	if len(m.Metrics) > 0 {
+		for _, msg := range m.Metrics {
+			dAtA[i] = 0x1a
+			i++
+			i = encodeVarintConfig(dAtA, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(dAtA[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n
+		}
+	}
+	return i, nil
+}
+
+func (m *Params_MetricInfo) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Params_MetricInfo) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Name) > 0 {
+		dAtA[i] = 0xa
+		i++
+		i = encodeVarintConfig(dAtA, i, uint64(len(m.Name)))
+		i += copy(dAtA[i:], m.Name)
+	}
+	if m.Type != 0 {
+		dAtA[i] = 0x10
+		i++
+		i = encodeVarintConfig(dAtA, i, uint64(m.Type))
+	}
 	return i, nil
 }
 
@@ -159,6 +330,25 @@ func (m *Params) Size() (n int) {
 	l = len(m.Token)
 	if l > 0 {
 		n += 1 + l + sovConfig(uint64(l))
+	}
+	if len(m.Metrics) > 0 {
+		for _, e := range m.Metrics {
+			l = e.Size()
+			n += 1 + l + sovConfig(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *Params_MetricInfo) Size() (n int) {
+	var l int
+	_ = l
+	l = len(m.Name)
+	if l > 0 {
+		n += 1 + l + sovConfig(uint64(l))
+	}
+	if m.Type != 0 {
+		n += 1 + sovConfig(uint64(m.Type))
 	}
 	return n
 }
@@ -183,6 +373,18 @@ func (this *Params) String() string {
 	s := strings.Join([]string{`&Params{`,
 		`Domain:` + fmt.Sprintf("%v", this.Domain) + `,`,
 		`Token:` + fmt.Sprintf("%v", this.Token) + `,`,
+		`Metrics:` + strings.Replace(fmt.Sprintf("%v", this.Metrics), "Params_MetricInfo", "Params_MetricInfo", 1) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *Params_MetricInfo) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&Params_MetricInfo{`,
+		`Name:` + fmt.Sprintf("%v", this.Name) + `,`,
+		`Type:` + fmt.Sprintf("%v", this.Type) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -282,6 +484,135 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 			}
 			m.Token = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Metrics", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowConfig
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthConfig
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Metrics = append(m.Metrics, &Params_MetricInfo{})
+			if err := m.Metrics[len(m.Metrics)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipConfig(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthConfig
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *Params_MetricInfo) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowConfig
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MetricInfo: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MetricInfo: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowConfig
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthConfig
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Name = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Type", wireType)
+			}
+			m.Type = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowConfig
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Type |= (Params_MetricInfo_Type(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipConfig(dAtA[iNdEx:])
@@ -411,17 +742,26 @@ var (
 func init() { proto.RegisterFile("mixer/adapter/wavefront/config/config.proto", fileDescriptorConfig) }
 
 var fileDescriptorConfig = []byte{
-	// 184 bytes of a gzipped FileDescriptorProto
+	// 333 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xd2, 0xce, 0xcd, 0xac, 0x48,
 	0x2d, 0xd2, 0x4f, 0x4c, 0x49, 0x2c, 0x28, 0x49, 0x2d, 0xd2, 0x2f, 0x4f, 0x2c, 0x4b, 0x4d, 0x2b,
 	0xca, 0xcf, 0x2b, 0xd1, 0x4f, 0xce, 0xcf, 0x4b, 0xcb, 0x4c, 0x87, 0x52, 0x7a, 0x05, 0x45, 0xf9,
 	0x25, 0xf9, 0x42, 0x02, 0x70, 0x69, 0x3d, 0x88, 0xb8, 0x94, 0x48, 0x7a, 0x7e, 0x7a, 0x3e, 0x58,
-	0x52, 0x1f, 0xc4, 0x82, 0xa8, 0x53, 0x32, 0xe3, 0x62, 0x0b, 0x48, 0x2c, 0x4a, 0xcc, 0x2d, 0x16,
-	0x12, 0xe3, 0x62, 0x4b, 0xc9, 0xcf, 0x4d, 0xcc, 0xcc, 0x93, 0x60, 0x54, 0x60, 0xd4, 0xe0, 0x0c,
-	0x82, 0xf2, 0x84, 0x44, 0xb8, 0x58, 0x4b, 0xf2, 0xb3, 0x53, 0xf3, 0x24, 0x98, 0xc0, 0xc2, 0x10,
-	0x8e, 0x93, 0xc9, 0x85, 0x87, 0x72, 0x0c, 0x37, 0x1e, 0xca, 0x31, 0x7c, 0x78, 0x28, 0xc7, 0xd8,
-	0xf0, 0x48, 0x8e, 0x71, 0xc5, 0x23, 0x39, 0xc6, 0x13, 0x8f, 0xe4, 0x18, 0x2f, 0x3c, 0x92, 0x63,
-	0x7c, 0xf0, 0x48, 0x8e, 0xf1, 0xc5, 0x23, 0x39, 0x86, 0x0f, 0x8f, 0xe4, 0x18, 0x27, 0x3c, 0x96,
-	0x63, 0x88, 0x62, 0x83, 0xb8, 0x21, 0x89, 0x0d, 0x6c, 0xa9, 0x31, 0x20, 0x00, 0x00, 0xff, 0xff,
-	0x38, 0x98, 0xf9, 0x0b, 0xcb, 0x00, 0x00, 0x00,
+	0x52, 0x1f, 0xc4, 0x82, 0xa8, 0x53, 0x5a, 0xca, 0xc4, 0xc5, 0x16, 0x90, 0x58, 0x94, 0x98, 0x5b,
+	0x2c, 0x24, 0xc6, 0xc5, 0x96, 0x92, 0x9f, 0x9b, 0x98, 0x99, 0x27, 0xc1, 0xa8, 0xc0, 0xa8, 0xc1,
+	0x19, 0x04, 0xe5, 0x09, 0x89, 0x70, 0xb1, 0x96, 0xe4, 0x67, 0xa7, 0xe6, 0x49, 0x30, 0x81, 0x85,
+	0x21, 0x1c, 0x21, 0x5b, 0x2e, 0xf6, 0xdc, 0xd4, 0x92, 0xa2, 0xcc, 0xe4, 0x62, 0x09, 0x66, 0x05,
+	0x66, 0x0d, 0x6e, 0x23, 0x65, 0x3d, 0x74, 0x2b, 0xf5, 0x20, 0x06, 0xeb, 0xf9, 0x82, 0xd5, 0x79,
+	0xe6, 0xa5, 0xe5, 0x07, 0xc1, 0xf4, 0x48, 0xad, 0x65, 0xe4, 0xe2, 0x42, 0x88, 0x0b, 0x09, 0x71,
+	0xb1, 0xe4, 0x25, 0xe6, 0xa6, 0x42, 0x6d, 0x06, 0xb3, 0x85, 0x6c, 0xb8, 0x58, 0x4a, 0x2a, 0x0b,
+	0x52, 0xc1, 0xd6, 0xf2, 0x19, 0x69, 0x10, 0x61, 0xbc, 0x5e, 0x48, 0x65, 0x41, 0x6a, 0x10, 0x58,
+	0x97, 0x92, 0x2f, 0x17, 0x0b, 0x88, 0x27, 0xc4, 0xcd, 0xc5, 0x1e, 0xea, 0xe7, 0xed, 0xe7, 0x1f,
+	0xee, 0x27, 0xc0, 0x20, 0xc4, 0xc9, 0xc5, 0xea, 0xee, 0x18, 0xea, 0xee, 0x2a, 0xc0, 0x08, 0x12,
+	0x77, 0xf6, 0x0f, 0xf5, 0x0b, 0x71, 0x0d, 0x12, 0x60, 0x12, 0x12, 0xe4, 0xe2, 0x75, 0x71, 0xf5,
+	0x09, 0x71, 0x8c, 0x87, 0x09, 0x31, 0x0b, 0xf1, 0x72, 0x71, 0x7a, 0x78, 0x06, 0x87, 0xf8, 0xbb,
+	0x07, 0x39, 0xfa, 0x0a, 0xb0, 0x38, 0x99, 0x5c, 0x78, 0x28, 0xc7, 0x70, 0xe3, 0xa1, 0x1c, 0xc3,
+	0x87, 0x87, 0x72, 0x8c, 0x0d, 0x8f, 0xe4, 0x18, 0x57, 0x3c, 0x92, 0x63, 0x3c, 0xf1, 0x48, 0x8e,
+	0xf1, 0xc2, 0x23, 0x39, 0xc6, 0x07, 0x8f, 0xe4, 0x18, 0x5f, 0x3c, 0x92, 0x63, 0xf8, 0xf0, 0x48,
+	0x8e, 0x71, 0xc2, 0x63, 0x39, 0x86, 0x28, 0x36, 0x88, 0x0b, 0x93, 0xd8, 0xc0, 0x81, 0x6c, 0x0c,
+	0x08, 0x00, 0x00, 0xff, 0xff, 0xf2, 0xe8, 0xb0, 0xc5, 0xbb, 0x01, 0x00, 0x00,
 }
