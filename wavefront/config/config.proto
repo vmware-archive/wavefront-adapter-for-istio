@@ -23,6 +23,8 @@ option go_package="config";
 
 // config for wavefront
 message Params {
-    // Path of the file to save the information about runtime requests.
-    string file_path = 1;
+  // the wavefront domain
+  string domain = 1;
+  // the wavefront token
+  string token = 2;
 }

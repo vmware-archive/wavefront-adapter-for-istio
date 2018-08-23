@@ -2,15 +2,15 @@
 // source: mixer/adapter/wavefront/config/config.proto
 
 /*
-Package config is a generated protocol buffer package.
+	Package config is a generated protocol buffer package.
 
-config for wavefront
+	config for wavefront
 
-It is generated from these files:
-	mixer/adapter/wavefront/config/config.proto
+	It is generated from these files:
+		mixer/adapter/wavefront/config/config.proto
 
-It has these top-level messages:
-	Params
+	It has these top-level messages:
+		Params
 */
 package config
 
@@ -37,17 +37,26 @@ const _ = proto.GoGoProtoPackageIsVersion2 // please upgrade the proto package
 
 // config for wavefront
 type Params struct {
-	// Path of the file to save the information about runtime requests.
-	FilePath string `protobuf:"bytes,1,opt,name=file_path,json=filePath,proto3" json:"file_path,omitempty"`
+	// the wavefront domain
+	Domain string `protobuf:"bytes,1,opt,name=domain,proto3" json:"domain,omitempty"`
+	// the wavefront token
+	Token string `protobuf:"bytes,2,opt,name=token,proto3" json:"token,omitempty"`
 }
 
 func (m *Params) Reset()                    { *m = Params{} }
 func (*Params) ProtoMessage()               {}
 func (*Params) Descriptor() ([]byte, []int) { return fileDescriptorConfig, []int{0} }
 
-func (m *Params) GetFilePath() string {
+func (m *Params) GetDomain() string {
 	if m != nil {
-		return m.FilePath
+		return m.Domain
+	}
+	return ""
+}
+
+func (m *Params) GetToken() string {
+	if m != nil {
+		return m.Token
 	}
 	return ""
 }
@@ -74,7 +83,10 @@ func (this *Params) Equal(that interface{}) bool {
 	} else if this == nil {
 		return false
 	}
-	if this.FilePath != that1.FilePath {
+	if this.Domain != that1.Domain {
+		return false
+	}
+	if this.Token != that1.Token {
 		return false
 	}
 	return true
@@ -83,9 +95,10 @@ func (this *Params) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 5)
+	s := make([]string, 0, 6)
 	s = append(s, "&config.Params{")
-	s = append(s, "FilePath: "+fmt.Sprintf("%#v", this.FilePath)+",\n")
+	s = append(s, "Domain: "+fmt.Sprintf("%#v", this.Domain)+",\n")
+	s = append(s, "Token: "+fmt.Sprintf("%#v", this.Token)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -112,11 +125,17 @@ func (m *Params) MarshalTo(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.FilePath) > 0 {
+	if len(m.Domain) > 0 {
 		dAtA[i] = 0xa
 		i++
-		i = encodeVarintConfig(dAtA, i, uint64(len(m.FilePath)))
-		i += copy(dAtA[i:], m.FilePath)
+		i = encodeVarintConfig(dAtA, i, uint64(len(m.Domain)))
+		i += copy(dAtA[i:], m.Domain)
+	}
+	if len(m.Token) > 0 {
+		dAtA[i] = 0x12
+		i++
+		i = encodeVarintConfig(dAtA, i, uint64(len(m.Token)))
+		i += copy(dAtA[i:], m.Token)
 	}
 	return i, nil
 }
@@ -133,7 +152,11 @@ func encodeVarintConfig(dAtA []byte, offset int, v uint64) int {
 func (m *Params) Size() (n int) {
 	var l int
 	_ = l
-	l = len(m.FilePath)
+	l = len(m.Domain)
+	if l > 0 {
+		n += 1 + l + sovConfig(uint64(l))
+	}
+	l = len(m.Token)
 	if l > 0 {
 		n += 1 + l + sovConfig(uint64(l))
 	}
@@ -158,7 +181,8 @@ func (this *Params) String() string {
 		return "nil"
 	}
 	s := strings.Join([]string{`&Params{`,
-		`FilePath:` + fmt.Sprintf("%v", this.FilePath) + `,`,
+		`Domain:` + fmt.Sprintf("%v", this.Domain) + `,`,
+		`Token:` + fmt.Sprintf("%v", this.Token) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -202,7 +226,7 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field FilePath", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Domain", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -227,7 +251,36 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.FilePath = string(dAtA[iNdEx:postIndex])
+			m.Domain = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Token", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowConfig
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthConfig
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Token = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -358,17 +411,17 @@ var (
 func init() { proto.RegisterFile("mixer/adapter/wavefront/config/config.proto", fileDescriptorConfig) }
 
 var fileDescriptorConfig = []byte{
-	// 178 bytes of a gzipped FileDescriptorProto
+	// 184 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xd2, 0xce, 0xcd, 0xac, 0x48,
 	0x2d, 0xd2, 0x4f, 0x4c, 0x49, 0x2c, 0x28, 0x49, 0x2d, 0xd2, 0x2f, 0x4f, 0x2c, 0x4b, 0x4d, 0x2b,
 	0xca, 0xcf, 0x2b, 0xd1, 0x4f, 0xce, 0xcf, 0x4b, 0xcb, 0x4c, 0x87, 0x52, 0x7a, 0x05, 0x45, 0xf9,
 	0x25, 0xf9, 0x42, 0x02, 0x70, 0x69, 0x3d, 0x88, 0xb8, 0x94, 0x48, 0x7a, 0x7e, 0x7a, 0x3e, 0x58,
-	0x52, 0x1f, 0xc4, 0x82, 0xa8, 0x53, 0x52, 0xe5, 0x62, 0x0b, 0x48, 0x2c, 0x4a, 0xcc, 0x2d, 0x16,
-	0x92, 0xe6, 0xe2, 0x4c, 0xcb, 0xcc, 0x49, 0x8d, 0x2f, 0x48, 0x2c, 0xc9, 0x90, 0x60, 0x54, 0x60,
-	0xd4, 0xe0, 0x0c, 0xe2, 0x00, 0x09, 0x04, 0x24, 0x96, 0x64, 0x38, 0x99, 0x5c, 0x78, 0x28, 0xc7,
-	0x70, 0xe3, 0xa1, 0x1c, 0xc3, 0x87, 0x87, 0x72, 0x8c, 0x0d, 0x8f, 0xe4, 0x18, 0x57, 0x3c, 0x92,
-	0x63, 0x3c, 0xf1, 0x48, 0x8e, 0xf1, 0xc2, 0x23, 0x39, 0xc6, 0x07, 0x8f, 0xe4, 0x18, 0x5f, 0x3c,
-	0x92, 0x63, 0xf8, 0xf0, 0x48, 0x8e, 0x71, 0xc2, 0x63, 0x39, 0x86, 0x28, 0x36, 0x88, 0x95, 0x49,
-	0x6c, 0x60, 0x3b, 0x8c, 0x01, 0x01, 0x00, 0x00, 0xff, 0xff, 0x70, 0x12, 0xa5, 0xfc, 0xba, 0x00,
-	0x00, 0x00,
+	0x52, 0x1f, 0xc4, 0x82, 0xa8, 0x53, 0x32, 0xe3, 0x62, 0x0b, 0x48, 0x2c, 0x4a, 0xcc, 0x2d, 0x16,
+	0x12, 0xe3, 0x62, 0x4b, 0xc9, 0xcf, 0x4d, 0xcc, 0xcc, 0x93, 0x60, 0x54, 0x60, 0xd4, 0xe0, 0x0c,
+	0x82, 0xf2, 0x84, 0x44, 0xb8, 0x58, 0x4b, 0xf2, 0xb3, 0x53, 0xf3, 0x24, 0x98, 0xc0, 0xc2, 0x10,
+	0x8e, 0x93, 0xc9, 0x85, 0x87, 0x72, 0x0c, 0x37, 0x1e, 0xca, 0x31, 0x7c, 0x78, 0x28, 0xc7, 0xd8,
+	0xf0, 0x48, 0x8e, 0x71, 0xc5, 0x23, 0x39, 0xc6, 0x13, 0x8f, 0xe4, 0x18, 0x2f, 0x3c, 0x92, 0x63,
+	0x7c, 0xf0, 0x48, 0x8e, 0xf1, 0xc5, 0x23, 0x39, 0x86, 0x0f, 0x8f, 0xe4, 0x18, 0x27, 0x3c, 0x96,
+	0x63, 0x88, 0x62, 0x83, 0xb8, 0x21, 0x89, 0x0d, 0x6c, 0xa9, 0x31, 0x20, 0x00, 0x00, 0xff, 0xff,
+	0x38, 0x98, 0xf9, 0x0b, 0xcb, 0x00, 0x00, 0x00,
 }
