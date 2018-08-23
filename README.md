@@ -4,22 +4,41 @@
 
 ### Setup
 
-This project uses [Glide](https://glide.sh/) for dependency management. Install it with the following command:
+1\. Install [Golang](https://golang.org/dl/).
+
+2\. Set `GOPATH` and `GOBIN` like so:
 
 ```shell
-curl https://glide.sh/get | sh
+export GOPATH=~/go
+export GOBIN=$GOPATH/bin
 ```
+
+3\. Install the development tools like so:
+
+```shell
+make setup
+```
+
+Run `make help` to get a list of all available targets.
 
 ### Adding Dependencies
 
-To add a dependency using `glide`, use the following command:
+To add a dependency, use the following command:
 
 ```shell
-glide get <package-uri> --strip-vendor
+make vendor-get <package-uri>
 ```
 
 For example, you could add a dependency on `istio.io/istio` like so:
 
 ```shell
-glide get istio.io/istio --strip-vendor
+make vendor-get istio.io/istio
+```
+
+### Formatting Code
+
+You could format your code using the following command:
+
+```shell
+make format
 ```
