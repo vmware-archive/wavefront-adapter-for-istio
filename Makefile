@@ -28,9 +28,11 @@ help:
 	@echo ""
 	@echo "Available targets are:"
 	@echo ""
+	@echo "    build              Fixes imports, formats files and builds the project."
 	@echo "    format             Fix imports and format files."
 	@echo "    help               Show this help message."
 	@echo "    setup              Set up the development environment."
+	@echo "    test               Run all unit tests."
 	@echo "    vendor-install     Install all dependencies to vendor directory."
 	@echo "    vendor-get <pkg>   Add a new dependency to the vendor directory."
 	@echo ""
@@ -64,6 +66,13 @@ $(GOIMPORTS):
 	go get golang.org/x/tools/cmd/goimports
 	@echo "goimports installed!"
 
+# Fixes imports, formats files and builds the project
+# # Usage: make build
+.PHONY: build
+build: format
+	go build -v ./...
+	@echo "Build was successful!"
+
 # Fixes imports and formats files
 # Usage: make format
 .PHONY: format
@@ -82,3 +91,9 @@ vendor-install: setup
 .PHONY: vendor-get
 vendor-get: setup
 	@$(GLIDE) get $(pkg) --strip-vendor
+
+# Runs unit tests
+# Usage: make test
+.PHONY: test
+test:
+	go test -v ./...
