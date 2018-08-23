@@ -1,5 +1,5 @@
-hash: b2ee8806e06a7acad78253933f8b824494d4d98090e7fa6a355f0edc8bf564cc
-updated: 2018-08-22T12:39:53.670509882-07:00
+hash: 3b0f621d772f172e9dd55bcf1ebb57c21240a82ca66e673400ba4e868695c1f6
+updated: 2018-08-22T20:09:03.059873794-07:00
 imports:
 - name: github.com/gogo/googleapis
   version: 8558fb44d2f1fc223118afc694129d2c2d2924d1
@@ -25,6 +25,27 @@ imports:
   version: d6c0cd88035724dd42e0f335ae30161c20575ecc
 - name: github.com/hashicorp/go-multierror
   version: 3d5d8f294aa03d8e98859feac328afbdf1ae0703
+- name: github.com/inconshreveable/mousetrap
+  version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
+- name: github.com/natefinch/lumberjack
+  version: 7d6a1875575e09256dc552b4c0e450dcd02bd10e
+- name: github.com/spf13/cobra
+  version: 6fd8e29b07d8242ebe2888060fede5766e240c25
+- name: github.com/spf13/pflag
+  version: d929dcbb10863323c436af3cf76cb16a6dfc9b29
+- name: go.uber.org/atomic
+  version: 1ea20fb1cbb1cc08cbd0d913a96dead89aa18289
+- name: go.uber.org/multierr
+  version: 3c4937480c32f4c13a875a1829af76c98ca3d40a
+- name: go.uber.org/zap
+  version: ff33455a0e382e8a81d14dd7c922020b6b5e7982
+  subpackages:
+  - buffer
+  - internal/bufferpool
+  - internal/color
+  - internal/exit
+  - zapcore
+  - zapgrpc
 - name: golang.org/x/net
   version: 5ccada7d0a7ba9aeb5d3aca8d3501b4c2a509fec
   subpackages:
@@ -90,4 +111,5 @@ imports:
   - mixer/pkg/pool
   - mixer/pkg/status
   - mixer/template/metric
+  - pkg/log
 testImports: []
