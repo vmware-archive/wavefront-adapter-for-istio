@@ -17,12 +17,9 @@ syntax = "proto3";
 // config for wavefront
 package wavefront.config;
 
-import "gogoproto/gogo.proto";
 import "google/protobuf/duration.proto";
 
 option go_package="config";
-option (gogoproto.goproto_getters_all) = false;
-option (gogoproto.equal_all) = false;
 
 // config for wavefront
 message Params {
@@ -50,7 +47,7 @@ message Params {
   }
 
   // the metrics flush interval
-  google.protobuf.Duration flush_interval = 3 [(gogoproto.nullable)=false, (gogoproto.stdduration) = true];
+  google.protobuf.Duration flush_interval = 3;
 
   // the prefix to prepend metrics with
   string prefix = 4;

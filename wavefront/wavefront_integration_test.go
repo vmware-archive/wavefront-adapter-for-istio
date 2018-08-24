@@ -81,7 +81,7 @@ func TestReport(t *testing.T) {
 				}
 				s := string(bytes)
 				wantStr := `HandleMetric invoked with:
-       Adapter config: &Params{Domain:domain.wavefront.com,Token:api-token,Metrics:[&Params_MetricInfo{Name:requestsize.instance.istio-system,Type:COUNTER,}],}
+       Adapter config: &Params{Credentials:&Params_Direct{Direct:&Params_WavefrontDirect{Domain:domain.wavefront.com,Token:api-token,},},FlushInterval:5s,Prefix:testprefix,Percentiles:[0.5 0.75 0.95 0.99 0.999],Metrics:[&Params_MetricInfo{Name:requestsize.instance.istio-system,Type:COUNTER,}],}
        Instances: 'requestsize.instance.istio-system':
        {
            Value = 555
