@@ -35,15 +35,6 @@ message Params {
     WavefrontProxy proxy = 2;
   }
 
-  // the metrics flush interval
-  google.protobuf.Duration flush_interval = 3 [(gogoproto.nullable)=false, (gogoproto.stdduration) = true];
-
-  // the prefix to prepend metrics with
-  string prefix = 4;
-
-  // the metrics
-  repeated MetricInfo metrics = 5;
-
   // represents wavefront server credentials
   message WavefrontDirect {
     // the wavefront domain
@@ -57,6 +48,18 @@ message Params {
     // the wavefront proxy address
     string address = 1;
   }
+
+  // the metrics flush interval
+  google.protobuf.Duration flush_interval = 3 [(gogoproto.nullable)=false, (gogoproto.stdduration) = true];
+
+  // the prefix to prepend metrics with
+  string prefix = 4;
+
+  // the percentiles to export from histograms
+  repeated double percentiles = 5;
+
+  // the metrics
+  repeated MetricInfo metrics = 6;
 
   // represents a metric
   message MetricInfo {
