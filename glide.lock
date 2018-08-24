@@ -1,5 +1,5 @@
-hash: 387498ae69b479ed06cf724678f1401de62c76f621c548cfac1aaf82b8737068
-updated: 2018-08-22T21:19:09.880968361-07:00
+hash: 12e7e4d3bd6e4e7a215478e02c7154043d2ade09dec5cfd1cf37d7caa6a6f9f9
+updated: 2018-08-24T12:03:43.537520576-07:00
 imports:
 - name: cloud.google.com/go
   version: 3b1ae45394a234c385be014e9a488f2bb6eef821
@@ -141,6 +141,8 @@ imports:
   version: ed3a127ec5fef7ae9ea95b01b542c47fbd999ce5
   subpackages:
   - metrics
+- name: github.com/wavefrontHQ/go-metrics-wavefront
+  version: 539b1839cdaf551511c78455ea0ea19fed1f81af
 - name: go.uber.org/atomic
   version: 1ea20fb1cbb1cc08cbd0d913a96dead89aa18289
 - name: go.uber.org/multierr
