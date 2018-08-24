@@ -27,7 +27,7 @@ func main() {
 		addr = os.Args[1]
 	}
 
-	s, err := wavefront.NewMyGrpcAdapter(addr)
+	s, err := wavefront.NewWavefrontAdapter(addr)
 	if err != nil {
 		fmt.Printf("unable to start sever: %v", err)
 		os.Exit(-1)

@@ -45,17 +45,17 @@ type (
 		Run(shutdown chan error)
 	}
 
-	// MyGrpcAdapter supports metric template.
-	MyGrpcAdapter struct {
+	// WavefrontAdapter supports metric template.
+	WavefrontAdapter struct {
 		listener net.Listener
 		server   *grpc.Server
 	}
 )
 
-var _ metric.HandleMetricServiceServer = &MyGrpcAdapter{}
+var _ metric.HandleMetricServiceServer = &WavefrontAdapter{}
 
 // HandleMetric records metric entries
-func (s *MyGrpcAdapter) HandleMetric(ctx context.Context, r *metric.HandleMetricRequest) (*v1beta1.ReportResult, error) {
+func (wa *WavefrontAdapter) HandleMetric(ctx context.Context, r *metric.HandleMetricRequest) (*v1beta1.ReportResult, error) {
 
 	log.Infof("received request %v\n", *r)
 	var b bytes.Buffer
@@ -71,24 +71,20 @@ func (s *MyGrpcAdapter) HandleMetric(ctx context.Context, r *metric.HandleMetric
 	b.WriteString(fmt.Sprintf("HandleMetric invoked with:\n  Adapter config: %s\n  Instances: %s\n",
 		cfg.String(), instances(r.Instances)))
 
-	if cfg.FilePath == "" {
-		fmt.Println(b.String())
-	} else {
-		_, err := os.OpenFile("out.txt", os.O_RDONLY|os.O_CREATE, 0666)
-		if err != nil {
-			log.Errorf("error creating file: %v", err)
-		}
-		f, err := os.OpenFile(cfg.FilePath, os.O_APPEND|os.O_WRONLY, 0600)
-		if err != nil {
-			log.Errorf("error opening file for append: %v", err)
-		}
+	_, err := os.OpenFile("out.txt", os.O_RDONLY|os.O_CREATE, 0666)
+	if err != nil {
+		log.Errorf("error creating file: %v", err)
+	}
+	f, err := os.OpenFile("out.txt", os.O_APPEND|os.O_WRONLY, 0600)
+	if err != nil {
+		log.Errorf("error opening file for append: %v", err)
+	}
 
-		defer f.Close()
+	defer f.Close()
 
-		log.Infof("writing instances to file %s", f.Name())
-		if _, err = f.Write(b.Bytes()); err != nil {
-			log.Errorf("error writing to file: %v", err)
-		}
+	log.Infof("writing instances to file %s", f.Name())
+	if _, err = f.Write(b.Bytes()); err != nil {
+		log.Errorf("error writing to file: %v", err)
 	}
 
 	log.Infof("success!!")
@@ -129,30 +125,28 @@ func instances(in []*metric.InstanceMsg) string {
 }
 
 // Addr returns the listening address of the server
-func (s *MyGrpcAdapter) Addr() string {
-	return s.listener.Addr().String()
+func (wa *WavefrontAdapter) Addr() string {
+	return wa.listener.Addr().String()
 }
 
 // Run starts the server run
-func (s *MyGrpcAdapter) Run(shutdown chan error) {
-	shutdown <- s.server.Serve(s.listener)
+func (wa *WavefrontAdapter) Run(shutdown chan error) {
+	shutdown <- wa.server.Serve(wa.listener)
 }
 
 // Close gracefully shuts down the server; used for testing
-func (s *MyGrpcAdapter) Close() error {
-	if s.server != nil {
-		s.server.GracefulStop()
+func (wa *WavefrontAdapter) Close() error {
+	if wa.server != nil {
+		wa.server.GracefulStop()
 	}
-
-	if s.listener != nil {
-		_ = s.listener.Close()
+	if wa.listener != nil {
+		_ = wa.listener.Close()
 	}
-
 	return nil
 }
 
-// NewMyGrpcAdapter creates a new IBP adapter that listens at provided port.
-func NewMyGrpcAdapter(addr string) (Server, error) {
+// NewWavefrontAdapter creates a new Wavefront adapter that listens at provided port.
+func NewWavefrontAdapter(addr string) (Server, error) {
 	if addr == "" {
 		addr = "0"
 	}
@@ -160,11 +154,11 @@ func NewMyGrpcAdapter(addr string) (Server, error) {
 	if err != nil {
 		return nil, fmt.Errorf("unable to listen on socket: %v", err)
 	}
-	s := &MyGrpcAdapter{
+	adapter := &WavefrontAdapter{
 		listener: listener,
+		server: grpc.NewServer(),
 	}
-	fmt.Printf("listening on \"%v\"\n", s.Addr())
-	s.server = grpc.NewServer()
-	metric.RegisterHandleMetricServiceServer(s.server, s)
-	return s, nil
+	metric.RegisterHandleMetricServiceServer(adapter.server, adapter)
+	fmt.Printf("listening on \"%v\"\n", adapter.Addr())
+	return adapter, nil
 }

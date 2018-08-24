@@ -53,7 +53,7 @@ func TestReport(t *testing.T) {
 		nil,
 		adapter_integration.Scenario{
 			Setup: func() (ctx interface{}, err error) {
-				pServer, err := NewMyGrpcAdapter("")
+				pServer, err := NewWavefrontAdapter("")
 				if err != nil {
 					return nil, err
 				}
@@ -81,8 +81,8 @@ func TestReport(t *testing.T) {
 				}
 				s := string(bytes)
 				wantStr := `HandleMetric invoked with:
-       Adapter config: &Params{FilePath:out.txt,}
-       Instances: 'i1metric.instance.istio-system':
+       Adapter config: &Params{Domain:domain.wavefront.com,Token:api-token,Metrics:[&Params_MetricInfo{Name:requestsize.metric.istio-system,Type:COUNTER,}],}
+       Instances: 'requestsize.instance.istio-system':
        {
            Value = 555
            Dimensions = map[response_code:200]
