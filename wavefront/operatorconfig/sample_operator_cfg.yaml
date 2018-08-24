@@ -12,7 +12,7 @@ spec:
     domain: domain.wavefront.com
     token: api-token
     metrics:
-    - name: requestsize.metric.istio-system
+    - name: requestsize.instance.istio-system
       type: COUNTER
 ---
 # instance for template metric

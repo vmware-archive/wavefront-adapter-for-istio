@@ -79,7 +79,6 @@ func (wa *WavefrontAdapter) HandleMetric(ctx context.Context, r *metric.HandleMe
 	if err != nil {
 		log.Errorf("error opening file for append: %v", err)
 	}
-
 	defer f.Close()
 
 	log.Infof("writing instances to file %s", f.Name())
@@ -87,8 +86,38 @@ func (wa *WavefrontAdapter) HandleMetric(ctx context.Context, r *metric.HandleMe
 		log.Errorf("error writing to file: %v", err)
 	}
 
+	for _, instance := range r.Instances {
+		metricName := instance.Name
+		metric := identifyMetric(metricName, cfg.Metrics)
+		if metric != nil {
+			switch metric.Type {
+			case config.GAUGE:
+				log.Infof("Gauge %s: %v -- Dimensions: %v", metricName, decodeValue(instance.Value.GetValue()), decodeDimensions(instance.Dimensions))
+			case config.COUNTER:
+				log.Infof("Counter %s: %v -- Dimensions: %v", metricName, decodeValue(instance.Value.GetValue()), decodeDimensions(instance.Dimensions))
+			case config.DELTA_COUNTER:
+				log.Infof("Delta Counter %s: %v -- Dimensions: %v", metricName, decodeValue(instance.Value.GetValue()), decodeDimensions(instance.Dimensions))
+			case config.HISTOGRAM:
+				log.Infof("Histogram %s: %v -- Dimensions: %v", metricName, decodeValue(instance.Value.GetValue()), decodeDimensions(instance.Dimensions))
+			default:
+				log.Warnf("Couldn't handle metric type %s, data: %v", metric.Type, instance)
+			}
+		} else {
+			log.Warnf("Couldn't identify metric %s", metricName)
+		}
+	}
+
 	log.Infof("success!!")
 	return &v1beta1.ReportResult{}, nil
+}
+
+func identifyMetric(name string, metrics []*config.Params_MetricInfo) *config.Params_MetricInfo {
+	for _, metric := range metrics {
+		if metric.Name == name {
+			return metric
+		}
+	}
+	return nil
 }
 
 func decodeDimensions(in map[string]*policy.Value) map[string]interface{} {
@@ -107,6 +136,20 @@ func decodeValue(in interface{}) interface{} {
 		return t.Int64Value
 	case *policy.Value_DoubleValue:
 		return t.DoubleValue
+	case *policy.Value_BoolValue:
+		return t.BoolValue
+	case *policy.Value_IpAddressValue:
+		return t.IpAddressValue
+	case *policy.Value_TimestampValue:
+		return t.TimestampValue
+	case *policy.Value_DurationValue:
+		return t.DurationValue
+	case *policy.Value_EmailAddressValue:
+		return t.EmailAddressValue
+	case *policy.Value_DnsNameValue:
+		return t.DnsNameValue
+	case *policy.Value_UriValue:
+		return t.UriValue
 	default:
 		return fmt.Sprintf("%v", in)
 	}
@@ -156,7 +199,7 @@ func NewWavefrontAdapter(addr string) (Server, error) {
 	}
 	adapter := &WavefrontAdapter{
 		listener: listener,
-		server: grpc.NewServer(),
+		server:   grpc.NewServer(),
 	}
 	metric.RegisterHandleMetricServiceServer(adapter.server, adapter)
 	fmt.Printf("listening on \"%v\"\n", adapter.Addr())
