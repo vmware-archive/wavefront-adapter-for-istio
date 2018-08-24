@@ -1,5 +1,5 @@
-hash: 12e7e4d3bd6e4e7a215478e02c7154043d2ade09dec5cfd1cf37d7caa6a6f9f9
-updated: 2018-08-24T12:03:43.537520576-07:00
+hash: f126374d086cfa68b8ddd638e6cd4b30b492fd31cf2ddd1e7be30955322dc2df
+updated: 2018-08-24T16:02:21.083661337-07:00
 imports:
 - name: cloud.google.com/go
   version: 3b1ae45394a234c385be014e9a488f2bb6eef821
@@ -117,6 +117,8 @@ imports:
   - xfs
 - name: github.com/prometheus/prom2json
   version: 7b8ed2aed12952701e60d92bd2d91209dcd5eb1c
+- name: github.com/rcrowley/go-metrics
+  version: e2704e165165ec55d062f5919b4b29494e9fa790
 - name: github.com/spf13/cobra
   version: 6fd8e29b07d8242ebe2888060fede5766e240c25
 - name: github.com/spf13/pflag
@@ -249,7 +251,7 @@ imports:
   - mixer/v1
   - policy/v1beta1
 - name: istio.io/istio
-  version: 3a136c90ec5e308f236e0d7ebb5c4c5e405217f4
+  version: 42773aacced474d97159902d20579a25b1f98106
   subpackages:
   - mixer/adapter/kubernetesenv/template
   - mixer/adapter/servicecontrol/template/servicecontrolreport
