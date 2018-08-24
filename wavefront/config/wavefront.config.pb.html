@@ -2,7 +2,7 @@
 title: wavefront.config
 layout: protoc-gen-docs
 generator: protoc-gen-docs
-number_of_entries: 3
+number_of_entries: 5
 ---
 <p>config for wavefront</p>
 
@@ -19,19 +19,35 @@ number_of_entries: 3
 </tr>
 </thead>
 <tbody>
-<tr id="Params-domain">
-<td><code>domain</code></td>
-<td><code>string</code></td>
+<tr id="Params-direct" class="oneof oneof-start">
+<td><code>direct</code></td>
+<td><code><a href="#Params-WavefrontDirect">Params.WavefrontDirect (oneof)</a></code></td>
 <td>
-<p>the wavefront domain</p>
+<p>the wavefront server credentials</p>
 
 </td>
 </tr>
-<tr id="Params-token">
-<td><code>token</code></td>
+<tr id="Params-proxy" class="oneof">
+<td><code>proxy</code></td>
+<td><code><a href="#Params-WavefrontProxy">Params.WavefrontProxy (oneof)</a></code></td>
+<td>
+<p>the wavefront proxy credentials</p>
+
+</td>
+</tr>
+<tr id="Params-flush_interval">
+<td><code>flushInterval</code></td>
+<td><code><a href="https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#duration">google.protobuf.Duration</a></code></td>
+<td>
+<p>the metrics flush interval</p>
+
+</td>
+</tr>
+<tr id="Params-prefix">
+<td><code>prefix</code></td>
 <td><code>string</code></td>
 <td>
-<p>the wavefront token</p>
+<p>the prefix to prepend metrics with</p>
 
 </td>
 </tr>
@@ -122,6 +138,62 @@ number_of_entries: 3
 <td><code>HISTOGRAM</code></td>
 <td>
 <p>represents a histogram metric type</p>
+
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+<h2 id="Params-WavefrontDirect">Params.WavefrontDirect</h2>
+<section>
+<p>represents wavefront server credentials</p>
+
+<table class="message-fields">
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr id="Params-WavefrontDirect-domain">
+<td><code>domain</code></td>
+<td><code>string</code></td>
+<td>
+<p>the wavefront domain</p>
+
+</td>
+</tr>
+<tr id="Params-WavefrontDirect-token">
+<td><code>token</code></td>
+<td><code>string</code></td>
+<td>
+<p>the wavefront token</p>
+
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+<h2 id="Params-WavefrontProxy">Params.WavefrontProxy</h2>
+<section>
+<p>represents wavefront proxy credentials</p>
+
+<table class="message-fields">
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr id="Params-WavefrontProxy-address">
+<td><code>address</code></td>
+<td><code>string</code></td>
+<td>
+<p>the wavefront proxy address</p>
 
 </td>
 </tr>

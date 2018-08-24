@@ -18,27 +18,50 @@ syntax = "proto3";
 package wavefront.config;
 
 import "gogoproto/gogo.proto";
+import "google/protobuf/duration.proto";
 
 option go_package="config";
+option (gogoproto.goproto_getters_all) = false;
+option (gogoproto.equal_all) = false;
 
 // config for wavefront
 message Params {
 
-  // the wavefront domain
-  string domain = 1;
+  // the wavefront service credentials
+  oneof credentials {
+    // the wavefront server credentials
+    WavefrontDirect direct = 1;
+    // the wavefront proxy credentials
+    WavefrontProxy proxy = 2;
+  }
 
-  // the wavefront token
-  string token = 2;
+  // the metrics flush interval
+  google.protobuf.Duration flush_interval = 3 [(gogoproto.nullable)=false, (gogoproto.stdduration) = true];
+
+  // the prefix to prepend metrics with
+  string prefix = 4;
 
   // the metrics
-  repeated MetricInfo metrics = 3;
+  repeated MetricInfo metrics = 5;
+
+  // represents wavefront server credentials
+  message WavefrontDirect {
+    // the wavefront domain
+    string domain = 1;
+    // the wavefront token
+    string token = 2;
+  }
+
+  // represents wavefront proxy credentials
+  message WavefrontProxy {
+    // the wavefront proxy address
+    string address = 1;
+  }
 
   // represents a metric
   message MetricInfo {
-
     // the metric name
     string name = 1;
-
     // the metric type
     Type type = 2;
 
@@ -55,7 +78,6 @@ message Params {
       // represents a histogram metric type
       HISTOGRAM = 4;
     }
-
   }
 
 }
