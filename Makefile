@@ -71,6 +71,7 @@ $(GOIMPORTS):
 .PHONY: build
 build: format
 	go build -v ./...
+	cp wavefront/config/wavefront.yaml wavefront/operatorconfig/
 	@echo "Build was successful!"
 
 # Fixes imports and formats files
