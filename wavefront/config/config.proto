@@ -53,11 +53,8 @@ message Params {
   // the prefix to prepend metrics with
   string prefix = 4;
 
-  // the percentiles to export from histograms
-  repeated double percentiles = 5;
-
   // the metrics
-  repeated MetricInfo metrics = 6;
+  repeated MetricInfo metrics = 5;
 
   // represents a metric
   message MetricInfo {
