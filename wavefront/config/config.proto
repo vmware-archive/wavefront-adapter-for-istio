@@ -35,8 +35,8 @@ message Params {
 
   // represents wavefront server credentials
   message WavefrontDirect {
-    // the wavefront domain
-    string domain = 1;
+    // the wavefront server
+    string server = 1;
     // the wavefront token
     string token = 2;
   }
