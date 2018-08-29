@@ -23,11 +23,11 @@ import (
 
 var (
 	// InvalidDirectCredsError is returned when invalid direct credentials are found in the configuration.
-	InvalidDirectCredsError = errors.New("Invalid server or token found in configuration")
+	InvalidDirectCredsError = errors.New("invalid server or token found in configuration")
 	// InvalidProxyCredsError is returned when invalid proxy credentials are found in the configuration.
-	InvalidProxyCredsError = errors.New("Invalid proxy address found in configuration")
+	InvalidProxyCredsError = errors.New("invalid proxy address found in configuration")
 	// NoCredentialsError is returned when no valid credentials are found in the configuration.
-	NoCredentialsError = errors.New("No credentials were found in the configuration")
+	NoCredentialsError = errors.New("no credentials were found in the configuration")
 )
 
 // ValidateCredentials validates the credentials given a Params instance.
@@ -57,7 +57,7 @@ func validateMetric(m *Params_MetricInfo) error {
 	switch m.Type {
 	case HISTOGRAM:
 		if m.Sample == nil || m.Sample.GetDefinition() == nil || (m.Sample.GetExpDecay() == nil && m.Sample.GetUniform() == nil) {
-			return fmt.Errorf("No sample definition was found for histogram metric %s", m.Name)
+			return fmt.Errorf("no sample definition was found for histogram metric %s", m.Name)
 		}
 	}
 	return nil
