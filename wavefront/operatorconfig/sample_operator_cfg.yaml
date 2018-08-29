@@ -13,7 +13,7 @@ spec:
       server: server.wavefront.com
       token: api-token
     flushInterval: 5s
-    prefix: ""
+    prefix: "istio"
     metrics:
     - name: requestsize.instance.istio-system
       type: COUNTER
