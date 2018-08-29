@@ -24,7 +24,6 @@ option go_package="config";
 
 // config for wavefront
 message Params {
-
   // the wavefront service credentials
   oneof credentials {
     // the wavefront server credentials
@@ -76,6 +75,33 @@ message Params {
       // represents a histogram metric type
       HISTOGRAM = 4;
     }
-  }
 
+    // for metrics with type HISTOGRAM, this provides the sample definition
+    Sample sample = 3;
+
+    // represents a sample as in https://github.com/rcrowley/go-metrics
+    message Sample {
+      // the sample definition
+      oneof definition {
+        // the exponentially decaying sample definition
+        ExpDecay exp_decay = 1;
+	// the uniform sample definition
+	Uniform uniform = 2;
+      }
+
+      // represents an exponentially decaying sample
+      message ExpDecay {
+        // the reservoir size
+        int32 reservoir_size = 1;
+	// the alpha
+	double alpha = 2;
+      }
+
+      // represents a uniform sample
+      message Uniform {
+        // the reservoir size
+        int32 reservoir_size = 1;
+      }
+    }
+  }
 }
