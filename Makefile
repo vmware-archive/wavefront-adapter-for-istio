@@ -83,7 +83,7 @@ build: format
 # Builds the docker image for the project
 # # Usage: make docker-build
 .PHONY: docker-build
-docker-build: build
+docker-build: setup
 	docker build -t vmware/wavefront-istio-mixer-adapter:latest .
 	@echo "Docker image was built successfully!"
 
