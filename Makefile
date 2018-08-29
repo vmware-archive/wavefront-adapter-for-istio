@@ -15,6 +15,7 @@
 # Constants
 SHELL := /bin/bash
 GO := $(shell command -v go 2> /dev/null)
+DOCKER := $(shell command -v docker 2> /dev/null)
 GLIDE := $(GOBIN)/glide
 GOIMPORTS := $(GOBIN)/goimports
 PATH := $(GOBIN):$(PATH)
@@ -51,6 +52,9 @@ endif
 ifeq ($(GOBIN),)
 	$(error GOBIN is not set)
 endif
+ifndef DOCKER
+	$(error docker is not installed)
+endif
 
 # Configures the development environment
 # Usage: make setup
@@ -86,7 +90,7 @@ docker-build: build
 # Runs the docker container
 # # Usage: make docker-run
 .PHONY: docker-run
-docker-run:
+docker-run: setup
 	docker run -it -p 8080:8080 vmware/wavefront-istio-mixer-adapter:latest
 
 # Fixes imports and formats files

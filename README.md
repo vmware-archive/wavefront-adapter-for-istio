@@ -16,14 +16,16 @@ make docker-run
 
 1\. Install [Golang](https://golang.org/dl/).
 
-2\. Set `GOPATH` and `GOBIN` like so:
+2\. Install [Docker](https://github.com/istio/istio/wiki/Dev-Guide#setting-up-docker).
+
+3\. Set `GOPATH` and `GOBIN` like so:
 
 ```shell
 export GOPATH=~/go
 export GOBIN=$GOPATH/bin
 ```
 
-3\. Install the development tools like so:
+4\. Install the development tools like so:
 
 ```shell
 make setup
