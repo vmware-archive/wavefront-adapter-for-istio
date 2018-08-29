@@ -12,8 +12,7 @@ spec:
     direct:
       domain: domain.wavefront.com
       token: api-token
-    flush_interval:
-      seconds: 5
+    flushInterval: 5s
     prefix: testprefix
     metrics:
     - name: requestsize.instance.istio-system
