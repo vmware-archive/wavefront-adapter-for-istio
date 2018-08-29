@@ -1,0 +1,34 @@
+# service for adapter wavefront
+apiVersion: v1
+kind: Service
+metadata:
+  name: wavefront-adapter
+  labels:
+    app: wavefront-adapter
+spec:
+  ports:
+  - name: grpc
+    port: 8080
+  selector:
+    app: wavefront-adapter
+---
+# deployment for adapter wavefront
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: wavefront-adapter
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: wavefront-adapter
+        version: v1
+    spec:
+      containers:
+      - image: vmware/wavefront-istio-mixer-adapter:latest
+        imagePullPolicy: Always
+        name: wavefront-adapter
+        ports:
+        - containerPort: 8080
+---
