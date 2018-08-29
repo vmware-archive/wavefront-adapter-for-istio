@@ -2,18 +2,18 @@
 apiVersion: "config.istio.io/v1alpha2"
 kind: handler
 metadata:
-  name: testhandler
+  name: wavefront-handler
   namespace: istio-system
 spec:
   adapter: wavefront
   connection:
-    address: "[::]:8080"
+    address: "wavefront-adapter:8080"
   params:
     direct:
       server: server.wavefront.com
       token: api-token
     flushInterval: 5s
-    prefix: testprefix
+    prefix: ""
     metrics:
     - name: requestsize.instance.istio-system
       type: COUNTER
@@ -32,15 +32,15 @@ spec:
       response_code: response.code | 200
     monitored_resource_type: '"UNSPECIFIED"'
 ---
-# rule to dispatch to handler testhandler
+# rule to dispatch to handler wavefront-handler
 apiVersion: "config.istio.io/v1alpha2"
 kind: rule
 metadata:
-  name: testrule
+  name: wavefront-rule
   namespace: istio-system
 spec:
   actions:
-  - handler: testhandler.istio-system
+  - handler: wavefront-handler.istio-system
     instances:
     - requestsize
 ---
