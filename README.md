@@ -7,7 +7,7 @@
 To run the docker container, use the following command:
 
 ```shell
-docker run -it -p 8080:8080 vmware/wavefront-istio-mixer-adapter
+make docker-run
 ```
 
 ## Development

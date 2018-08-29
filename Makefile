@@ -30,6 +30,7 @@ help:
 	@echo ""
 	@echo "    build              Fix imports, formats files and builds the project locally."
 	@echo "    docker-build       Build the docker image for the project."
+	@echo "    docker-run         Run the docker container."
 	@echo "    format             Fix imports and format files."
 	@echo "    help               Show this help message."
 	@echo "    setup              Set up the development environment."
@@ -81,6 +82,12 @@ build: format
 docker-build: build
 	docker build -t vmware/wavefront-istio-mixer-adapter:latest .
 	@echo "Docker image was built successfully!"
+
+# Runs the docker container
+# # Usage: make docker-run
+.PHONY: docker-run
+docker-run:
+	docker run -it -p 8080:8080 vmware/wavefront-istio-mixer-adapter:latest
 
 # Fixes imports and formats files
 # Usage: make format
