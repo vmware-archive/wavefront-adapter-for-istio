@@ -21,13 +21,13 @@
 package wavefront
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"net"
-	"os"
 
+	metrics "github.com/rcrowley/go-metrics"
 	"github.com/vmware/wavefront-istio-mixer-adapter/wavefront/config"
+	wf "github.com/wavefrontHQ/go-metrics-wavefront"
 
 	"google.golang.org/grpc"
 
@@ -47,20 +47,146 @@ type (
 
 	// WavefrontAdapter supports metric template.
 	WavefrontAdapter struct {
-		listener net.Listener
-		server   *grpc.Server
+		listener            net.Listener
+		server              *grpc.Server
+		reporterInitialized bool
 	}
 )
 
+// ensure that WavefrontAdapter implements the HandleMetricServiceServer interface.
 var _ metric.HandleMetricServiceServer = &WavefrontAdapter{}
 
-// HandleMetric records metric entries
+// hostTags holds the source tag information for Wavefront metrics.
+var hostTags = map[string]string{"source": "istio"}
+
+// createWavefrontReporter creates a reporter that periodically flushes metrics to Wavefront.
+func createWavefrontReporter(cfg *config.Params) {
+	if direct := cfg.GetDirect(); direct != nil {
+		go wf.WavefrontDirect(metrics.DefaultRegistry, cfg.FlushInterval, hostTags, cfg.Prefix, direct.Server, direct.Token)
+	} else if proxy := cfg.GetProxy(); proxy != nil {
+		addr, _ := net.ResolveTCPAddr("tcp", proxy.Address)
+		go wf.WavefrontProxy(metrics.DefaultRegistry, cfg.FlushInterval, hostTags, cfg.Prefix, addr)
+	}
+}
+
+// verifyAndInitReporter checks if the Wavefront reporter is initialized, and if
+// not, initializes it.
+func (wa *WavefrontAdapter) verifyAndInitReporter(cfg *config.Params) {
+	if !wa.reporterInitialized {
+		log.Infof("trying to init wavefront reporter, config: %s", cfg.String())
+		if err := config.ValidateCredentials(cfg); err != nil {
+			log.Errorf("failed to create wavefront reporter, err: %s, config: %s", err.Error(), cfg.String())
+		} else {
+			createWavefrontReporter(cfg)
+			wa.reporterInitialized = true
+			log.Infof("wavefront reporter successfully initialized, config: %s", cfg.String())
+		}
+	}
+}
+
+// identifyMetric locates a metric in an array given the metric name.
+func identifyMetric(ms []*config.Params_MetricInfo, name string) *config.Params_MetricInfo {
+	for _, m := range ms {
+		if m.Name == name {
+			return m
+		}
+	}
+	return nil
+}
+
+// translateToFloat64 converts a given number to float64 or returns an error.
+func translateToFloat64(value interface{}) (float64, error) {
+	switch v := value.(type) {
+	case float64:
+		return v, nil
+	case int64:
+		return float64(v), nil
+	default:
+		return 0, fmt.Errorf("couldn't convert %s to float64", value)
+	}
+}
+
+// translateToInt64 converts a given number to int64 or returns an error.
+func translateToInt64(value interface{}) (int64, error) {
+	switch v := value.(type) {
+	case int64:
+		return v, nil
+	case float64:
+		return int64(v), nil
+	default:
+		return 0, fmt.Errorf("couldn't convert %s to int64", value)
+	}
+}
+
+// translateSample translates a config.Sample instance to a metrics.Sample instance.
+func translateSample(s *config.Params_MetricInfo_Sample) metrics.Sample {
+	if def := s.GetExpDecay(); def != nil {
+		return metrics.NewExpDecaySample(int(def.ReservoirSize), def.Alpha)
+	} else if def := s.GetUniform(); def != nil {
+		return metrics.NewUniformSample(int(def.ReservoirSize))
+	}
+	return nil
+}
+
+// writeMetrics extracts metric information from metric.InstanceMsgs and writes
+// it to the Wavefront metric registry.
+func writeMetrics(cfg *config.Params, insts []*metric.InstanceMsg) {
+	for _, inst := range insts {
+		metricName := inst.Name
+		metric := identifyMetric(cfg.Metrics, metricName)
+		if metric == nil {
+			log.Warnf("couldn't identify metric %s in configuration %s, ignoring", metricName, cfg.String())
+			continue
+		}
+
+		value := decodeValue(inst.Value.GetValue())
+		tags := decodeTags(inst.Dimensions)
+
+		switch metric.Type {
+		case config.GAUGE, config.COUNTER:
+			if float64Val, err := translateToFloat64(value); err != nil {
+				log.Warnf("couldn't translate metric value: %s %v, err: %v", metricName, value, err)
+				continue
+			} else {
+				gauge := wf.GetOrRegisterMetric(metricName, metrics.NewGaugeFloat64(), tags).(metrics.GaugeFloat64)
+				gauge.Update(float64Val)
+				log.Debugf("updated gauge metric %s with %v, tags: %v", metricName, float64Val, tags)
+			}
+		case config.DELTA_COUNTER:
+			if int64Val, err := translateToInt64(value); err != nil {
+				log.Warnf("couldn't translate metric value: %s %v, err: %v", metricName, value, err)
+				continue
+			} else {
+				counter := wf.GetOrRegisterMetric(metricName, metrics.NewCounter(), tags).(metrics.Counter)
+				counter.Inc(int64Val)
+				log.Debugf("updated counter metric %s with %v, tags: %v", metricName, int64Val, tags)
+			}
+		case config.HISTOGRAM:
+			if int64Val, err := translateToInt64(value); err != nil {
+				log.Warnf("couldn't translate metric value: %s %v, err: %v", metricName, value, err)
+				continue
+			} else {
+				histogram := wf.GetMetric(metricName, tags).(metrics.Histogram)
+				if histogram == nil {
+					sample := translateSample(metric.Sample)
+					histogram = metrics.NewHistogram(sample)
+					wf.RegisterMetric(metricName, histogram, tags)
+				}
+				histogram.Update(int64Val)
+				log.Debugf("updated histogram metric %s with %v, tags: %v", metricName, int64Val, tags)
+			}
+		default:
+			log.Warnf("couldn't handle metric %s with value %s, tags: %v", metricName, value, tags)
+		}
+	}
+}
+
+// HandleMetric records metric entries.
 func (wa *WavefrontAdapter) HandleMetric(ctx context.Context, r *metric.HandleMetricRequest) (*v1beta1.ReportResult, error) {
-
 	log.Infof("received request %v\n", *r)
-	var b bytes.Buffer
-	cfg := &config.Params{}
 
+	// unmarshal configuration
+	cfg := &config.Params{}
 	if r.AdapterConfig != nil {
 		if err := cfg.Unmarshal(r.AdapterConfig.Value); err != nil {
 			log.Errorf("error unmarshalling adapter config: %v", err)
@@ -68,66 +194,32 @@ func (wa *WavefrontAdapter) HandleMetric(ctx context.Context, r *metric.HandleMe
 		}
 	}
 
-	b.WriteString(fmt.Sprintf("HandleMetric invoked with:\n  Adapter config: %s\n  Instances: %s\n",
-		cfg.String(), instances(r.Instances)))
+	// init the Wavefront reporter if not initialized already
+	wa.verifyAndInitReporter(cfg)
 
-	_, err := os.OpenFile("out.txt", os.O_RDONLY|os.O_CREATE, 0666)
-	if err != nil {
-		log.Errorf("error creating file: %v", err)
-	}
-	f, err := os.OpenFile("out.txt", os.O_APPEND|os.O_WRONLY, 0600)
-	if err != nil {
-		log.Errorf("error opening file for append: %v", err)
-	}
-	defer f.Close()
-
-	log.Infof("writing instances to file %s", f.Name())
-	if _, err = f.Write(b.Bytes()); err != nil {
-		log.Errorf("error writing to file: %v", err)
+	// validate the metrics configuration
+	if err := config.ValidateMetrics(cfg); err != nil {
+		log.Errorf("error validating metrics config: %v %s", err, cfg.String())
+		return nil, err
 	}
 
-	for _, instance := range r.Instances {
-		metricName := instance.Name
-		metric := identifyMetric(metricName, cfg.Metrics)
-		if metric != nil {
-			switch metric.Type {
-			case config.GAUGE:
-				log.Infof("Gauge %s: %v -- Dimensions: %v", metricName, decodeValue(instance.Value.GetValue()), decodeDimensions(instance.Dimensions))
-			case config.COUNTER:
-				log.Infof("Counter %s: %v -- Dimensions: %v", metricName, decodeValue(instance.Value.GetValue()), decodeDimensions(instance.Dimensions))
-			case config.DELTA_COUNTER:
-				log.Infof("Delta Counter %s: %v -- Dimensions: %v", metricName, decodeValue(instance.Value.GetValue()), decodeDimensions(instance.Dimensions))
-			case config.HISTOGRAM:
-				log.Infof("Histogram %s: %v -- Dimensions: %v", metricName, decodeValue(instance.Value.GetValue()), decodeDimensions(instance.Dimensions))
-			default:
-				log.Warnf("Couldn't handle metric type %s, data: %v", metric.Type, instance)
-			}
-		} else {
-			log.Warnf("Couldn't identify metric %s", metricName)
-		}
-	}
+	// write metrics
+	writeMetrics(cfg, r.Instances)
 
 	log.Infof("success!!")
 	return &v1beta1.ReportResult{}, nil
 }
 
-func identifyMetric(name string, metrics []*config.Params_MetricInfo) *config.Params_MetricInfo {
-	for _, metric := range metrics {
-		if metric.Name == name {
-			return metric
-		}
+// decodeTags converts dimensions to a map of tags.
+func decodeTags(dimensions map[string]*policy.Value) map[string]string {
+	tags := make(map[string]string, len(dimensions))
+	for i, d := range dimensions {
+		tags[i] = fmt.Sprintf("%v", decodeValue(d.GetValue()))
 	}
-	return nil
+	return tags
 }
 
-func decodeDimensions(in map[string]*policy.Value) map[string]interface{} {
-	out := make(map[string]interface{}, len(in))
-	for k, v := range in {
-		out[k] = decodeValue(v.GetValue())
-	}
-	return out
-}
-
+// decodeValue decodes a policy.Value instance.
 func decodeValue(in interface{}) interface{} {
 	switch t := in.(type) {
 	case *policy.Value_StringValue:
@@ -155,29 +247,17 @@ func decodeValue(in interface{}) interface{} {
 	}
 }
 
-func instances(in []*metric.InstanceMsg) string {
-	var b bytes.Buffer
-	for _, inst := range in {
-		b.WriteString(fmt.Sprintf("'%s':\n"+
-			"  {\n"+
-			"		Value = %v\n"+
-			"		Dimensions = %v\n"+
-			"  }", inst.Name, decodeValue(inst.Value.GetValue()), decodeDimensions(inst.Dimensions)))
-	}
-	return b.String()
-}
-
-// Addr returns the listening address of the server
+// Addr returns the listening address of the server.
 func (wa *WavefrontAdapter) Addr() string {
 	return wa.listener.Addr().String()
 }
 
-// Run starts the server run
+// Run starts the server run.
 func (wa *WavefrontAdapter) Run(shutdown chan error) {
 	shutdown <- wa.server.Serve(wa.listener)
 }
 
-// Close gracefully shuts down the server; used for testing
+// Close gracefully shuts down the server; used for testing.
 func (wa *WavefrontAdapter) Close() error {
 	if wa.server != nil {
 		wa.server.GracefulStop()
@@ -193,13 +273,16 @@ func NewWavefrontAdapter(addr string) (Server, error) {
 	if addr == "" {
 		addr = "0"
 	}
+
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", addr))
 	if err != nil {
 		return nil, fmt.Errorf("unable to listen on socket: %v", err)
 	}
+
 	adapter := &WavefrontAdapter{
-		listener: listener,
-		server:   grpc.NewServer(),
+		listener:            listener,
+		server:              grpc.NewServer(),
+		reporterInitialized: false,
 	}
 	metric.RegisterHandleMetricServiceServer(adapter.server, adapter)
 	fmt.Printf("listening on \"%v\"\n", adapter.Addr())

@@ -10,7 +10,7 @@ spec:
     address: "{ADDRESS}" # replaced by the test at runtime
   params:
     direct:
-      domain: domain.wavefront.com
+      server: server.wavefront.com
       token: api-token
     flushInterval: 5s
     prefix: testprefix
