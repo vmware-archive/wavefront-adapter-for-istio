@@ -28,7 +28,8 @@ help:
 	@echo ""
 	@echo "Available targets are:"
 	@echo ""
-	@echo "    build              Fixes imports, formats files and builds the project."
+	@echo "    build              Fix imports, formats files and builds the project locally."
+	@echo "    docker-build       Build the docker image for the project."
 	@echo "    format             Fix imports and format files."
 	@echo "    help               Show this help message."
 	@echo "    setup              Set up the development environment."
@@ -73,6 +74,13 @@ build: format
 	go build -v ./...
 	cp wavefront/config/wavefront.yaml wavefront/operatorconfig/
 	@echo "Build was successful!"
+
+# Builds the docker image for the project
+# # Usage: make docker-build
+.PHONY: docker-build
+docker-build: build
+	docker build -t vmware/wavefront-istio-mixer-adapter:latest .
+	@echo "Docker image was built successfully!"
 
 # Fixes imports and formats files
 # Usage: make format

@@ -7,7 +7,7 @@ metadata:
 spec:
   adapter: wavefront
   connection:
-    address: "{ADDRESS}" # replaced by the test at runtime
+    address: "[::]:8080"
   params:
     direct:
       server: server.wavefront.com

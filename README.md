@@ -1,5 +1,15 @@
 # Wavefront Istio Mixer Adapter
 
+## Usage
+
+### Run The Docker Container
+
+To run the docker container, use the following command:
+
+```shell
+docker run -it -p 8080:8080 vmware/wavefront-istio-mixer-adapter
+```
+
 ## Development
 
 ### Setup
@@ -41,6 +51,14 @@ You could format your code using the following command:
 
 ```shell
 make format
+```
+
+### Building The Docker Image
+
+To build the docker image, use the following command:
+
+```shell
+make docker-build
 ```
 
 ## License
