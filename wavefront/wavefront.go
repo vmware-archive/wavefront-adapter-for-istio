@@ -146,7 +146,6 @@ func writeMetrics(cfg *config.Params, insts []*metric.InstanceMsg) {
 		case config.GAUGE, config.COUNTER:
 			if float64Val, err := translateToFloat64(value); err != nil {
 				log.Warnf("couldn't translate metric value: %s %v, err: %v", metricName, value, err)
-				continue
 			} else {
 				gauge := wf.GetOrRegisterMetric(metricName, metrics.NewGaugeFloat64(), tags).(metrics.GaugeFloat64)
 				gauge.Update(float64Val)
@@ -155,7 +154,6 @@ func writeMetrics(cfg *config.Params, insts []*metric.InstanceMsg) {
 		case config.DELTA_COUNTER:
 			if int64Val, err := translateToInt64(value); err != nil {
 				log.Warnf("couldn't translate metric value: %s %v, err: %v", metricName, value, err)
-				continue
 			} else {
 				counter := wf.GetOrRegisterMetric(metricName, metrics.NewCounter(), tags).(metrics.Counter)
 				counter.Inc(int64Val)
@@ -164,7 +162,6 @@ func writeMetrics(cfg *config.Params, insts []*metric.InstanceMsg) {
 		case config.HISTOGRAM:
 			if int64Val, err := translateToInt64(value); err != nil {
 				log.Warnf("couldn't translate metric value: %s %v, err: %v", metricName, value, err)
-				continue
 			} else {
 				histogram := wf.GetMetric(metricName, tags).(metrics.Histogram)
 				if histogram == nil {
