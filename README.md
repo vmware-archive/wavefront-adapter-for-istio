@@ -40,13 +40,15 @@ See [config.proto](wavefront/config/config.proto) for the available configuratio
 Please follow these steps to configure the Istio Mixer to publish metrics to
 Wavefront using this adapter.
 
-1\. Deploy the `wavefront-adapter`.
+1\. Deploy [Istio](https://istio.io/docs/setup/kubernetes/quick-start/).
+
+2\. Deploy the `wavefront-adapter`.
 
 ```shell
 kubectl apply -f wavefront-adapter.yaml
 ```
 
-2\. Deploy your copy of the `operatorconfig`.
+3\. Deploy your copy of the `operatorconfig`.
 
 ```shell
 kubectl apply -f operatorconfig/
