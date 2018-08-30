@@ -1,3 +1,75 @@
+# requestsize instance for template metric
+apiVersion: "config.istio.io/v1alpha2"
+kind: instance
+metadata:
+  name: requestsize
+  namespace: istio-system
+spec:
+  template: metric
+  params:
+    value: request.size | 0
+    dimensions:
+      source_service: source.service | "unknown"
+      source_version: source.labels["version"] | "unknown"
+      destination_service: destination.service | "unknown"
+      destination_version: destination.labels["version"] | "unknown"
+      response_code: response.code | 200
+    monitored_resource_type: '"UNSPECIFIED"'
+---
+# requestcount instance for template metric
+apiVersion: "config.istio.io/v1alpha2"
+kind: instance
+metadata:
+  name: requestcount
+  namespace: istio-system
+spec:
+  template: metric
+  params:
+    value: 1
+    dimensions:
+      source_service: source.service | "unknown"
+      source_version: source.labels["version"] | "unknown"
+      destination_service: destination.service | "unknown"
+      destination_version: destination.labels["version"] | "unknown"
+      response_code: response.code | 200
+    monitored_resource_type: '"UNSPECIFIED"'
+---
+# requestduration instance for template metric
+apiVersion: "config.istio.io/v1alpha2"
+kind: instance
+metadata:
+  name: requestduration
+  namespace: istio-system
+spec:
+  template: metric
+  params:
+    value: response.duration | "0ms"
+    dimensions:
+      source_service: source.service | "unknown"
+      source_version: source.labels["version"] | "unknown"
+      destination_service: destination.service | "unknown"
+      destination_version: destination.labels["version"] | "unknown"
+      response_code: response.code | 200
+    monitored_resource_type: '"UNSPECIFIED"'
+---
+# responsesize instance for template metric
+apiVersion: "config.istio.io/v1alpha2"
+kind: instance
+metadata:
+  name: responsesize
+  namespace: istio-system
+spec:
+  template: metric
+  params:
+    value: response.size | 0
+    dimensions:
+      source_service: source.service | "unknown"
+      source_version: source.labels["version"] | "unknown"
+      destination_service: destination.service | "unknown"
+      destination_version: destination.labels["version"] | "unknown"
+      response_code: response.code | 200
+    monitored_resource_type: '"UNSPECIFIED"'
+---
 # handler for adapter wavefront
 apiVersion: "config.istio.io/v1alpha2"
 kind: handler
@@ -17,25 +89,17 @@ spec:
     prefix: "istio"
     metrics:
     - name: requestsize.instance.istio-system
+      type: GAUGE
+    - name: requestcount.instance.istio-system
       type: COUNTER
----
-# instance for template metric
-apiVersion: "config.istio.io/v1alpha2"
-kind: instance
-metadata:
-  name: requestsize
-  namespace: istio-system
-spec:
-  template: metric
-  params:
-    value: request.size | 0
-    dimensions:
-      source_service: source.service | "unknown"
-      source_version: source.labels["version"] | "unknown"
-      destination_service: destination.service | "unknown"
-      destination_version: destination.labels["version"] | "unknown"
-      response_code: response.code | 200
-    monitored_resource_type: '"UNSPECIFIED"'
+    - name: requestduration.instance.istio-system
+      type: HISTOGRAM
+      sample:
+        expDecay:
+          reservoirSize: 1024
+          alpha: 0.015
+    - name: responsesize.instance.istio-system
+      type: GAUGE
 ---
 # rule to dispatch to handler wavefront-handler
 apiVersion: "config.istio.io/v1alpha2"
@@ -48,4 +112,7 @@ spec:
   - handler: wavefront-handler.istio-system
     instances:
     - requestsize
+    - requestcount
+    - requestduration
+    - responsesize
 ---
