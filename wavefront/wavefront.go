@@ -155,21 +155,22 @@ func writeMetrics(cfg *config.Params, insts []*metric.InstanceMsg) {
 			if int64Val, err := translateToInt64(value); err != nil {
 				log.Warnf("couldn't translate metric value: %s %v, err: %v", metricName, value, err)
 			} else {
-				counter := wf.GetOrRegisterMetric(metricName, metrics.NewCounter(), tags).(metrics.Counter)
+				deltaMetricName := wf.DeltaCounterName(metricName)
+				counter := wf.GetOrRegisterMetric(deltaMetricName, metrics.NewCounter(), tags).(metrics.Counter)
 				counter.Inc(int64Val)
-				log.Debugf("updated counter metric %s with %v, tags: %v", metricName, int64Val, tags)
+				log.Debugf("updated delta counter metric %s with %v, tags: %v", deltaMetricName, int64Val, tags)
 			}
 		case config.HISTOGRAM:
 			if int64Val, err := translateToInt64(value); err != nil {
 				log.Warnf("couldn't translate metric value: %s %v, err: %v", metricName, value, err)
 			} else {
-				histogram := wf.GetMetric(metricName, tags).(metrics.Histogram)
+				histogram := wf.GetMetric(metricName, tags)
 				if histogram == nil {
 					sample := translateSample(metric.Sample)
 					histogram = metrics.NewHistogram(sample)
 					wf.RegisterMetric(metricName, histogram, tags)
 				}
-				histogram.Update(int64Val)
+				histogram.(metrics.Histogram).Update(int64Val)
 				log.Debugf("updated histogram metric %s with %v, tags: %v", metricName, int64Val, tags)
 			}
 		default:
