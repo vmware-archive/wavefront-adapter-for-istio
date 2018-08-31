@@ -1,7 +1,7 @@
 package: github.com/vmware/wavefront-istio-mixer-adapter
 import:
 - package: istio.io/istio
-  version: ~1.0.0
+  version: ~1.0.1
 - package: github.com/golang/protobuf
   version: ~v1.1.0
 - package: github.com/gogo/protobuf
