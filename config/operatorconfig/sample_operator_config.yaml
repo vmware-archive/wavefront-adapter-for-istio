@@ -82,8 +82,8 @@ spec:
     address: "wavefront-adapter:8080"
   params:
     direct:
-      server: server.wavefront.com
-      token: api-token
+      server: https://YOUR-INSTANCE.wavefront.com
+      token: YOUR-API-TOKEN
     flushInterval:
       seconds: 5
     prefix: "istio"

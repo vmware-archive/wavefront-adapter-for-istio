@@ -4,10 +4,10 @@
 
 ### Configuration
 
-1\. Create a copy of the [wavefront/operatorconfig](wavefront/operatorconfig) directory.
+1\. Create a copy of the [config/operatorconfig/](config/operatorconfig/) directory.
 
 2\. If you want the metrics to be published to the Wavefront instance directly, supply
-the `direct` params for `wavefront-handler` under `sample_operator_cfg.yaml` like so:
+the `direct` params for `wavefront-handler` under `sample_operator_config.yaml` like so:
 
 ```yaml
 ...
@@ -45,13 +45,13 @@ Wavefront using this adapter.
 2\. Deploy the `wavefront-adapter`.
 
 ```shell
-kubectl apply -f wavefront-adapter.yaml
+kubectl apply -f config/wavefront-adapter.yaml
 ```
 
 3\. Deploy your copy of the `operatorconfig`.
 
 ```shell
-kubectl apply -f operatorconfig/
+kubectl apply -f your/operatorconfig/
 ```
 
 You should now be able to see Istio metrics on Wavefront under source `istio`.

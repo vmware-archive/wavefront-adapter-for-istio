@@ -77,13 +77,13 @@ $(GOIMPORTS):
 .PHONY: build
 build: format
 	go build -v ./...
-	cp wavefront/config/wavefront.yaml wavefront/operatorconfig/
+	cp wavefront/config/wavefront.yaml config/operatorconfig/
 	@echo "Build was successful!"
 
 # Builds the docker image for the project
 # # Usage: make docker-build
 .PHONY: docker-build
-docker-build: setup
+docker-build: build
 	docker build -t vmware/wavefront-istio-mixer-adapter:latest .
 	@echo "Docker image was built successfully!"
 
