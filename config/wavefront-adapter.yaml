@@ -2,10 +2,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: wavefront-adapter
+  name: wavefront
   namespace: istio-system
   labels:
-    app: wavefront-adapter
+    app: wavefront
 spec:
   type: ClusterIP
   ports:
@@ -14,28 +14,28 @@ spec:
     port: 8080
     targetPort: 8080
   selector:
-    app: wavefront-adapter
+    app: wavefront
 ---
 # deployment for adapter wavefront
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: wavefront-adapter
+  name: wavefront
   namespace: istio-system
   labels:
-    app: wavefront-adapter
+    app: wavefront
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: wavefront-adapter
+        app: wavefront
       annotations:
         sidecar.istio.io/inject: "false"
         scheduler.alpha.kubernetes.io/critical-pod: ""
     spec:
       containers:
-      - name: wavefront-adapter
+      - name: wavefront
         image: vmware/wavefront-istio-mixer-adapter:latest
         imagePullPolicy: Always
         ports:

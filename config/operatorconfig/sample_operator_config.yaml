@@ -79,7 +79,7 @@ metadata:
 spec:
   adapter: wavefront
   connection:
-    address: "wavefront-adapter:8080"
+    address: "wavefront:8080"
   params:
     direct:
       server: https://YOUR-INSTANCE.wavefront.com

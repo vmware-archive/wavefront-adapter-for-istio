@@ -12,7 +12,7 @@ the `direct` params for `wavefront-handler` under `sample_operator_config.yaml` 
 ```yaml
 ...
   connection:
-    address: "wavefront-adapter:8080"
+    address: "wavefront:8080"
   params:
     direct:
       server: https://YOUR-INSTANCE.wavefront.com
@@ -26,7 +26,7 @@ the `proxy` params like below:
 ```yaml
 ...
   connection:
-    address: "wavefront-adapter:8080"
+    address: "wavefront:8080"
   params:
     proxy:
       address: YOUR-PROXY-ADDRESS
@@ -42,13 +42,13 @@ Wavefront using this adapter.
 
 1\. Deploy [Istio](https://istio.io/docs/setup/kubernetes/quick-start/).
 
-2\. Deploy the `wavefront-adapter`.
+2\. Deploy the `wavefront-adapter.yaml`.
 
 ```shell
 kubectl apply -f config/wavefront-adapter.yaml
 ```
 
-3\. Deploy your copy of the `operatorconfig`.
+3\. Deploy your copy of `operatorconfig`.
 
 ```shell
 kubectl apply -f your/operatorconfig/
