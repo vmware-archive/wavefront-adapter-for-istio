@@ -36,8 +36,8 @@ help:
 	@echo "    help               Show this help message."
 	@echo "    setup              Set up the development environment."
 	@echo "    test               Run all unit tests."
-	@echo "    vendor-install     Install all dependencies to vendor directory."
 	@echo "    vendor-get <pkg>   Add a new dependency to the vendor directory."
+	@echo "    vendor-update      Update all dependencies in vendor directory."
 	@echo ""
 
 # Checks for necessary variables
@@ -99,18 +99,18 @@ docker-run: setup
 format: setup
 	@$(GOIMPORTS) -w -l $(FILES)
 
-# Installs dependencies from glide.lock to the vendor directory
-# Usage: make vendor-install
-.PHONY: vendor-install
-vendor-install: setup
-	@$(GLIDE) install --strip-vendor
-
 # Adds a new dependency to glide.yaml, glide.lock and to the vendor directory
 # Usage: make vendor-get <pkg>
 # Example: make vendor-get pkg=github.com/foo/bar
 .PHONY: vendor-get
 vendor-get: setup
 	@$(GLIDE) get $(pkg) --strip-vendor
+
+# Updates all dependencies in vendor directory
+# Usage: make vendor-update
+.PHONY: vendor-update
+vendor-update: setup
+	@$(GLIDE) update --strip-vendor
 
 # Runs unit tests
 # Usage: make test
