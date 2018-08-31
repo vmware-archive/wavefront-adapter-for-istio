@@ -1,5 +1,9 @@
 # Contribution Guide
 
+Once again, we hope you have read our [code of conduct](CODE_OF_CONDUCT.md) before starting.
+
+We are excited to be working with the community to help with Open Source compliance obligations!
+
 ## Development
 
 ### Setup
