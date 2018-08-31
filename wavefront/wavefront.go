@@ -204,7 +204,7 @@ func (wa *WavefrontAdapter) HandleMetric(ctx context.Context, r *metric.HandleMe
 	// write metrics
 	writeMetrics(cfg, r.Instances)
 
-	log.Infof("success!!")
+	log.Infof("metrics were processed successfully!")
 	return &v1beta1.ReportResult{}, nil
 }
 
