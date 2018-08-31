@@ -62,4 +62,4 @@ Please check out [CONTRIBUTING.md](CONTRIBUTING.md) if you'd like to contribute.
 
 ## License
 
-The wavefront-istio-mixer-adapter project is licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for the full license text.
+Wavefront Istio Mixer Adapter is licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for the full license text.
