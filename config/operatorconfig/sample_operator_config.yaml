@@ -89,9 +89,13 @@ spec:
     prefix: "istio"
     metrics:
     - name: requestsize.instance.istio-system
-      type: GAUGE
+      type: HISTOGRAM
+      sample:
+        expDecay:
+          reservoirSize: 1024
+          alpha: 0.015
     - name: requestcount.instance.istio-system
-      type: COUNTER
+      type: DELTA_COUNTER
     - name: requestduration.instance.istio-system
       type: HISTOGRAM
       sample:
@@ -99,7 +103,11 @@ spec:
           reservoirSize: 1024
           alpha: 0.015
     - name: responsesize.instance.istio-system
-      type: GAUGE
+      type: HISTOGRAM
+      sample:
+        expDecay:
+          reservoirSize: 1024
+          alpha: 0.015
 ---
 # rule to dispatch to handler wavefront-handler
 apiVersion: "config.istio.io/v1alpha2"
