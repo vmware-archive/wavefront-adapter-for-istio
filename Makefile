@@ -115,5 +115,5 @@ vendor-update: setup
 # Runs unit tests
 # Usage: make test
 .PHONY: test
-test:
+test: build
 	go test -v ./...
