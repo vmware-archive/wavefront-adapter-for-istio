@@ -4,7 +4,10 @@
 /*
 	Package config is a generated protocol buffer package.
 
-	config for wavefront
+	The `wavefront` adapter collects metrics and makes them available to
+	[VMware Wavefront](https://www.wavefront.com/).
+
+	This adapter supports the [metric template](https://istio.io/docs/reference/config/policy-and-telemetry/templates/metric/).
 
 	It is generated from these files:
 		mixer/adapter/wavefront/config/config.proto

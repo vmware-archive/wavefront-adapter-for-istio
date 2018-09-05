@@ -1,7 +1,7 @@
 # Wavefront Istio Mixer Adapter
 
 Wavefront Istio Mixer Adapter is an adapter for [Istio](https://istio.io) which
-can be used to publish metrics to [VMware Wavefront](https://cloud.vmware.com/wavefront).
+can be used to publish metrics to [VMware Wavefront](https://www.wavefront.com/).
 
 ## Usage
 
