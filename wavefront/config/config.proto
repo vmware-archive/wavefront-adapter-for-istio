@@ -31,84 +31,84 @@ import "google/protobuf/duration.proto";
 
 option go_package="config";
 
-// config for wavefront
+// Configuration format for the `wavefront` adapter.
 message Params {
-  // the wavefront service credentials
+  // One of the Wavefront service credentials must be supplied.
   oneof credentials {
-    // the wavefront server credentials
+    // The credentials for direct ingestion.
     WavefrontDirect direct = 1;
-    // the wavefront proxy credentials
+    // The credentials for ingestion via a Wavefront Proxy.
     WavefrontProxy proxy = 2;
   }
 
-  // represents wavefront server credentials
+  // Describes Wavefront Server credentials.
   message WavefrontDirect {
-    // the wavefront server
+    // The Wavefront server URL. Ex: https://mydomain.wavefront.com
     string server = 1;
-    // the wavefront token
+    // The Wavefront API token.
     string token = 2;
   }
 
-  // represents wavefront proxy credentials
+  // Describes Wavefront Proxy credentials.
   message WavefrontProxy {
-    // the wavefront proxy address
+    // The wavefront proxy address.
     string address = 1;
   }
 
-  // the metrics flush interval
+  // The metrics flush interval.
   google.protobuf.Duration flush_interval = 3 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true];
 
-  // the prefix to prepend metrics with
+  // The prefix to prepend all metrics handled by the adapter.
   string prefix = 4;
 
-  // the metrics
+  // The set of metrics to publish to Wavefront.
   repeated MetricInfo metrics = 5;
 
-  // represents a metric
+  // Describes how a metric should be represented on Wavefront.
   message MetricInfo {
-    // the metric name
+    // The metric name.
     string name = 1;
-    // the metric type
+    // The metric type.
     Type type = 2;
 
-    // represents metric types as in https://docs.wavefront.com/metric_types.html
+    // Describes metric types as in [Wavefront](https://docs.wavefront.com/metric_types.html).
     enum Type {
-      // reserved for unknown metric types
+      // Reserved for unknown metric types.
       UNKNOWN = 0;
-      // represents a gauge metric type
+      // Represents a gauge metric type.
       GAUGE = 1;
-      // represents a counter metric type
+      // Represents a counter metric type.
       COUNTER = 2;
-      // represents a delta counter metric type
+      // Represents a delta counter metric type.
       DELTA_COUNTER = 3;
-      // represents a histogram metric type
+      // Represents a histogram metric type.
       HISTOGRAM = 4;
     }
 
-    // for metrics with type HISTOGRAM, this provides the sample definition
+    // For metrics with type HISTOGRAM, this describes the sample definition.
     Sample sample = 3;
 
-    // represents a sample as in https://github.com/rcrowley/go-metrics
+    // Describes a sample as in the [rcrowley/go-metrics](https://github.com/rcrowley/go-metrics) library.
     message Sample {
-      // the sample definition
+      // One of the sample definition must be supplied.
       oneof definition {
-        // the exponentially decaying sample definition
+        // Definition of an exponentially decaying sample.
         ExpDecay exp_decay = 1;
-	// the uniform sample definition
+	// Definition of a uniform sample.
 	Uniform uniform = 2;
       }
 
-      // represents an exponentially decaying sample
+      // Describes an exponentially decaying sample.
       message ExpDecay {
-        // the reservoir size
+        // The reservoir size.
         int32 reservoir_size = 1;
-	// the alpha
+	// The alpha.
 	double alpha = 2;
       }
 
-      // represents a uniform sample
+      // Describes a uniform sample.
       message Uniform {
-        // the reservoir size
+        // The reservoir size
         int32 reservoir_size = 1;
       }
     }

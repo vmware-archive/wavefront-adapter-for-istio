@@ -15,7 +15,7 @@ number_of_entries: 8
 
 <h2 id="Params">Params</h2>
 <section>
-<p>config for wavefront</p>
+<p>Configuration format for the <code>wavefront</code> adapter.</p>
 
 <table class="message-fields">
 <thead>
@@ -30,7 +30,7 @@ number_of_entries: 8
 <td><code>direct</code></td>
 <td><code><a href="#Params-WavefrontDirect">Params.WavefrontDirect (oneof)</a></code></td>
 <td>
-<p>the wavefront server credentials</p>
+<p>The credentials for direct ingestion.</p>
 
 </td>
 </tr>
@@ -38,7 +38,7 @@ number_of_entries: 8
 <td><code>proxy</code></td>
 <td><code><a href="#Params-WavefrontProxy">Params.WavefrontProxy (oneof)</a></code></td>
 <td>
-<p>the wavefront proxy credentials</p>
+<p>The credentials for ingestion via a Wavefront Proxy.</p>
 
 </td>
 </tr>
@@ -46,7 +46,7 @@ number_of_entries: 8
 <td><code>flushInterval</code></td>
 <td><code><a href="https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#duration">google.protobuf.Duration</a></code></td>
 <td>
-<p>the metrics flush interval</p>
+<p>The metrics flush interval.</p>
 
 </td>
 </tr>
@@ -54,7 +54,7 @@ number_of_entries: 8
 <td><code>prefix</code></td>
 <td><code>string</code></td>
 <td>
-<p>the prefix to prepend metrics with</p>
+<p>The prefix to prepend all metrics handled by the adapter.</p>
 
 </td>
 </tr>
@@ -62,7 +62,7 @@ number_of_entries: 8
 <td><code>metrics</code></td>
 <td><code><a href="#Params-MetricInfo">Params.MetricInfo[]</a></code></td>
 <td>
-<p>the metrics</p>
+<p>The set of metrics to publish to Wavefront.</p>
 
 </td>
 </tr>
@@ -71,7 +71,7 @@ number_of_entries: 8
 </section>
 <h2 id="Params-MetricInfo">Params.MetricInfo</h2>
 <section>
-<p>represents a metric</p>
+<p>Describes how a metric should be represented on Wavefront.</p>
 
 <table class="message-fields">
 <thead>
@@ -86,7 +86,7 @@ number_of_entries: 8
 <td><code>name</code></td>
 <td><code>string</code></td>
 <td>
-<p>the metric name</p>
+<p>The metric name.</p>
 
 </td>
 </tr>
@@ -94,7 +94,7 @@ number_of_entries: 8
 <td><code>type</code></td>
 <td><code><a href="#Params-MetricInfo-Type">Params.MetricInfo.Type</a></code></td>
 <td>
-<p>the metric type</p>
+<p>The metric type.</p>
 
 </td>
 </tr>
@@ -102,7 +102,7 @@ number_of_entries: 8
 <td><code>sample</code></td>
 <td><code><a href="#Params-MetricInfo-Sample">Params.MetricInfo.Sample</a></code></td>
 <td>
-<p>for metrics with type HISTOGRAM, this provides the sample definition</p>
+<p>For metrics with type HISTOGRAM, this describes the sample definition.</p>
 
 </td>
 </tr>
@@ -111,7 +111,7 @@ number_of_entries: 8
 </section>
 <h2 id="Params-MetricInfo-Sample">Params.MetricInfo.Sample</h2>
 <section>
-<p>represents a sample as in https://github.com/rcrowley/go-metrics</p>
+<p>Describes a sample as in the <a href="https://github.com/rcrowley/go-metrics">rcrowley/go-metrics</a> library.</p>
 
 <table class="message-fields">
 <thead>
@@ -126,7 +126,7 @@ number_of_entries: 8
 <td><code>expDecay</code></td>
 <td><code><a href="#Params-MetricInfo-Sample-ExpDecay">Params.MetricInfo.Sample.ExpDecay (oneof)</a></code></td>
 <td>
-<p>the exponentially decaying sample definition</p>
+<p>Definition of an exponentially decaying sample.</p>
 
 </td>
 </tr>
@@ -134,7 +134,7 @@ number_of_entries: 8
 <td><code>uniform</code></td>
 <td><code><a href="#Params-MetricInfo-Sample-Uniform">Params.MetricInfo.Sample.Uniform (oneof)</a></code></td>
 <td>
-<p>the uniform sample definition</p>
+<p>Definition of a uniform sample.</p>
 
 </td>
 </tr>
@@ -143,7 +143,7 @@ number_of_entries: 8
 </section>
 <h2 id="Params-MetricInfo-Sample-ExpDecay">Params.MetricInfo.Sample.ExpDecay</h2>
 <section>
-<p>represents an exponentially decaying sample</p>
+<p>Describes an exponentially decaying sample.</p>
 
 <table class="message-fields">
 <thead>
@@ -158,7 +158,7 @@ number_of_entries: 8
 <td><code>reservoirSize</code></td>
 <td><code>int32</code></td>
 <td>
-<p>the reservoir size</p>
+<p>The reservoir size.</p>
 
 </td>
 </tr>
@@ -166,7 +166,7 @@ number_of_entries: 8
 <td><code>alpha</code></td>
 <td><code>double</code></td>
 <td>
-<p>the alpha</p>
+<p>The alpha.</p>
 
 </td>
 </tr>
@@ -175,7 +175,7 @@ number_of_entries: 8
 </section>
 <h2 id="Params-MetricInfo-Sample-Uniform">Params.MetricInfo.Sample.Uniform</h2>
 <section>
-<p>represents a uniform sample</p>
+<p>Describes a uniform sample.</p>
 
 <table class="message-fields">
 <thead>
@@ -190,7 +190,7 @@ number_of_entries: 8
 <td><code>reservoirSize</code></td>
 <td><code>int32</code></td>
 <td>
-<p>the reservoir size</p>
+<p>The reservoir size</p>
 
 </td>
 </tr>
@@ -199,7 +199,7 @@ number_of_entries: 8
 </section>
 <h2 id="Params-MetricInfo-Type">Params.MetricInfo.Type</h2>
 <section>
-<p>represents metric types as in https://docs.wavefront.com/metric_types.html</p>
+<p>Describes metric types as in <a href="https://docs.wavefront.com/metric_types.html">Wavefront</a>.</p>
 
 <table class="enum-values">
 <thead>
@@ -212,35 +212,35 @@ number_of_entries: 8
 <tr id="Params-MetricInfo-Type-UNKNOWN">
 <td><code>UNKNOWN</code></td>
 <td>
-<p>reserved for unknown metric types</p>
+<p>Reserved for unknown metric types.</p>
 
 </td>
 </tr>
 <tr id="Params-MetricInfo-Type-GAUGE">
 <td><code>GAUGE</code></td>
 <td>
-<p>represents a gauge metric type</p>
+<p>Represents a gauge metric type.</p>
 
 </td>
 </tr>
 <tr id="Params-MetricInfo-Type-COUNTER">
 <td><code>COUNTER</code></td>
 <td>
-<p>represents a counter metric type</p>
+<p>Represents a counter metric type.</p>
 
 </td>
 </tr>
 <tr id="Params-MetricInfo-Type-DELTA_COUNTER">
 <td><code>DELTA_COUNTER</code></td>
 <td>
-<p>represents a delta counter metric type</p>
+<p>Represents a delta counter metric type.</p>
 
 </td>
 </tr>
 <tr id="Params-MetricInfo-Type-HISTOGRAM">
 <td><code>HISTOGRAM</code></td>
 <td>
-<p>represents a histogram metric type</p>
+<p>Represents a histogram metric type.</p>
 
 </td>
 </tr>
@@ -249,7 +249,7 @@ number_of_entries: 8
 </section>
 <h2 id="Params-WavefrontDirect">Params.WavefrontDirect</h2>
 <section>
-<p>represents wavefront server credentials</p>
+<p>Describes Wavefront Server credentials.</p>
 
 <table class="message-fields">
 <thead>
@@ -264,7 +264,7 @@ number_of_entries: 8
 <td><code>server</code></td>
 <td><code>string</code></td>
 <td>
-<p>the wavefront server</p>
+<p>The Wavefront server URL. Ex: https://mydomain.wavefront.com</p>
 
 </td>
 </tr>
@@ -272,7 +272,7 @@ number_of_entries: 8
 <td><code>token</code></td>
 <td><code>string</code></td>
 <td>
-<p>the wavefront token</p>
+<p>The Wavefront API token.</p>
 
 </td>
 </tr>
@@ -281,7 +281,7 @@ number_of_entries: 8
 </section>
 <h2 id="Params-WavefrontProxy">Params.WavefrontProxy</h2>
 <section>
-<p>represents wavefront proxy credentials</p>
+<p>Describes Wavefront Proxy credentials.</p>
 
 <table class="message-fields">
 <thead>
@@ -296,7 +296,7 @@ number_of_entries: 8
 <td><code>address</code></td>
 <td><code>string</code></td>
 <td>
-<p>the wavefront proxy address</p>
+<p>The wavefront proxy address.</p>
 
 </td>
 </tr>

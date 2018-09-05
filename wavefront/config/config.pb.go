@@ -47,19 +47,19 @@ var _ = time.Kitchen
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion2 // please upgrade the proto package
 
-// represents metric types as in https://docs.wavefront.com/metric_types.html
+// Describes metric types as in [Wavefront](https://docs.wavefront.com/metric_types.html).
 type Params_MetricInfo_Type int32
 
 const (
-	// reserved for unknown metric types
+	// Reserved for unknown metric types.
 	UNKNOWN Params_MetricInfo_Type = 0
-	// represents a gauge metric type
+	// Represents a gauge metric type.
 	GAUGE Params_MetricInfo_Type = 1
-	// represents a counter metric type
+	// Represents a counter metric type.
 	COUNTER Params_MetricInfo_Type = 2
-	// represents a delta counter metric type
+	// Represents a delta counter metric type.
 	DELTA_COUNTER Params_MetricInfo_Type = 3
-	// represents a histogram metric type
+	// Represents a histogram metric type.
 	HISTOGRAM Params_MetricInfo_Type = 4
 )
 
@@ -82,19 +82,19 @@ func (Params_MetricInfo_Type) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptorConfig, []int{0, 2, 0}
 }
 
-// config for wavefront
+// Configuration format for the `wavefront` adapter.
 type Params struct {
-	// the wavefront service credentials
+	// One of the Wavefront service credentials must be supplied.
 	//
 	// Types that are valid to be assigned to Credentials:
 	//	*Params_Direct
 	//	*Params_Proxy
 	Credentials isParams_Credentials `protobuf_oneof:"credentials"`
-	// the metrics flush interval
+	// The metrics flush interval.
 	FlushInterval time.Duration `protobuf:"bytes,3,opt,name=flush_interval,json=flushInterval,stdduration" json:"flush_interval"`
-	// the prefix to prepend metrics with
+	// The prefix to prepend all metrics handled by the adapter.
 	Prefix string `protobuf:"bytes,4,opt,name=prefix,proto3" json:"prefix,omitempty"`
-	// the metrics
+	// The set of metrics to publish to Wavefront.
 	Metrics []*Params_MetricInfo `protobuf:"bytes,5,rep,name=metrics" json:"metrics,omitempty"`
 }
 
@@ -235,11 +235,11 @@ func _Params_OneofSizer(msg proto.Message) (n int) {
 	return n
 }
 
-// represents wavefront server credentials
+// Describes Wavefront Server credentials.
 type Params_WavefrontDirect struct {
-	// the wavefront server
+	// The Wavefront server URL. Ex: https://mydomain.wavefront.com
 	Server string `protobuf:"bytes,1,opt,name=server,proto3" json:"server,omitempty"`
-	// the wavefront token
+	// The Wavefront API token.
 	Token string `protobuf:"bytes,2,opt,name=token,proto3" json:"token,omitempty"`
 }
 
@@ -261,9 +261,9 @@ func (m *Params_WavefrontDirect) GetToken() string {
 	return ""
 }
 
-// represents wavefront proxy credentials
+// Describes Wavefront Proxy credentials.
 type Params_WavefrontProxy struct {
-	// the wavefront proxy address
+	// The wavefront proxy address.
 	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 }
 
@@ -278,13 +278,13 @@ func (m *Params_WavefrontProxy) GetAddress() string {
 	return ""
 }
 
-// represents a metric
+// Describes how a metric should be represented on Wavefront.
 type Params_MetricInfo struct {
-	// the metric name
+	// The metric name.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// the metric type
+	// The metric type.
 	Type Params_MetricInfo_Type `protobuf:"varint,2,opt,name=type,proto3,enum=wavefront.config.Params_MetricInfo_Type" json:"type,omitempty"`
-	// for metrics with type HISTOGRAM, this provides the sample definition
+	// For metrics with type HISTOGRAM, this describes the sample definition.
 	Sample *Params_MetricInfo_Sample `protobuf:"bytes,3,opt,name=sample" json:"sample,omitempty"`
 }
 
@@ -313,9 +313,9 @@ func (m *Params_MetricInfo) GetSample() *Params_MetricInfo_Sample {
 	return nil
 }
 
-// represents a sample as in https://github.com/rcrowley/go-metrics
+// Describes a sample as in the [rcrowley/go-metrics](https://github.com/rcrowley/go-metrics) library.
 type Params_MetricInfo_Sample struct {
-	// the sample definition
+	// One of the sample definition must be supplied.
 	//
 	// Types that are valid to be assigned to Definition:
 	//	*Params_MetricInfo_Sample_ExpDecay_
@@ -441,11 +441,11 @@ func _Params_MetricInfo_Sample_OneofSizer(msg proto.Message) (n int) {
 	return n
 }
 
-// represents an exponentially decaying sample
+// Describes an exponentially decaying sample.
 type Params_MetricInfo_Sample_ExpDecay struct {
-	// the reservoir size
+	// The reservoir size.
 	ReservoirSize int32 `protobuf:"varint,1,opt,name=reservoir_size,json=reservoirSize,proto3" json:"reservoir_size,omitempty"`
-	// the alpha
+	// The alpha.
 	Alpha float64 `protobuf:"fixed64,2,opt,name=alpha,proto3" json:"alpha,omitempty"`
 }
 
@@ -469,9 +469,9 @@ func (m *Params_MetricInfo_Sample_ExpDecay) GetAlpha() float64 {
 	return 0
 }
 
-// represents a uniform sample
+// Describes a uniform sample.
 type Params_MetricInfo_Sample_Uniform struct {
-	// the reservoir size
+	// The reservoir size
 	ReservoirSize int32 `protobuf:"varint,1,opt,name=reservoir_size,json=reservoirSize,proto3" json:"reservoir_size,omitempty"`
 }
 
