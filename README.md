@@ -28,7 +28,8 @@ params:
     address: YOUR-PROXY-IP:YOUR-PROXY-PORT
 ```
 
-See [config.proto](wavefront/config/config.proto) for the available configuration parameters.
+See the [reference docs](https://istio.io/docs/reference/config/policy-and-telemetry/adapters/wavefront/)
+for the available configuration parameters.
 
 ### Deployment
 
