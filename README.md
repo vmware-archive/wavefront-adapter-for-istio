@@ -32,7 +32,7 @@ the `proxy` params like below:
     address: "wavefront:8080"
   params:
     proxy:
-      address: YOUR-PROXY-ADDRESS
+      address: YOUR-PROXY-IP:YOUR-PROXY-PORT
 ...
 ```
 
