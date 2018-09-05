@@ -51,7 +51,7 @@ message Params {
 
   // Describes Wavefront Proxy credentials.
   message WavefrontProxy {
-    // The wavefront proxy address.
+    // The wavefront proxy address. Ex: 192.168.99.100:2878
     string address = 1;
   }
 

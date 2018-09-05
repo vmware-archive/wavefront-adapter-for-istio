@@ -263,7 +263,7 @@ func (m *Params_WavefrontDirect) GetToken() string {
 
 // Describes Wavefront Proxy credentials.
 type Params_WavefrontProxy struct {
-	// The wavefront proxy address.
+	// The wavefront proxy address. Ex: 192.168.99.100:2878
 	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 }
 
