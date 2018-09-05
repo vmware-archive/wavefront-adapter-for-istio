@@ -84,6 +84,8 @@ spec:
     direct:
       server: https://YOUR-INSTANCE.wavefront.com
       token: YOUR-API-TOKEN
+#    proxy:
+#      address: 192.168.99.100:2878
     flushInterval:
       seconds: 5
     prefix: "istio"
