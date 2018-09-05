@@ -13,27 +13,19 @@ publish metrics to [VMware Wavefront](https://www.wavefront.com/).
 the `direct` params for `wavefront-handler` under `sample_operator_config.yaml` like so:
 
 ```yaml
-...
-  connection:
-    address: "wavefront:8080"
-  params:
-    direct:
-      server: https://YOUR-INSTANCE.wavefront.com
-      token: YOUR-API-TOKEN
-...
+params:
+  direct:
+    server: https://YOUR-INSTANCE.wavefront.com
+    token: YOUR-API-TOKEN
 ```
 
 If you want the metrics to be published to the Wavefront Proxy instead, supply
 the `proxy` params like below:
 
 ```yaml
-...
-  connection:
-    address: "wavefront:8080"
-  params:
-    proxy:
-      address: YOUR-PROXY-IP:YOUR-PROXY-PORT
-...
+params:
+  proxy:
+    address: YOUR-PROXY-IP:YOUR-PROXY-PORT
 ```
 
 See [config.proto](wavefront/config/config.proto) for the available configuration parameters.
