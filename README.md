@@ -1,7 +1,7 @@
-# Wavefront Istio Mixer Adapter
+# VMware Wavefront Adapter for Istio
 
-Wavefront Istio Mixer Adapter is an adapter for [Istio](https://istio.io) to
-publish metrics to [VMware Wavefront](https://www.wavefront.com/).
+VMware Wavefront Adapter for Istio is an adapter for [Istio](https://istio.io)
+to publish metrics to [VMware Wavefront](https://www.wavefront.com/).
 
 ## Usage
 
@@ -58,4 +58,5 @@ Please check out [CONTRIBUTING.md](CONTRIBUTING.md) if you'd like to contribute.
 
 ## License
 
-Wavefront Istio Mixer Adapter is licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for the full license text.
+VMware Wavefront Adapter for Istio is licensed under the Apache License, Version
+2.0. See [LICENSE](LICENSE) for the full license text.

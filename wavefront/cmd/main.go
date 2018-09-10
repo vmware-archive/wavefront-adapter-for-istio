@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/vmware/wavefront-istio-mixer-adapter/wavefront"
+	"github.com/vmware/wavefront-adapter-for-istio/wavefront"
 )
 
 func main() {

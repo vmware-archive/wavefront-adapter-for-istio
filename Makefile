@@ -85,14 +85,14 @@ build: format
 # # Usage: make docker-build
 .PHONY: docker-build
 docker-build: build
-	docker build -t vmware/wavefront-istio-mixer-adapter:latest .
+	docker build -t vmware/wavefront-adapter-for-istio:latest .
 	@echo "Docker image was built successfully!"
 
 # Runs the docker container
 # # Usage: make docker-run
 .PHONY: docker-run
 docker-run: setup
-	docker run -it -p 8080:8080 vmware/wavefront-istio-mixer-adapter:latest
+	docker run -it -p 8080:8080 vmware/wavefront-adapter-for-istio:latest
 
 # Fixes imports and formats files
 # Usage: make format

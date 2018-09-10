@@ -36,7 +36,7 @@ spec:
     spec:
       containers:
       - name: wavefront
-        image: vmware/wavefront-istio-mixer-adapter:latest
+        image: vmware/wavefront-adapter-for-istio:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8080

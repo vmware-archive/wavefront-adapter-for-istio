@@ -27,7 +27,7 @@ import (
 	"net"
 
 	metrics "github.com/rcrowley/go-metrics"
-	"github.com/vmware/wavefront-istio-mixer-adapter/wavefront/config"
+	"github.com/vmware/wavefront-adapter-for-istio/wavefront/config"
 	wf "github.com/wavefrontHQ/go-metrics-wavefront"
 
 	"google.golang.org/grpc"

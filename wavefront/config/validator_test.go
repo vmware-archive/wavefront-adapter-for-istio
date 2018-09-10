@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/vmware/wavefront-istio-mixer-adapter/wavefront/config"
+	"github.com/vmware/wavefront-adapter-for-istio/wavefront/config"
 )
 
 func TestValidateCredentials(t *testing.T) {
