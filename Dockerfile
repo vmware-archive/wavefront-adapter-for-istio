@@ -5,8 +5,7 @@ WORKDIR /go/src/github.com/vmware/wavefront-adapter-for-istio/
 COPY ./ .
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -v -o bin/wavefront ./wavefront/cmd/
 
-FROM alpine:latest
-RUN apk --no-cache add ca-certificates
+FROM photon:latest
 WORKDIR /bin/
 COPY --from=builder /go/src/github.com/vmware/wavefront-adapter-for-istio/bin/wavefront .
 ENTRYPOINT [ "/bin/wavefront" ]
