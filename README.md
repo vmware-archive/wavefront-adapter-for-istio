@@ -19,6 +19,8 @@ params:
     token: YOUR-API-TOKEN
 ```
 
+**Note:** Instructions for generating an API token can be found [here](https://docs.wavefront.com/wavefront_api.html#generating-an-api-token).
+
 If you want the metrics to be published to the Wavefront Proxy instead, supply
 the `proxy` params like below:
 
