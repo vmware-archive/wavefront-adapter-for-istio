@@ -15,7 +15,7 @@
 
 syntax = "proto3";
 
-// $title: Wavefront
+// $title: VMware Wavefront
 // $description: Adapter to deliver metrics to VMware Wavefront.
 // $location: https://istio.io/docs/reference/config/policy-and-telemetry/adapters/wavefront.html
 // $aliases:
