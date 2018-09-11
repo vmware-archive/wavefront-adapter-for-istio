@@ -1,7 +1,7 @@
 # VMware Wavefront Adapter for Istio
 
 VMware Wavefront Adapter for Istio is an adapter for [Istio](https://istio.io)
-to publish metrics to [VMware Wavefront](https://www.wavefront.com/).
+to publish metrics to [Wavefront by VMware](https://www.wavefront.com/).
 
 ## Usage
 

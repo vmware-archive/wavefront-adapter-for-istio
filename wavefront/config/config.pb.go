@@ -5,7 +5,7 @@
 	Package config is a generated protocol buffer package.
 
 	The `wavefront` adapter collects metrics and makes them available to
-	[VMware Wavefront](https://www.wavefront.com/).
+	[Wavefront by VMware](https://www.wavefront.com/).
 
 	This adapter supports the [metric template](https://istio.io/docs/reference/config/policy-and-telemetry/templates/metric/).
 
