@@ -3,7 +3,7 @@
 Wavefront by VMware Adapter for Istio is an adapter for [Istio](https://istio.io)
 to publish metrics to [Wavefront by VMware](https://www.wavefront.com/).
 
-## Usage
+## Quick Start
 
 ### Configuration
 
@@ -30,33 +30,32 @@ params:
     address: YOUR-PROXY-IP:YOUR-PROXY-PORT
 ```
 
-See the [reference docs](https://istio.io/docs/reference/config/policy-and-telemetry/adapters/wavefront/)
+See the [reference docs](https://preliminary.istio.io/docs/reference/config/policy-and-telemetry/adapters/wavefront/)
 for the available configuration parameters.
 
 ### Deployment
 
 Please follow these steps to configure the Istio Mixer to publish metrics to
-Wavefront using this adapter.
+Wavefront using this adapter. These steps must be performed after
+deploying [Istio](https://istio.io/docs/setup/kubernetes/quick-start/).
 
-1\. Deploy [Istio](https://istio.io/docs/setup/kubernetes/quick-start/).
-
-2\. Deploy the `wavefront-adapter.yaml`.
+1\. Deploy the `wavefront-adapter.yaml`.
 
 ```shell
 kubectl apply -f config/wavefront-adapter.yaml
 ```
 
-3\. Deploy your copy of `operatorconfig`.
+2\. Deploy your copy of `operatorconfig`.
 
 ```shell
 kubectl apply -f your/operatorconfig/
 ```
 
-You should now be able to see Istio metrics on Wavefront under source `istio`.
+You should now be able to see Istio metrics on Wavefront with _istio_ as source.
 
 ## Contributing
 
-Please check out [CONTRIBUTING.md](CONTRIBUTING.md) if you'd like to contribute.
+Please see [CONTRIBUTING.md](CONTRIBUTING.md) if you'd like to contribute.
 
 ## License
 
