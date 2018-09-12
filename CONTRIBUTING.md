@@ -57,7 +57,7 @@ To build the docker image, use the following command:
 make docker-build
 ```
 
-### Run The Docker Container
+### Running The Docker Container
 
 To run the docker container locally, use the following command:
 
