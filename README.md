@@ -1,6 +1,6 @@
-# VMware Wavefront Adapter for Istio
+# Wavefront by VMware Adapter for Istio
 
-VMware Wavefront Adapter for Istio is an adapter for [Istio](https://istio.io)
+Wavefront by VMware Adapter for Istio is an adapter for [Istio](https://istio.io)
 to publish metrics to [Wavefront by VMware](https://www.wavefront.com/).
 
 ## Usage
@@ -60,5 +60,5 @@ Please check out [CONTRIBUTING.md](CONTRIBUTING.md) if you'd like to contribute.
 
 ## License
 
-VMware Wavefront Adapter for Istio is licensed under the Apache License, Version
-2.0. See [LICENSE](LICENSE) for the full license text.
+Wavefront by VMware Adapter for Istio is licensed under the Apache License,
+Version 2.0. See [LICENSE](LICENSE) for the full license text.
