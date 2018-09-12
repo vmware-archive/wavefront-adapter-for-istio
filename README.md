@@ -1,5 +1,7 @@
 # Wavefront by VMware Adapter for Istio
 
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE.txt)
+
 Wavefront by VMware Adapter for Istio is an adapter for [Istio](https://istio.io)
 to publish metrics to [Wavefront by VMware](https://www.wavefront.com/).
 
