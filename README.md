@@ -61,4 +61,4 @@ Please check out [CONTRIBUTING.md](CONTRIBUTING.md) if you'd like to contribute.
 ## License
 
 Wavefront by VMware Adapter for Istio is licensed under the Apache License,
-Version 2.0. See [LICENSE](LICENSE) for the full license text.
+Version 2.0. See [LICENSE.txt](LICENSE.txt) for the full license text.
