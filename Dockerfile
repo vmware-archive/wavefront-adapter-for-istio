@@ -6,6 +6,7 @@ COPY ./ .
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -v -o bin/wavefront ./wavefront/cmd/
 
 FROM photon:2.0
+RUN tdnf update -y
 WORKDIR /bin/
 COPY --from=builder /go/src/github.com/vmware/wavefront-adapter-for-istio/bin/wavefront .
 ENTRYPOINT [ "/bin/wavefront" ]
