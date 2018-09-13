@@ -10,6 +10,9 @@
 Wavefront by VMware Adapter for Istio is an adapter for [Istio](https://istio.io)
 to publish metrics to [Wavefront by VMware](https://www.wavefront.com/).
 
+**Note:** This adapter is currently experimental. Therefore, caution should be
+taken before using it in production environments.
+
 ## Quick Start
 
 ### Configuration
@@ -26,7 +29,7 @@ params:
     token: YOUR-API-TOKEN
 ```
 
-**Note:** Instructions for generating an API token can be found [here](https://docs.wavefront.com/wavefront_api.html#generating-an-api-token).
+Instructions for generating an API token can be found [here](https://docs.wavefront.com/wavefront_api.html#generating-an-api-token).
 
 If you want the metrics to be published to the Wavefront Proxy instead, supply
 the `proxy` params like below:
