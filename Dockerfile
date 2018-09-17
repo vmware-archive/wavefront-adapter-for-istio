@@ -11,6 +11,7 @@ FROM photon:2.0
 RUN tdnf update -y
 WORKDIR /bin/
 COPY --from=builder /root/go/src/github.com/vmware/wavefront-adapter-for-istio/bin/wavefront .
+COPY open_source_license .
 ENTRYPOINT [ "/bin/wavefront" ]
 CMD [ "8000" ]
 EXPOSE 8000
