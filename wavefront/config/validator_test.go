@@ -59,7 +59,7 @@ func TestValidateCredentials(t *testing.T) {
 			Proxy: &config.Params_WavefrontProxy{Address: "not-a-valid-address"},
 		}}, fmt.Errorf("address not-a-valid-address: missing port in address")},
 		{config.Params{Credentials: &config.Params_Proxy{
-			Proxy: &config.Params_WavefrontProxy{Address: "192.168.99.100:8080"},
+			Proxy: &config.Params_WavefrontProxy{Address: "192.168.99.100:12345"},
 		}}, nil},
 	}
 

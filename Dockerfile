@@ -12,5 +12,5 @@ RUN tdnf update -y
 WORKDIR /bin/
 COPY --from=builder /root/go/src/github.com/vmware/wavefront-adapter-for-istio/bin/wavefront .
 ENTRYPOINT [ "/bin/wavefront" ]
-CMD [ "8080" ]
-EXPOSE 8080
+CMD [ "8000" ]
+EXPOSE 8000

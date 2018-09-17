@@ -11,8 +11,8 @@ spec:
   ports:
   - name: grpc
     protocol: TCP
-    port: 8080
-    targetPort: 8080
+    port: 8000
+    targetPort: 8000
   selector:
     app: wavefront
 ---
@@ -39,5 +39,5 @@ spec:
         image: vmware/wavefront-adapter-for-istio:latest
         imagePullPolicy: Always
         ports:
-        - containerPort: 8080
+        - containerPort: 8000
 ---

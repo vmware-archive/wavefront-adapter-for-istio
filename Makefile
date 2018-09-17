@@ -92,7 +92,7 @@ docker-build: build
 # # Usage: make docker-run
 .PHONY: docker-run
 docker-run: setup
-	docker run -it -p 8080:8080 vmware/wavefront-adapter-for-istio:latest
+	docker run -it -p 8000:8000 vmware/wavefront-adapter-for-istio:latest
 
 # Fixes imports and formats files
 # Usage: make format
