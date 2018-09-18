@@ -85,14 +85,13 @@ func (wa *WavefrontAdapter) verifyAndInitReporter(cfg *config.Params) {
 	}
 }
 
-// identifyMetric locates a metric in an array given the metric name.
-func identifyMetric(ms []*config.Params_MetricInfo, name string) *config.Params_MetricInfo {
+// createMetricMap creates a map of metric names and the corresponding MetricInfo objects.
+func createMetricMap(ms []*config.Params_MetricInfo) map[string]*config.Params_MetricInfo {
+	metricMap := make(map[string]*config.Params_MetricInfo)
 	for _, m := range ms {
-		if m.Name == name {
-			return m
-		}
+		metricMap[m.Name] = m
 	}
-	return nil
+	return metricMap
 }
 
 // translateToFloat64 converts a given number to float64 or returns an error.
@@ -132,11 +131,13 @@ func translateSample(s *config.Params_MetricInfo_Sample) metrics.Sample {
 // writeMetrics extracts metric information from metric.InstanceMsgs and writes
 // it to the Wavefront metric registry.
 func writeMetrics(cfg *config.Params, insts []*metric.InstanceMsg) {
+	metricMap := createMetricMap(cfg.Metrics)
 	for _, inst := range insts {
 		metricName := inst.Name
-		metric := identifyMetric(cfg.Metrics, metricName)
-		if metric == nil {
-			log.Warnf("couldn't identify metric %s in configuration %s, ignoring", metricName, cfg.String())
+		metric, metricFound := metricMap[metricName]
+
+		if !metricFound {
+			log.Warnf("couldn't find metric %s in configuration %s, ignoring", metricName, cfg.String())
 			continue
 		}
 
@@ -152,6 +153,7 @@ func writeMetrics(cfg *config.Params, insts []*metric.InstanceMsg) {
 				gauge.Update(float64Val)
 				log.Debugf("updated gauge metric %s with %v, tags: %v", metricName, float64Val, tags)
 			}
+
 		case config.DELTA_COUNTER:
 			if int64Val, err := translateToInt64(value); err != nil {
 				log.Warnf("couldn't translate metric value: %s %v, err: %v", metricName, value, err)
@@ -161,6 +163,7 @@ func writeMetrics(cfg *config.Params, insts []*metric.InstanceMsg) {
 				counter.Inc(int64Val)
 				log.Debugf("updated delta counter metric %s with %v, tags: %v", deltaMetricName, int64Val, tags)
 			}
+
 		case config.HISTOGRAM:
 			if int64Val, err := translateToInt64(value); err != nil {
 				log.Warnf("couldn't translate metric value: %s %v, err: %v", metricName, value, err)
@@ -174,6 +177,7 @@ func writeMetrics(cfg *config.Params, insts []*metric.InstanceMsg) {
 				histogram.(metrics.Histogram).Update(int64Val)
 				log.Debugf("updated histogram metric %s with %v, tags: %v", metricName, int64Val, tags)
 			}
+
 		default:
 			log.Warnf("couldn't handle metric %s with value %s, tags: %v", metricName, value, tags)
 		}
