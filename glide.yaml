@@ -1,4 +1,8 @@
 package: github.com/vmware/wavefront-adapter-for-istio
+license: Apache-2.0
+owners:
+- name: Venil Noronha
+  email: veniln@vmware.com
 import:
 - package: istio.io/istio
   version: ~1.0.1
