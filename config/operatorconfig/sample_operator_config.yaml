@@ -88,6 +88,7 @@ spec:
 #      address: YOUR-PROXY-IP:YOUR-PROXY-PORT
     flushInterval:
       seconds: 5
+    source: "cluster"
     prefix: "istio"
     metrics:
     - name: requestsize.instance.istio-system

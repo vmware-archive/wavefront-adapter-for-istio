@@ -60,7 +60,7 @@ kubectl apply -f config/wavefront-adapter.yaml
 kubectl apply -f YOUR/operatorconfig/
 ```
 
-You should now be able to see Istio metrics on Wavefront with _istio_ as source.
+You should now be able to see Istio metrics on Wavefront with _cluster_ as source.
 
 ## Contributing
 

@@ -57,11 +57,9 @@ type (
 // ensure that WavefrontAdapter implements the HandleMetricServiceServer interface.
 var _ metric.HandleMetricServiceServer = &WavefrontAdapter{}
 
-// hostTags holds the source tag information for Wavefront metrics.
-var hostTags = map[string]string{"source": "istio"}
-
 // createWavefrontReporter creates a reporter that periodically flushes metrics to Wavefront.
 func createWavefrontReporter(cfg *config.Params) {
+	hostTags := map[string]string{"source": cfg.Source}
 	if direct := cfg.GetDirect(); direct != nil {
 		go wf.WavefrontDirect(metrics.DefaultRegistry, cfg.FlushInterval, hostTags, cfg.Prefix, direct.Server, direct.Token)
 	} else if proxy := cfg.GetProxy(); proxy != nil {
