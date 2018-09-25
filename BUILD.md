@@ -58,3 +58,11 @@ To run the docker container locally, use the following command:
 ```shell
 make docker-run
 ```
+
+## Test
+
+To run the unit tests, use the following command:
+
+```shell
+make test
+```
