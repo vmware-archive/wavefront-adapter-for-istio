@@ -59,11 +59,14 @@ message Params {
   // The metrics flush interval.
   google.protobuf.Duration flush_interval = 3 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true];
 
+  // The source tag for all metrics handled by this adapter.
+  string source = 4;
+
   // The prefix to prepend all metrics handled by the adapter.
-  string prefix = 4;
+  string prefix = 5;
 
   // The set of metrics to publish to Wavefront.
-  repeated MetricInfo metrics = 5;
+  repeated MetricInfo metrics = 6;
 
   // Describes how a metric should be represented on Wavefront.
   message MetricInfo {
