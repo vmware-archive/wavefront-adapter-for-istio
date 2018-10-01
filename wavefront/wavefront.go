@@ -111,6 +111,8 @@ func translateToInt64(value interface{}) (int64, error) {
 		return v, nil
 	case float64:
 		return int64(v), nil
+	case *policy.Duration:
+		return int64(v.GetValue().GetNanos()), nil
 	default:
 		return 0, fmt.Errorf("couldn't convert %s to int64", value)
 	}
