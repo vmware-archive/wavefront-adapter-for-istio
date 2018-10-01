@@ -17,7 +17,7 @@ syntax = "proto3";
 
 // $title: Wavefront by VMware
 // $description: Adapter to deliver metrics to Wavefront by VMware.
-// $location: https://istio.io/docs/reference/config/policy-and-telemetry/adapters/wavefront/index.html
+// $location: https://istio.io/docs/reference/config/policy-and-telemetry/adapters/wavefront.html
 // $provider: VMware, Inc.
 // $contact_email: veniln@vmware.com
 // $support_link:
