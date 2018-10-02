@@ -44,3 +44,31 @@ contributors. Typical contribution flow steps are:
 If this process sounds unfamiliar have a look at the excellent overview of
 [collaboration via Pull Requests on GitHub](https://help.github.com/categories/collaborating-with-issues-and-pull-requests/)
 for more information.
+
+## Commit Messages
+
+Commit messages should be self-sufficient to describe the problem the PR
+addresses i.e. ideally without any references to private communication channels
+like Slack, email, etc.
+
+Below is a commit message template for reference.
+
+```
+Short (50 chars or less) summary of changes
+
+More detailed explanatory text, if necessary.  Wrap it to about 72
+characters or so.  In some contexts, the first line is treated as the
+subject of an email and the rest of the text as the body.  The blank
+line separating the summary from the body is critical (unless you omit
+the body entirely); tools like rebase can get confused if you run the
+two together.
+
+Further paragraphs come after blank lines.
+
+  - Bullet points are okay, too
+
+  - Typically a hyphen or asterisk is used for the bullet, preceded by a
+    single space, with blank lines in between, but conventions vary here
+
+Signed-off-by: Some Developer <some.developer@example.com>
+```
