@@ -74,6 +74,42 @@ spec:
       response_code: response.code | 200
     monitored_resource_type: '"UNSPECIFIED"'
 ---
+# tcpsentbytes instance for template metric
+apiVersion: "config.istio.io/v1alpha2"
+kind: instance
+metadata:
+  name: tcpsentbytes
+  namespace: istio-system
+spec:
+  template: metric
+  params:
+    value: connection.sent.bytes | 0
+    dimensions:
+      source_service: source.service | "unknown"
+      source_version: source.labels["version"] | "unknown"
+      destination_service: destination.service.name | "unknown"
+      destination_service_namespace: destination.service.namespace | "unknown"
+      destination_version: destination.labels["version"] | "unknown"
+    monitored_resource_type: '"UNSPECIFIED"'
+---
+# tcpreceivedbytes instance for template metric
+apiVersion: "config.istio.io/v1alpha2"
+kind: instance
+metadata:
+  name: tcpreceivedbytes
+  namespace: istio-system
+spec:
+  template: metric
+  params:
+    value: connection.received.bytes | 0
+    dimensions:
+      source_service: source.service | "unknown"
+      source_version: source.labels["version"] | "unknown"
+      destination_service: destination.service.name | "unknown"
+      destination_service_namespace: destination.service.namespace | "unknown"
+      destination_version: destination.labels["version"] | "unknown"
+    monitored_resource_type: '"UNSPECIFIED"'
+---
 # handler for adapter wavefront
 apiVersion: "config.istio.io/v1alpha2"
 kind: handler
@@ -115,6 +151,18 @@ spec:
         expDecay:
           reservoirSize: 1024
           alpha: 0.015
+    - name: tcpsentbytes.instance.istio-system
+      type: HISTOGRAM
+      sample:
+        expDecay:
+          reservoirSize: 1024
+          alpha: 0.015
+    - name: tcpreceivedbytes.instance.istio-system
+      type: HISTOGRAM
+      sample:
+        expDecay:
+          reservoirSize: 1024
+          alpha: 0.015
 ---
 # rule to dispatch to handler wavefront-handler
 apiVersion: "config.istio.io/v1alpha2"
@@ -131,3 +179,16 @@ spec:
     - requestduration
     - responsesize
 ---
+# rule to dispatch tcp metrics to handler wavefront-handler
+apiVersion: "config.istio.io/v1alpha2"
+kind: rule
+metadata:
+  name: wavefront-tcp-rule
+  namespace: istio-system
+spec:
+  match: context.protocol == "tcp"
+  actions:
+  - handler: wavefront-handler.istio-system
+    instances:
+    - tcpsentbytes
+    - tcpreceivedbytes
