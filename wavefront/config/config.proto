@@ -105,16 +105,16 @@ message Params {
       oneof definition {
         // Definition of an exponentially decaying sample.
         ExpDecay exp_decay = 1;
-	// Definition of a uniform sample.
-	Uniform uniform = 2;
+        // Definition of a uniform sample.
+        Uniform uniform = 2;
       }
 
       // Describes an exponentially decaying sample.
       message ExpDecay {
         // The reservoir size.
         int32 reservoir_size = 1;
-	// The alpha.
-	double alpha = 2;
+        // The alpha.
+        double alpha = 2;
       }
 
       // Describes a uniform sample.
