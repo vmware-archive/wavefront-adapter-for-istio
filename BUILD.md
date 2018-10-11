@@ -66,3 +66,11 @@ To run the unit tests, use the following command:
 ```shell
 make test
 ```
+
+## Packing Configuration
+
+To pack configuration files for releases, use the following command:
+
+```shell
+make pack-config
+```
