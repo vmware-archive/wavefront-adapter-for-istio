@@ -16,6 +16,7 @@
 package config_test
 
 import (
+	"errors"
 	"fmt"
 	"testing"
 
@@ -81,17 +82,17 @@ func TestValidateMetrics(t *testing.T) {
 		{config.Params_MetricInfo{Type: config.COUNTER}, nil},
 		{config.Params_MetricInfo{Type: config.DELTA_COUNTER}, nil},
 		{config.Params_MetricInfo{
-			Name: "metric-name",
-			Type: config.HISTOGRAM,
+			InstanceName: "metric-name",
+			Type:         config.HISTOGRAM,
 		}, err},
 		{config.Params_MetricInfo{
-			Name:   "metric-name",
-			Type:   config.HISTOGRAM,
-			Sample: &config.Params_MetricInfo_Sample{},
+			InstanceName: "metric-name",
+			Type:         config.HISTOGRAM,
+			Sample:       &config.Params_MetricInfo_Sample{},
 		}, err},
 		{config.Params_MetricInfo{
-			Name: "metric-name",
-			Type: config.HISTOGRAM,
+			InstanceName: "metric-name",
+			Type:         config.HISTOGRAM,
 			Sample: &config.Params_MetricInfo_Sample{
 				Definition: &config.Params_MetricInfo_Sample_ExpDecay_{
 					ExpDecay: &config.Params_MetricInfo_Sample_ExpDecay{
@@ -102,8 +103,8 @@ func TestValidateMetrics(t *testing.T) {
 			},
 		}, nil},
 		{config.Params_MetricInfo{
-			Name: "metric-name",
-			Type: config.HISTOGRAM,
+			InstanceName: "metric-name",
+			Type:         config.HISTOGRAM,
 			Sample: &config.Params_MetricInfo_Sample{
 				Definition: &config.Params_MetricInfo_Sample_Uniform_{
 					Uniform: &config.Params_MetricInfo_Sample_Uniform{
@@ -118,6 +119,57 @@ func TestValidateMetrics(t *testing.T) {
 		cfg := &config.Params{Metrics: []*config.Params_MetricInfo{&entry.metric}}
 		if err := config.ValidateMetrics(cfg); fmt.Sprint(err) != fmt.Sprint(entry.err) {
 			t.Errorf("Validation failed for %v, got: %v, want: %v.", entry.metric, err, entry.err)
+		}
+	}
+}
+
+func TestValidateMetricsDuplicate(t *testing.T) {
+	guageErr := errors.New("duplicate metric guage found, please supply or change the metric name")
+	table := []struct {
+		metrics []*config.Params_MetricInfo
+		err     error
+	}{
+		{
+			[]*config.Params_MetricInfo{
+				&config.Params_MetricInfo{Type: config.GAUGE},
+			}, nil,
+		},
+		{
+			[]*config.Params_MetricInfo{
+				&config.Params_MetricInfo{Name: "guage1", InstanceName: "guage1", Type: config.GAUGE},
+				&config.Params_MetricInfo{Name: "guage2", InstanceName: "guage2", Type: config.GAUGE},
+			}, nil,
+		},
+		{
+			[]*config.Params_MetricInfo{
+				&config.Params_MetricInfo{Name: "guage1", Type: config.GAUGE},
+				&config.Params_MetricInfo{InstanceName: "guage2", Type: config.GAUGE},
+			}, nil,
+		},
+		{
+			[]*config.Params_MetricInfo{
+				&config.Params_MetricInfo{Name: "guage", Type: config.GAUGE},
+				&config.Params_MetricInfo{Name: "guage", Type: config.GAUGE},
+			}, guageErr,
+		},
+		{
+			[]*config.Params_MetricInfo{
+				&config.Params_MetricInfo{Name: "guage", Type: config.GAUGE},
+				&config.Params_MetricInfo{InstanceName: "guage", Type: config.GAUGE},
+			}, guageErr,
+		},
+		{
+			[]*config.Params_MetricInfo{
+				&config.Params_MetricInfo{Name: "guage1", InstanceName: "guage", Type: config.GAUGE},
+				&config.Params_MetricInfo{Name: "guage2", InstanceName: "guage", Type: config.GAUGE},
+			}, errors.New("duplicate metrics found for instance guage"),
+		},
+	}
+
+	for _, entry := range table {
+		cfg := &config.Params{Metrics: entry.metrics}
+		if err := config.ValidateMetrics(cfg); fmt.Sprint(err) != fmt.Sprint(entry.err) {
+			t.Errorf("Validation failed for %v, got: %v, want: %v.", entry.metrics, err, entry.err)
 		}
 	}
 }

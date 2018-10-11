@@ -9,7 +9,8 @@ spec:
   params:
     value: request.size | 0
     dimensions:
-      source_service: source.service | "unknown"
+      source_service: source.workload.name | "unknown"
+      source_service_namespace: source.workload.namespace | "unknown"
       source_version: source.labels["version"] | "unknown"
       destination_service: destination.service.name | "unknown"
       destination_service_namespace: destination.service.namespace | "unknown"
@@ -28,7 +29,8 @@ spec:
   params:
     value: 1
     dimensions:
-      source_service: source.service | "unknown"
+      source_service: source.workload.name | "unknown"
+      source_service_namespace: source.workload.namespace | "unknown"
       source_version: source.labels["version"] | "unknown"
       destination_service: destination.service.name | "unknown"
       destination_service_namespace: destination.service.namespace | "unknown"
@@ -47,7 +49,8 @@ spec:
   params:
     value: response.duration | "0ms"
     dimensions:
-      source_service: source.service | "unknown"
+      source_service: source.workload.name | "unknown"
+      source_service_namespace: source.workload.namespace | "unknown"
       source_version: source.labels["version"] | "unknown"
       destination_service: destination.service.name | "unknown"
       destination_service_namespace: destination.service.namespace | "unknown"
@@ -66,7 +69,8 @@ spec:
   params:
     value: response.size | 0
     dimensions:
-      source_service: source.service | "unknown"
+      source_service: source.workload.name | "unknown"
+      source_service_namespace: source.workload.namespace | "unknown"
       source_version: source.labels["version"] | "unknown"
       destination_service: destination.service.name | "unknown"
       destination_service_namespace: destination.service.namespace | "unknown"
@@ -85,7 +89,8 @@ spec:
   params:
     value: connection.sent.bytes | 0
     dimensions:
-      source_service: source.service | "unknown"
+      source_service: source.workload.name | "unknown"
+      source_service_namespace: source.workload.namespace | "unknown"
       source_version: source.labels["version"] | "unknown"
       destination_service: destination.service.name | "unknown"
       destination_service_namespace: destination.service.namespace | "unknown"
@@ -103,7 +108,8 @@ spec:
   params:
     value: connection.received.bytes | 0
     dimensions:
-      source_service: source.service | "unknown"
+      source_service: source.workload.name | "unknown"
+      source_service_namespace: source.workload.namespace | "unknown"
       source_version: source.labels["version"] | "unknown"
       destination_service: destination.service.name | "unknown"
       destination_service_namespace: destination.service.namespace | "unknown"
@@ -131,33 +137,39 @@ spec:
     source: "cluster"
     prefix: "istio"
     metrics:
-    - name: requestsize.instance.istio-system
+    - name: requestsize
+      instanceName: requestsize.instance.istio-system
       type: HISTOGRAM
       sample:
         expDecay:
           reservoirSize: 1024
           alpha: 0.015
-    - name: requestcount.instance.istio-system
+    - name: requestcount
+      instanceName: requestcount.instance.istio-system
       type: DELTA_COUNTER
-    - name: requestduration.instance.istio-system
+    - name: requestduration
+      instanceName: requestduration.instance.istio-system
       type: HISTOGRAM
       sample:
         expDecay:
           reservoirSize: 1024
           alpha: 0.015
-    - name: responsesize.instance.istio-system
+    - name: responsesize
+      instanceName: responsesize.instance.istio-system
       type: HISTOGRAM
       sample:
         expDecay:
           reservoirSize: 1024
           alpha: 0.015
-    - name: tcpsentbytes.instance.istio-system
+    - name: tcpsentbytes
+      instanceName: tcpsentbytes.instance.istio-system
       type: HISTOGRAM
       sample:
         expDecay:
           reservoirSize: 1024
           alpha: 0.015
-    - name: tcpreceivedbytes.instance.istio-system
+    - name: tcpreceivedbytes
+      instanceName: tcpreceivedbytes.instance.istio-system
       type: HISTOGRAM
       sample:
         expDecay:

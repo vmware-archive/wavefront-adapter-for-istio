@@ -87,7 +87,7 @@ func (wa *WavefrontAdapter) verifyAndInitReporter(cfg *config.Params) {
 func createMetricMap(ms []*config.Params_MetricInfo) map[string]*config.Params_MetricInfo {
 	metricMap := make(map[string]*config.Params_MetricInfo)
 	for _, m := range ms {
-		metricMap[m.Name] = m
+		metricMap[m.InstanceName] = m
 	}
 	return metricMap
 }
@@ -133,14 +133,13 @@ func translateSample(s *config.Params_MetricInfo_Sample) metrics.Sample {
 func writeMetrics(cfg *config.Params, insts []*metric.InstanceMsg) {
 	metricMap := createMetricMap(cfg.Metrics)
 	for _, inst := range insts {
-		metricName := inst.Name
-		metric, metricFound := metricMap[metricName]
-
+		metric, metricFound := metricMap[inst.Name]
 		if !metricFound {
-			log.Warnf("couldn't find metric %s in configuration %s, ignoring", metricName, cfg.String())
+			log.Warnf("couldn't find metric for instance %s in configuration %s, ignoring", inst.Name, cfg.String())
 			continue
 		}
 
+		metricName := config.MetricName(metric)
 		value := decodeValue(inst.Value.GetValue())
 		tags := decodeTags(inst.Dimensions)
 
