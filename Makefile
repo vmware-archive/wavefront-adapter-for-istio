@@ -35,6 +35,7 @@ help:
 	@echo "    docker-run         Run the docker container."
 	@echo "    format             Fix imports and format files."
 	@echo "    help               Show this help message."
+	@echo "    pack-config        Create configuration archives."
 	@echo "    setup              Set up the development environment."
 	@echo "    test               Run all unit tests."
 	@echo "    vendor-get <pkg>   Add a new dependency to the vendor directory."
@@ -99,6 +100,15 @@ docker-run: setup
 .PHONY: format
 format: setup
 	@$(GOIMPORTS) -w -l $(FILES)
+
+# Creates configuration archives
+# Usage: make pack-config
+.PHONY: pack-config
+pack-config:
+	rm -rf config.tar.gz config.zip
+	tar -zcvf config.tar.gz config
+	zip -r config.zip config
+	@echo "Configurations were packed successfully!"
 
 # Adds a new dependency to glide.yaml, glide.lock and to the vendor directory
 # Usage: make vendor-get <pkg>
