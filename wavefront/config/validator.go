@@ -58,7 +58,7 @@ func validateMetric(m *Params_MetricInfo) error {
 	switch m.Type {
 	case HISTOGRAM:
 		if m.Sample == nil || m.Sample.GetDefinition() == nil || (m.Sample.GetExpDecay() == nil && m.Sample.GetUniform() == nil) {
-			return fmt.Errorf("no sample definition was found for histogram metric %s", m.Name)
+			return fmt.Errorf("no sample definition was found for histogram metric %s", MetricName(m))
 		}
 	}
 	return nil
@@ -66,10 +66,27 @@ func validateMetric(m *Params_MetricInfo) error {
 
 // ValidateMetrics validates the metrics configuration given a Params instance.
 func ValidateMetrics(cfg *Params) error {
+	names := make(map[string]struct{})
+	instanceNames := make(map[string]struct{})
+
 	for _, m := range cfg.Metrics {
 		if err := validateMetric(m); err != nil {
 			return err
 		}
+
+		// check for duplicate metric names
+		name := MetricName(m)
+		if _, exists := names[name]; exists {
+			return fmt.Errorf("duplicate metric %s found, please supply or change the metric name", name)
+		}
+		names[name] = struct{}{}
+
+		// check for duplicate instance names
+		if _, exists := instanceNames[m.InstanceName]; exists {
+			return fmt.Errorf("duplicate metrics found for instance %s", m.InstanceName)
+		}
+		instanceNames[m.InstanceName] = struct{}{}
 	}
+
 	return nil
 }
