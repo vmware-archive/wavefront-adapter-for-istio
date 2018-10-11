@@ -39,7 +39,7 @@ params:
     address: YOUR-PROXY-IP:YOUR-PROXY-PORT
 ```
 
-See the [reference docs](https://preliminary.istio.io/docs/reference/config/policy-and-telemetry/adapters/wavefront/)
+See the [reference docs](https://istio.io/docs/reference/config/policy-and-telemetry/adapters/wavefront/)
 for the available configuration parameters.
 
 ### Deployment
