@@ -15,7 +15,13 @@ taken before using it in production environments.
 
 ### Configuration
 
-1\. Create a copy of the [config/operatorconfig/](config/operatorconfig/) directory.
+1\. Download the configuration from the [releases page](https://github.com/vmware/wavefront-adapter-for-istio/releases)
+and extract it.
+
+```shell
+curl -L https://github.com/vmware/wavefront-adapter-for-istio/releases/download/0.1.0/config.tar.gz > config.tar.gz
+tar -zxvf config.tar.gz
+```
 
 2\. If you want the metrics to be published to the Wavefront instance directly, supply
 the `direct` params for `wavefront-handler` under `sample_operator_config.yaml` like so:
@@ -45,19 +51,19 @@ for the available configuration parameters.
 ### Deployment
 
 Please follow these steps to configure the Istio Mixer to publish metrics to
-Wavefront using this adapter. These steps must be performed after
-deploying [Istio](https://istio.io/docs/setup/kubernetes/quick-start/).
+Wavefront using this adapter. These steps must be performed after deploying
+[Istio](https://istio.io/docs/setup/kubernetes/quick-start/).
 
-1\. Deploy the `wavefront-adapter.yaml`.
+1\. Deploy `wavefront-adapter.yaml`.
 
 ```shell
 kubectl apply -f config/wavefront-adapter.yaml
 ```
 
-2\. Deploy your copy of `operatorconfig`.
+2\. Deploy the `operatorconfig`.
 
 ```shell
-kubectl apply -f YOUR/operatorconfig/
+kubectl apply -f config/operatorconfig/
 ```
 
 You should now be able to see Istio metrics on Wavefront with _cluster_ as source.
