@@ -78,9 +78,20 @@ func TestValidateMetrics(t *testing.T) {
 		metric config.Params_MetricInfo
 		err    error
 	}{
-		{config.Params_MetricInfo{Type: config.GAUGE}, nil},
-		{config.Params_MetricInfo{Type: config.COUNTER}, nil},
-		{config.Params_MetricInfo{Type: config.DELTA_COUNTER}, nil},
+		{config.Params_MetricInfo{}, config.NoInstanceNameError},
+		{config.Params_MetricInfo{Type: config.GAUGE}, config.NoInstanceNameError},
+		{config.Params_MetricInfo{
+			InstanceName: "instance",
+			Type:         config.GAUGE,
+		}, nil},
+		{config.Params_MetricInfo{
+			InstanceName: "instance",
+			Type:         config.COUNTER,
+		}, nil},
+		{config.Params_MetricInfo{
+			InstanceName: "instance",
+			Type:         config.DELTA_COUNTER,
+		}, nil},
 		{config.Params_MetricInfo{
 			InstanceName: "metric-name",
 			Type:         config.HISTOGRAM,
@@ -131,7 +142,7 @@ func TestValidateMetricsDuplicate(t *testing.T) {
 	}{
 		{
 			[]*config.Params_MetricInfo{
-				&config.Params_MetricInfo{Type: config.GAUGE},
+				&config.Params_MetricInfo{InstanceName: "instance", Type: config.GAUGE},
 			}, nil,
 		},
 		{
@@ -142,19 +153,19 @@ func TestValidateMetricsDuplicate(t *testing.T) {
 		},
 		{
 			[]*config.Params_MetricInfo{
-				&config.Params_MetricInfo{Name: "guage1", Type: config.GAUGE},
+				&config.Params_MetricInfo{Name: "guage1", InstanceName: "instance", Type: config.GAUGE},
 				&config.Params_MetricInfo{InstanceName: "guage2", Type: config.GAUGE},
 			}, nil,
 		},
 		{
 			[]*config.Params_MetricInfo{
-				&config.Params_MetricInfo{Name: "guage", Type: config.GAUGE},
-				&config.Params_MetricInfo{Name: "guage", Type: config.GAUGE},
+				&config.Params_MetricInfo{Name: "guage", InstanceName: "instance1", Type: config.GAUGE},
+				&config.Params_MetricInfo{Name: "guage", InstanceName: "instance2", Type: config.GAUGE},
 			}, guageErr,
 		},
 		{
 			[]*config.Params_MetricInfo{
-				&config.Params_MetricInfo{Name: "guage", Type: config.GAUGE},
+				&config.Params_MetricInfo{Name: "guage", InstanceName: "instance1", Type: config.GAUGE},
 				&config.Params_MetricInfo{InstanceName: "guage", Type: config.GAUGE},
 			}, guageErr,
 		},
