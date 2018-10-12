@@ -25,6 +25,7 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"time"
 
 	metrics "github.com/rcrowley/go-metrics"
 	"github.com/vmware/wavefront-adapter-for-istio/wavefront/config"
@@ -171,7 +172,8 @@ func writeMetrics(cfg *config.Params, insts []*metric.InstanceMsg) {
 			} else {
 				histogram := wf.GetMetric(metricName, tags)
 				if histogram == nil {
-					sample := translateSample(metric.Sample)
+					// sample := translateSample(metric.Sample)
+					sample := NewTimeUniformSample(time.Minute, time.Second*5)
 					histogram = metrics.NewHistogram(sample)
 					wf.RegisterMetric(metricName, histogram, tags)
 				}
