@@ -9,6 +9,7 @@ spec:
   params:
     value: request.size | 0
     dimensions:
+      reporter: conditional((context.reporter.kind | "inbound") == "outbound", "client", "server")
       source_service: source.workload.name | "unknown"
       source_service_namespace: source.workload.namespace | "unknown"
       source_version: source.labels["version"] | "unknown"
@@ -50,6 +51,7 @@ spec:
   params:
     value: response.duration | "0ms"
     dimensions:
+      reporter: conditional((context.reporter.kind | "inbound") == "outbound", "client", "server")
       source_service: source.workload.name | "unknown"
       source_service_namespace: source.workload.namespace | "unknown"
       source_version: source.labels["version"] | "unknown"
@@ -70,6 +72,7 @@ spec:
   params:
     value: response.size | 0
     dimensions:
+      reporter: conditional((context.reporter.kind | "inbound") == "outbound", "client", "server")
       source_service: source.workload.name | "unknown"
       source_service_namespace: source.workload.namespace | "unknown"
       source_version: source.labels["version"] | "unknown"
@@ -90,6 +93,7 @@ spec:
   params:
     value: connection.sent.bytes | 0
     dimensions:
+      reporter: conditional((context.reporter.kind | "inbound") == "outbound", "client", "server")
       source_service: source.workload.name | "unknown"
       source_service_namespace: source.workload.namespace | "unknown"
       source_version: source.labels["version"] | "unknown"
@@ -109,6 +113,7 @@ spec:
   params:
     value: connection.received.bytes | 0
     dimensions:
+      reporter: conditional((context.reporter.kind | "inbound") == "outbound", "client", "server")
       source_service: source.workload.name | "unknown"
       source_service_namespace: source.workload.namespace | "unknown"
       source_version: source.labels["version"] | "unknown"

@@ -13,7 +13,18 @@ taken before using it in production environments.
 
 ## Quick Start
 
-### Configuration
+This adapter could be installed either via [Helm](#helm-installation) or via the
+[Standard](#standard-installation) method.
+
+### Helm Installation
+
+[Helm](https://helm.sh/) is the preferred way of installing this adapter. Please
+see the [Helm Quick Start](install/wavefront#quick-start) to learn to install
+this adapter using Helm.
+
+### Standard Installation
+
+#### Configuration
 
 1\. Download the configuration from the [releases page](https://github.com/vmware/wavefront-adapter-for-istio/releases)
 and extract it.
@@ -58,7 +69,7 @@ params:
 See the [reference docs](https://istio.io/docs/reference/config/policy-and-telemetry/adapters/wavefront/)
 for the available configuration parameters.
 
-### Deployment
+#### Deployment
 
 Execute the following command to configure the Istio Mixer to publish metrics to
 Wavefront using this adapter. This step must be performed after deploying
