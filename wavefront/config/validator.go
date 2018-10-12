@@ -29,6 +29,8 @@ var (
 	InvalidProxyCredsError = errors.New("invalid proxy address found in configuration")
 	// NoCredentialsError is returned when no valid credentials are found in the configuration.
 	NoCredentialsError = errors.New("no credentials were found in the configuration")
+	// NoInstanceNameError is returned when an instance name isn't supplied for a metric.
+	NoInstanceNameError = errors.New("metric instance name must be supplied")
 )
 
 // ValidateCredentials validates the credentials given a Params instance.
@@ -55,6 +57,10 @@ func ValidateCredentials(cfg *Params) error {
 
 // validateMetric validates a given metric instance.
 func validateMetric(m *Params_MetricInfo) error {
+	if m.InstanceName == "" {
+		return NoInstanceNameError
+	}
+
 	switch m.Type {
 	case HISTOGRAM:
 		if m.Sample == nil || m.Sample.GetDefinition() == nil || (m.Sample.GetExpDecay() == nil && m.Sample.GetUniform() == nil) {
