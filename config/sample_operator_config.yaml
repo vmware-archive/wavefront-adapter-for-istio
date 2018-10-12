@@ -133,8 +133,8 @@ spec:
 #    proxy:
 #      address: YOUR-PROXY-IP:YOUR-PROXY-PORT
     flushInterval: 5s
-    source: "cluster"
-    prefix: "istio"
+    source: istio
+    prefix: istio
     metrics:
     - name: requestsize
       instanceName: requestsize.instance.istio-system
