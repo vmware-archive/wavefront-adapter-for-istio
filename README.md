@@ -19,7 +19,7 @@ taken before using it in production environments.
 and extract it.
 
 ```shell
-curl -L https://github.com/vmware/wavefront-adapter-for-istio/releases/download/0.1.0/config.tar.gz > config.tar.gz
+curl -O https://github.com/vmware/wavefront-adapter-for-istio/releases/download/0.1.0/config.tar.gz
 tar -zxvf config.tar.gz
 ```
 
