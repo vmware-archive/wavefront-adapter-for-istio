@@ -79,7 +79,7 @@ $(GOIMPORTS):
 .PHONY: build
 build: format
 	go build -v ./...
-	cp wavefront/config/wavefront.yaml config/operatorconfig/
+	cp wavefront/config/wavefront.yaml config/
 	@echo "Build was successful!"
 
 # Builds the docker image for the project
