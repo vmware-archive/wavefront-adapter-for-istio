@@ -51,6 +51,7 @@ value, for example, to your cluster name.
 
 ```yaml
 params:
+  ...
   source: my-cluster
 ```
 
