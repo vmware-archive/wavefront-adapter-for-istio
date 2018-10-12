@@ -25,6 +25,8 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"sort"
+	"time"
 
 	metrics "github.com/rcrowley/go-metrics"
 	"github.com/vmware/wavefront-adapter-for-istio/wavefront/config"
@@ -56,6 +58,28 @@ type (
 
 // ensure that WavefrontAdapter implements the HandleMetricServiceServer interface.
 var _ metric.HandleMetricServiceServer = &WavefrontAdapter{}
+
+type MetricHistgram struct {
+	name      string
+	tags      map[string]string
+	histogram metrics.Histogram
+}
+
+func MetricKey(name string, tags map[string]string) string {
+	keys := make([]string, 0, len(tags))
+	for k := range tags {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	tagString := ""
+	for _, k := range keys {
+		tagString += "-" + k + tags[k]
+	}
+	return name + "-" + tagString
+}
+
+var histograms = make(map[string]MetricHistgram)
 
 // createWavefrontReporter creates a reporter that periodically flushes metrics to Wavefront.
 func createWavefrontReporter(cfg *config.Params) {
@@ -167,13 +191,16 @@ func writeMetrics(cfg *config.Params, insts []*metric.InstanceMsg) {
 			if int64Val, err := translateToInt64(value); err != nil {
 				log.Warnf("couldn't translate metric value: %s %v, err: %v", metricName, value, err)
 			} else {
-				histogram := wf.GetMetric(metricName, tags)
-				if histogram == nil {
+				key := MetricKey(metricName, tags)
+				m, found := histograms[key]
+				if !found {
+					fmt.Println("- metricName:", metricName, " -  not found")
 					sample := translateSample(metric.Sample)
-					histogram = metrics.NewHistogram(sample)
-					wf.RegisterMetric(metricName, histogram, tags)
+					histogram := metrics.NewHistogram(sample)
+					m = MetricHistgram{name: metricName, tags: tags, histogram: histogram}
+					histograms[key] = m
 				}
-				histogram.(metrics.Histogram).Update(int64Val)
+				m.histogram.Update(int64Val)
 				log.Debugf("updated histogram metric %s with %v, tags: %v", metricName, int64Val, tags)
 			}
 
@@ -185,7 +212,8 @@ func writeMetrics(cfg *config.Params, insts []*metric.InstanceMsg) {
 
 // HandleMetric records metric entries.
 func (wa *WavefrontAdapter) HandleMetric(ctx context.Context, r *metric.HandleMetricRequest) (*v1beta1.ReportResult, error) {
-	log.Infof("received request %v\n", *r)
+	log.Info("-------------------------------\n")
+	// log.Infof("received request %v\n", *r)
 
 	// unmarshal configuration
 	cfg := &config.Params{}
@@ -275,6 +303,25 @@ func NewWavefrontAdapter(addr string) (Server, error) {
 	if addr == "" {
 		addr = "0"
 	}
+
+	ticker := time.NewTicker(1 * time.Minute)
+	go func() {
+		for t := range ticker.C {
+			fmt.Println("-- Tick at", t)
+
+			for _, m := range histograms {
+				fmt.Println("metric:", m.name, "histogram reseted, count:", m.histogram.(metrics.Histogram).Count())
+
+				gauge := wf.GetOrRegisterMetric(m.name+".count", metrics.NewGaugeFloat64(), m.tags).(metrics.GaugeFloat64)
+				gauge.Update(float64(m.histogram.Count()))
+
+				gauge = wf.GetOrRegisterMetric(m.name+".mean", metrics.NewGaugeFloat64(), m.tags).(metrics.GaugeFloat64)
+				gauge.Update(m.histogram.Mean())
+
+				m.histogram.Clear()
+			}
+		}
+	}()
 
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", addr))
 	if err != nil {
