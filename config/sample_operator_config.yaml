@@ -29,6 +29,7 @@ spec:
   params:
     value: 1
     dimensions:
+      reporter: conditional((context.reporter.kind | "inbound") == "outbound", "client", "server")
       source_service: source.workload.name | "unknown"
       source_service_namespace: source.workload.namespace | "unknown"
       source_version: source.labels["version"] | "unknown"
