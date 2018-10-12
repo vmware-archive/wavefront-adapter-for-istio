@@ -132,8 +132,7 @@ spec:
       token: YOUR-API-TOKEN
 #    proxy:
 #      address: YOUR-PROXY-IP:YOUR-PROXY-PORT
-    flushInterval:
-      seconds: 5
+    flushInterval: 5s
     source: "cluster"
     prefix: "istio"
     metrics:
