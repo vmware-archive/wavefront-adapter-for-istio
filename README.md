@@ -23,8 +23,9 @@ curl -LO https://github.com/vmware/wavefront-adapter-for-istio/releases/download
 tar -zxvf config.tar.gz
 ```
 
-2\. If you want the metrics to be published to the Wavefront instance directly, supply
-the `direct` params for `wavefront-handler` under `sample_operator_config.yaml` like so:
+2\. If you want the metrics to be published to the Wavefront instance directly,
+supply the `direct` params for `wavefront-handler` under
+`sample_operator_config.yaml` like so:
 
 ```yaml
 params:
@@ -45,6 +46,14 @@ params:
     address: YOUR-PROXY-IP:YOUR-PROXY-PORT
 ```
 
+3\. It is recommended that you update the `source` attribute to a reasonable
+value, for example, to your cluster name.
+
+```yaml
+params:
+  source: my-cluster
+```
+
 See the [reference docs](https://istio.io/docs/reference/config/policy-and-telemetry/adapters/wavefront/)
 for the available configuration parameters.
 
@@ -58,7 +67,8 @@ Wavefront using this adapter. This step must be performed after deploying
 kubectl apply -f config/
 ```
 
-You should now be able to see Istio metrics on Wavefront with _cluster_ as source.
+You should now be able to see Istio metrics on Wavefront under your configured
+source (or `istio` by default).
 
 ## Contributing
 
