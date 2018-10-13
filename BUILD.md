@@ -67,14 +67,6 @@ To run the unit tests, use the following command:
 make test
 ```
 
-## Packing Configuration
-
-To pack configuration files for releases, use the following command:
-
-```shell
-make pack-config
-```
-
 # Dry-Running Helm
 
 To dry-run the helm chart, use the following command:
