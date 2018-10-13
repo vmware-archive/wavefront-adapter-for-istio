@@ -1,0 +1,43 @@
+# handler for adapter wavefront
+apiVersion: "config.istio.io/v1alpha2"
+kind: handler
+metadata:
+  name: wavefront-handler
+  namespace: istio-system
+spec:
+  adapter: wavefront
+  connection:
+    address: "wavefront:8000"
+  params:
+    {{- if .Values.credentials.direct }}
+    direct:
+      server: {{ .Values.credentials.direct.server }}
+      token: {{ .Values.credentials.direct.token }}
+    {{- else if .Values.credentials.proxy }}
+    proxy:
+      address: {{ .Values.credentials.proxy.address }}
+    {{- else }}
+       {{- required "Either credentials.direct or credentials.proxy must be supplied" .Values.error }}
+    {{- end }}
+    flushInterval: {{ .Values.metrics.flushInterval }}
+    source: {{ .Values.metrics.source }}
+    prefix: {{ .Values.metrics.prefix }}
+    metrics:
+    {{- if eq .Values.metrics.http true }}
+      {{- template "metrics.http" }}
+    {{- end }}
+    {{- if eq .Values.metrics.tcp true }}
+      {{- template "metrics.tcp" }}
+    {{- end }}
+---
+{{- if eq .Values.metrics.http true }}
+  {{- template "instances.http" }}
+---
+  {{- template "rule.http" }}
+{{- end }}
+---
+{{- if eq .Values.metrics.tcp true }}
+  {{- template "instances.tcp" }}
+---
+  {{- template "rule.tcp" }}
+{{- end }}
