@@ -26,17 +26,14 @@ this adapter using Helm.
 
 #### Configuration
 
-1\. Download the configuration from the [releases page](https://github.com/vmware/wavefront-adapter-for-istio/releases)
-and extract it.
+1\. Download the configuration.
 
 ```shell
-curl -LO https://github.com/vmware/wavefront-adapter-for-istio/releases/download/0.1.0/config.tar.gz
-tar -zxvf config.tar.gz
+curl -LO https://raw.githubusercontent.com/vmware/wavefront-adapter-for-istio/master/install/config.yaml
 ```
 
 2\. If you want the metrics to be published to the Wavefront instance directly,
-supply the `direct` params for `wavefront-handler` under
-`sample_operator_config.yaml` like so:
+supply the `direct` params for the `wavefront-handler` like so:
 
 ```yaml
 params:
@@ -71,16 +68,26 @@ for the available configuration parameters.
 
 #### Deployment
 
+##### Installation
+
 Execute the following command to configure the Istio Mixer to publish metrics to
 Wavefront using this adapter. This step must be performed after deploying
 [Istio](https://istio.io/docs/setup/kubernetes/quick-start/).
 
 ```shell
-kubectl apply -f config/
+kubectl apply -f install/config.yaml
 ```
 
 You should now be able to see Istio metrics on Wavefront under your configured
 source (or `istio` by default).
+
+##### Uninstallation
+
+To uninstall this adapter, use the following command.
+
+```shell
+kubectl delete -f install/config.yaml
+```
 
 ## Contributing
 
