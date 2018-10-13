@@ -74,3 +74,20 @@ To pack configuration files for releases, use the following command:
 ```shell
 make pack-config
 ```
+
+# Dry-Running Helm
+
+To dry-run the helm chart, use the following command:
+
+```shell
+make helm-print
+```
+
+# Generating Helm Manifest
+
+To generate the `install/config.yaml` manifest for the Helm chart, use the
+following command:
+
+```shell
+make helm-generate
+```
