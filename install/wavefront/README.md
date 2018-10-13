@@ -47,9 +47,13 @@ of configurable parameters.
   * **http** is a flag that specifies whether HTTP metrics should be captured.
   * **tcp** is a flag that specifies whether TCP metrics should be captured.
 
-**Note:** It is required that you set the `credentials` for your Wavefront
-instance. It is also recommended that you set the `source` attribute to a
-reasonable value, for example, to your cluster name.
+It is required that you set the `credentials` for your Wavefront instance. It is
+also recommended that you set the `source` attribute to a reasonable value, for
+example, to your cluster name.
+
+**Note:** Helm will pick the `direct` credentials by default. If you wish to
+ingest metrics via a Proxy, please ensure that the `direct` credentials are
+either deleted or commented before deploying.
 
 ### Deployment
 
