@@ -1,5 +1,6 @@
 # Wavefront by VMware Adapter for Istio
 
+[![CircleCI](https://img.shields.io/circleci/project/github/vmware/wavefront-adapter-for-istio/master.svg?logo=circleci)](https://circleci.com/gh/vmware/wavefront-adapter-for-istio)
 [![Docker Pulls](https://img.shields.io/docker/pulls/vmware/wavefront-adapter-for-istio.svg?logo=docker)](https://hub.docker.com/r/vmware/wavefront-adapter-for-istio/)
 [![License](https://img.shields.io/badge/license-Apache--2.0-green.svg)](LICENSE)
 
