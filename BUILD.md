@@ -83,3 +83,11 @@ following command:
 ```shell
 make helm-generate
 ```
+
+# Packing Helm Configuration
+
+To pack Helm configuration files for releases, use the following command:
+
+```shell
+make helm-pack
+```

@@ -34,6 +34,7 @@ help:
 	@echo "    docker-build       Build the docker image for the project."
 	@echo "    docker-run         Run the docker container."
 	@echo "    format             Fix imports and format files."
+	@echo "    helm-pack          Create a Helm configuration package."
 	@echo "    helm-print         Dry run and print the Helm manifest."
 	@echo "    helm-generate      Generate the manifest from Helm configuration."
 	@echo "    help               Show this help message."
@@ -101,6 +102,12 @@ docker-run: setup
 .PHONY: helm-print
 helm-print:
 	helm install --dry-run --debug install/wavefront/
+
+# Creates a Helm configuration package
+# Usage: make helm-pack
+.PHONY: helm-pack
+helm-pack:
+	helm package install/wavefront/
 
 # Generates the manifest from Helm configuration
 # Usage: make helm-generate
