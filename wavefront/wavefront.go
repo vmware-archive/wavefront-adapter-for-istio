@@ -29,9 +29,7 @@ import (
 	metrics "github.com/rcrowley/go-metrics"
 	"github.com/vmware/wavefront-adapter-for-istio/wavefront/config"
 	wf "github.com/wavefrontHQ/go-metrics-wavefront"
-
 	"google.golang.org/grpc"
-
 	"istio.io/api/mixer/adapter/model/v1beta1"
 	policy "istio.io/api/policy/v1beta1"
 	"istio.io/istio/mixer/template/metric"
