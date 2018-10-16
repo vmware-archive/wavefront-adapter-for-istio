@@ -1,0 +1,10 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.10
+    working_directory: /go/src/github.com/vmware/wavefront-adapter-for-istio
+    steps:
+      - checkout
+      - run: make build
+      - run: make test
