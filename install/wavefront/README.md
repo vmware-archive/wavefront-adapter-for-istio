@@ -11,16 +11,16 @@ for installing the Wavefront by VMware adapter on your Kubernetes deployment.
 
 2. Install Tiller via Helm.
 
-```shell
-helm init
+```console
+$ helm init
 ```
 
 3. Download and extract [Istio](https://istio.io/docs/setup/kubernetes/download-release/).
 
 4. Install Istio CRDs (Custom Resource Definitions).
 
-```shell
-kubectl apply -f install/kubernetes/helm/istio/templates/crds.yaml
+```console
+$ kubectl apply -f install/kubernetes/helm/istio/templates/crds.yaml
 ```
 
 ### Configuration
@@ -61,23 +61,81 @@ either deleted or commented before deploying.
 
 To install the adapter via Helm, execute the following command.
 
-```shell
-helm install install/wavefront/
+```console
+$ helm install install/wavefront/
 ```
 
 You should now be able to see Istio metrics on Wavefront under your configured
 source (or `istio` by default).
 
+**Note:** On Kubernetes 1.6+, you may encounter the following error if Helm
+experiences a problem with RBAC.
+
+```console
+$ helm install install/wavefront/
+Error: no available release name found
+```
+
+To fix the issue, create a Kubernetes Service Account with appropriate
+privileges as described in [the Helm documentation](https://docs.helm.sh/using_helm/#tiller-and-role-based-access-control)
+and re-install Tiller.
+
+The following example configuration was taken from the [Helm repository](https://github.com/helm/helm/blob/master/docs/rbac.md).
+
+1\. Create a file named `rbac-config.yaml` with the following configuration.
+
+```yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tiller
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: tiller
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: tiller
+    namespace: kube-system
+```
+
+2\. Install the RBAC configuration.
+
+```console
+$ kubectl create -f rbac-config.yaml
+serviceaccount "tiller" created
+clusterrolebinding "tiller" created
+```
+
+3\. Reinstall Tiller.
+
+```console
+$ helm reset
+$ helm init --service-account tiller
+```
+
+4\. Install the adapter.
+
+```console
+$ helm install install/wavefront/
+```
+
 #### Uninstallation
 
 To uninstall the adapter, first identify the Helm release name, like so:
 
-```shell
-helm list
+```console
+$ helm list
 ```
 
 Then uninstall it using the following command.
 
-```shell
-helm delete <release-name>
+```console
+$ helm delete <release-name>
 ```
