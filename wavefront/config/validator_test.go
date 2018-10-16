@@ -135,7 +135,7 @@ func TestValidateMetrics(t *testing.T) {
 }
 
 func TestValidateMetricsDuplicate(t *testing.T) {
-	guageErr := errors.New("duplicate metric guage found, please supply or change the metric name")
+	gaugeErr := errors.New("duplicate metric gauge found, please supply or change the metric name")
 	table := []struct {
 		metrics []*config.Params_MetricInfo
 		err     error
@@ -147,33 +147,33 @@ func TestValidateMetricsDuplicate(t *testing.T) {
 		},
 		{
 			[]*config.Params_MetricInfo{
-				&config.Params_MetricInfo{Name: "guage1", InstanceName: "guage1", Type: config.GAUGE},
-				&config.Params_MetricInfo{Name: "guage2", InstanceName: "guage2", Type: config.GAUGE},
+				&config.Params_MetricInfo{Name: "gauge1", InstanceName: "gauge1", Type: config.GAUGE},
+				&config.Params_MetricInfo{Name: "gauge2", InstanceName: "gauge2", Type: config.GAUGE},
 			}, nil,
 		},
 		{
 			[]*config.Params_MetricInfo{
-				&config.Params_MetricInfo{Name: "guage1", InstanceName: "instance", Type: config.GAUGE},
-				&config.Params_MetricInfo{InstanceName: "guage2", Type: config.GAUGE},
+				&config.Params_MetricInfo{Name: "gauge1", InstanceName: "instance", Type: config.GAUGE},
+				&config.Params_MetricInfo{InstanceName: "gauge2", Type: config.GAUGE},
 			}, nil,
 		},
 		{
 			[]*config.Params_MetricInfo{
-				&config.Params_MetricInfo{Name: "guage", InstanceName: "instance1", Type: config.GAUGE},
-				&config.Params_MetricInfo{Name: "guage", InstanceName: "instance2", Type: config.GAUGE},
-			}, guageErr,
+				&config.Params_MetricInfo{Name: "gauge", InstanceName: "instance1", Type: config.GAUGE},
+				&config.Params_MetricInfo{Name: "gauge", InstanceName: "instance2", Type: config.GAUGE},
+			}, gaugeErr,
 		},
 		{
 			[]*config.Params_MetricInfo{
-				&config.Params_MetricInfo{Name: "guage", InstanceName: "instance1", Type: config.GAUGE},
-				&config.Params_MetricInfo{InstanceName: "guage", Type: config.GAUGE},
-			}, guageErr,
+				&config.Params_MetricInfo{Name: "gauge", InstanceName: "instance1", Type: config.GAUGE},
+				&config.Params_MetricInfo{InstanceName: "gauge", Type: config.GAUGE},
+			}, gaugeErr,
 		},
 		{
 			[]*config.Params_MetricInfo{
-				&config.Params_MetricInfo{Name: "guage1", InstanceName: "guage", Type: config.GAUGE},
-				&config.Params_MetricInfo{Name: "guage2", InstanceName: "guage", Type: config.GAUGE},
-			}, errors.New("duplicate metrics found for instance guage"),
+				&config.Params_MetricInfo{Name: "gauge1", InstanceName: "gauge", Type: config.GAUGE},
+				&config.Params_MetricInfo{Name: "gauge2", InstanceName: "gauge", Type: config.GAUGE},
+			}, errors.New("duplicate metrics found for instance gauge"),
 		},
 	}
 
