@@ -80,7 +80,6 @@ $(GOIMPORTS):
 .PHONY: build
 build: format
 	go build -v ./...
-	cp wavefront/config/wavefront.yaml config/
 	cp wavefront/config/wavefront.yaml install/wavefront/templates/
 	@echo "Build was successful!"
 
