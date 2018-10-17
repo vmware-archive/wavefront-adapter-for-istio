@@ -67,7 +67,7 @@ To run the unit tests, use the following command:
 make test
 ```
 
-# Dry-Running Helm
+## Dry-Running Helm
 
 To dry-run the helm chart, use the following command:
 
@@ -75,7 +75,7 @@ To dry-run the helm chart, use the following command:
 make helm-print
 ```
 
-# Generating Helm Manifest
+## Generating Helm Manifest
 
 To generate the `install/config.yaml` manifest for the Helm chart, use the
 following command:
@@ -84,7 +84,7 @@ following command:
 make helm-generate
 ```
 
-# Packing Helm Configuration
+## Packing Helm Configuration
 
 To pack Helm configuration files for releases, use the following command:
 
