@@ -25,35 +25,65 @@ $ kubectl apply -f install/kubernetes/helm/istio/templates/crds.yaml
 
 ### Configuration
 
-You could configure the adapter installation via `values.yaml`. Below is a list
-of configurable parameters.
+1\. Download the Helm chart configuration and extract it.
 
-* **adapter** holds the adapter installation parameters
-  * **image** represents the Docker image name
-  * **tag** represents the Docker image tag
+```console
+$ curl -LO https://github.com/vmware/wavefront-adapter-for-istio/releases/download/0.1.0/wavefront-0.1.0.tgz
+$ tar -zxvf wavefront-0.1.0.tgz
+```
 
-* **credentials** holds credentials for a Wavefront by VMware instance. One of
-  either `direct` or `proxy` parameters must be supplied.
-  * **direct** holds credentials for direct ingestion.
-    * **server** is the server URL. Ex: https://mydomain.wavefront.com
-    * **token** is the API token.
-  * **proxy** holds credentials for ingestion via a Proxy.
-    * **address** is the proxy address. Ex: 192.168.99.100:2878
+2\. If you want the metrics to be published to the Wavefront instance directly,
+supply the `direct` params in `values.yaml` like so:
 
-* **metrics** holds the metric configuration.
-  * **flushInterval** is the metric flush interval.
-  * **source** is the source tag for all metrics handled by this adapter.
-  * **prefix** is the prefix to prepend all metrics handled by this adapter.
-  * **http** is a flag that specifies whether HTTP metrics should be captured.
-  * **tcp** is a flag that specifies whether TCP metrics should be captured.
+```yaml
+credentials:
+  direct:
+    server: https://YOUR-INSTANCE.wavefront.com
+    token: YOUR-API-TOKEN
+```
 
-It is required that you set the `credentials` for your Wavefront instance. It is
-also recommended that you set the `source` attribute to a reasonable value, for
-example, to your cluster name.
+Instructions for generating an API token can be found in the Wavefront by VMware
+[docs](https://docs.wavefront.com/wavefront_api.html#generating-an-api-token).
+
+If you want the metrics to be published to the Wavefront Proxy instead, supply
+the `proxy` params like below:
+
+```yaml
+credentials:
+  proxy:
+    address: YOUR-PROXY-IP:YOUR-PROXY-PORT
+```
 
 **Note:** Helm will pick the `direct` credentials by default. If you wish to
 ingest metrics via a Proxy, please ensure that the `direct` credentials are
 either deleted or commented before deploying.
+
+3\. It is recommended that you update the `source` attribute to a reasonable
+value, for example, to your cluster name.
+
+```yaml
+metrics:
+  source: my-cluster
+```
+
+#### Configuration Parameters
+
+See below for the list of available configuration parameters.
+
+| Parent      | Parameter     | Description                                        |
+| ----------- | ------------- | -------------------------------------------------- |
+| adapter     | image         | The Docker image name                              |
+|             | tag           | The Docker image tag                               |
+| credentials | direct        | Credentials for direct ingestion                   |
+|             | proxy         | Credentials for ingestion via a Proxy              | 
+| direct      | server        | The Server URL. Ex: https://mydomain.wavefront.com |
+|             | token         | The API token                                      |
+| proxy       | address       | The Proxy address. Ex: 192.168.99.100:2878         |
+| metrics     | flushInterval | The metric flush interval                          |
+|             | source        | The source tag for all metrics                     |
+|             | prefix        | The prefix to prepend all metrics with             |
+|             | http          | Specify whether HTTP metrics should be captured    |
+|             | tcp           | Specify whether TCP metrics should be captured     |
 
 ### Deployment
 
@@ -62,17 +92,19 @@ either deleted or commented before deploying.
 To install the adapter via Helm, execute the following command.
 
 ```console
-$ helm install install/wavefront/
+$ helm install wavefront/
 ```
 
 You should now be able to see Istio metrics on Wavefront under your configured
 source (or `istio` by default).
 
-**Note:** On Kubernetes 1.6+, you may encounter the following error if Helm
-experiences a problem with RBAC.
+##### RBAC Issues On Helm
+
+On Kubernetes 1.6+, you may encounter the following error if Helm experiences a
+problem with RBAC.
 
 ```console
-$ helm install install/wavefront/
+$ helm install wavefront/
 Error: no available release name found
 ```
 
@@ -123,7 +155,7 @@ $ helm init --service-account tiller
 4\. Install the adapter.
 
 ```console
-$ helm install install/wavefront/
+$ helm install wavefront/
 ```
 
 #### Uninstallation
