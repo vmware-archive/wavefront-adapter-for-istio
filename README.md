@@ -76,7 +76,7 @@ Wavefront using this adapter. This step must be performed after deploying
 [Istio](https://istio.io/docs/setup/kubernetes/quick-start/).
 
 ```shell
-kubectl apply -f install/config.yaml
+kubectl apply -f config.yaml
 ```
 
 You should now be able to see Istio metrics on Wavefront under your configured
@@ -87,7 +87,7 @@ source (or `istio` by default).
 To uninstall this adapter, use the following command.
 
 ```shell
-kubectl delete -f install/config.yaml
+kubectl delete -f config.yaml
 ```
 
 ## Contributing
