@@ -9,7 +9,7 @@ metadata:
 spec:
   template: metric
   params:
-    value: request.size | 0
+    value: request.total_size | 0
     dimensions:
       {{- template "attributes.service" }}
       response_code: response.code | 200
@@ -54,7 +54,7 @@ metadata:
 spec:
   template: metric
   params:
-    value: response.size | 0
+    value: response.total_size | 0
     dimensions:
       {{- template "attributes.service" }}
       response_code: response.code | 200

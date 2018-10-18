@@ -326,7 +326,7 @@ metadata:
 spec:
   template: metric
   params:
-    value: request.size | 0
+    value: request.total_size | 0
     dimensions:
       reporter: conditional((context.reporter.kind | "inbound") == "outbound", "client", "server")
       source_service: source.workload.name | "unknown"
@@ -389,7 +389,7 @@ metadata:
 spec:
   template: metric
   params:
-    value: response.size | 0
+    value: response.total_size | 0
     dimensions:
       reporter: conditional((context.reporter.kind | "inbound") == "outbound", "client", "server")
       source_service: source.workload.name | "unknown"
@@ -405,7 +405,7 @@ spec:
 apiVersion: "config.istio.io/v1alpha2"
 kind: rule
 metadata:
-  name: wavefront-rule
+  name: wavefront-http-rule
   namespace: istio-system
 spec:
   actions:

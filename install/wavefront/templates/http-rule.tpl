@@ -4,7 +4,7 @@
 apiVersion: "config.istio.io/v1alpha2"
 kind: rule
 metadata:
-  name: wavefront-rule
+  name: wavefront-http-rule
   namespace: istio-system
 spec:
   actions:
