@@ -28,8 +28,8 @@ $ kubectl apply -f install/kubernetes/helm/istio/templates/crds.yaml
 1\. Download the Helm chart configuration and extract it.
 
 ```console
-$ curl -LO https://github.com/vmware/wavefront-adapter-for-istio/releases/download/0.1.0/wavefront-0.1.0.tgz
-$ tar -zxvf wavefront-0.1.0.tgz
+$ curl -LO https://github.com/vmware/wavefront-adapter-for-istio/releases/download/0.1.1/wavefront-0.1.1.tgz
+$ tar -zxvf wavefront-0.1.1.tgz
 ```
 
 2\. If you want the metrics to be published to the Wavefront instance directly,
