@@ -25,6 +25,8 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"runtime"
+	"time"
 
 	metrics "github.com/rcrowley/go-metrics"
 	"github.com/vmware/wavefront-adapter-for-istio/wavefront/config"
@@ -56,16 +58,39 @@ type (
 
 // ensure that WavefrontAdapter implements the HandleMetricServiceServer interface.
 var _ metric.HandleMetricServiceServer = &WavefrontAdapter{}
+var hostTags map[string]string
 
 // createWavefrontReporter creates a reporter that periodically flushes metrics to Wavefront.
 func createWavefrontReporter(cfg *config.Params) {
-	hostTags := map[string]string{"source": cfg.Source}
+	hostTags = map[string]string{"source": cfg.Source}
 	if direct := cfg.GetDirect(); direct != nil {
 		go wf.WavefrontDirect(metrics.DefaultRegistry, cfg.FlushInterval, hostTags, cfg.Prefix, direct.Server, direct.Token)
 	} else if proxy := cfg.GetProxy(); proxy != nil {
 		addr, _ := net.ResolveTCPAddr("tcp", proxy.Address)
 		go wf.WavefrontProxy(metrics.DefaultRegistry, cfg.FlushInterval, hostTags, cfg.Prefix, addr)
 	}
+
+	fmt.Print("Preparing adapter metrics")
+	ticker := time.NewTicker(5 * time.Second)
+	go func() {
+		for t := range ticker.C {
+			fmt.Println("reporting memory stats -", t)
+			var m runtime.MemStats
+			runtime.ReadMemStats(&m)
+
+			gauge := wf.GetOrRegisterMetric("adapter.memory.alloc", metrics.NewGauge(), hostTags).(metrics.Gauge)
+			gauge.Update(int64(m.Alloc))
+
+			gauge = wf.GetOrRegisterMetric("adapter.memory.totalalloc", metrics.NewGauge(), hostTags).(metrics.Gauge)
+			gauge.Update(int64(m.TotalAlloc))
+
+			gauge = wf.GetOrRegisterMetric("adapter.memory.sys", metrics.NewGauge(), hostTags).(metrics.Gauge)
+			gauge.Update(int64(m.Sys))
+
+			gauge = wf.GetOrRegisterMetric("adapter.memory.numgc", metrics.NewGauge(), hostTags).(metrics.Gauge)
+			gauge.Update(int64(m.NumGC))
+		}
+	}()
 }
 
 // verifyAndInitReporter checks if the Wavefront reporter is initialized, and if
