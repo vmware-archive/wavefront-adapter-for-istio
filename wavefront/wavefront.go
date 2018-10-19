@@ -25,9 +25,11 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"os"
 	"runtime"
 	"time"
 
+	"github.com/mackerelio/go-osstat/cpu"
 	metrics "github.com/rcrowley/go-metrics"
 	"github.com/vmware/wavefront-adapter-for-istio/wavefront/config"
 	wf "github.com/wavefrontHQ/go-metrics-wavefront"
@@ -89,6 +91,28 @@ func createWavefrontReporter(cfg *config.Params) {
 
 			gauge = wf.GetOrRegisterMetric("adapter.memory.numgc", metrics.NewGauge(), hostTags).(metrics.Gauge)
 			gauge.Update(int64(m.NumGC))
+
+			before, err := cpu.Get()
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "%s\n", err)
+				return
+			}
+			time.Sleep(time.Duration(1) * time.Second)
+			after, err := cpu.Get()
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "%s\n", err)
+				return
+			}
+			total := float64(after.Total - before.Total)
+
+			gaugeCPU := wf.GetOrRegisterMetric("adapter.cpu.user", metrics.NewGaugeFloat64(), hostTags).(metrics.GaugeFloat64)
+			gaugeCPU.Update(float64(after.User-before.User) / total)
+
+			gaugeCPU = wf.GetOrRegisterMetric("adapter.cpu.system", metrics.NewGaugeFloat64(), hostTags).(metrics.GaugeFloat64)
+			gaugeCPU.Update(float64(after.System-before.System) / total)
+
+			gaugeCPU = wf.GetOrRegisterMetric("adapter.cpu.idle", metrics.NewGaugeFloat64(), hostTags).(metrics.GaugeFloat64)
+			gaugeCPU.Update(float64(after.Idle-before.Idle) / total)
 		}
 	}()
 }
