@@ -1,7 +1,9 @@
 # Wavefront by VMware Adapter for Istio
 
+[![CircleCI](https://img.shields.io/circleci/project/github/vmware/wavefront-adapter-for-istio/master.svg?logo=circleci)](https://circleci.com/gh/vmware/wavefront-adapter-for-istio)
 [![Docker Pulls](https://img.shields.io/docker/pulls/vmware/wavefront-adapter-for-istio.svg?logo=docker)](https://hub.docker.com/r/vmware/wavefront-adapter-for-istio/)
-[![License](https://img.shields.io/badge/license-Apache--2.0-green.svg)](LICENSE)
+[![Slack](https://img.shields.io/badge/slack-join%20chat-e01563.svg?logo=slack)](https://code.vmware.com/web/code/join)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
 <img alt="Wavefront by VMware" src="docs/images/logo.png">
 
@@ -13,12 +15,27 @@ taken before using it in production environments.
 
 ## Quick Start
 
-### Configuration
+This adapter could be installed either via [Helm](#helm-installation) or via the
+[Standard](#standard-installation) method.
 
-1\. Create a copy of the [config/operatorconfig/](config/operatorconfig/) directory.
+### Helm Installation
 
-2\. If you want the metrics to be published to the Wavefront instance directly, supply
-the `direct` params for `wavefront-handler` under `sample_operator_config.yaml` like so:
+[Helm](https://helm.sh/) is the preferred way of installing this adapter. Please
+see the [Helm Quick Start](install/wavefront#quick-start) to learn to install
+this adapter using Helm.
+
+### Standard Installation
+
+#### Configuration
+
+1\. Download the configuration.
+
+```shell
+curl -LO https://raw.githubusercontent.com/vmware/wavefront-adapter-for-istio/master/install/config.yaml
+```
+
+2\. If you want the metrics to be published to the Wavefront instance directly,
+supply the `direct` params for the `wavefront-handler` like so:
 
 ```yaml
 params:
@@ -39,28 +56,40 @@ params:
     address: YOUR-PROXY-IP:YOUR-PROXY-PORT
 ```
 
-See the [reference docs](https://preliminary.istio.io/docs/reference/config/policy-and-telemetry/adapters/wavefront/)
+3\. It is recommended that you update the `source` attribute to a reasonable
+value, for example, to your cluster name.
+
+```yaml
+params:
+  ...
+  source: my-cluster
+```
+
+See the [reference docs](https://istio.io/docs/reference/config/policy-and-telemetry/adapters/wavefront/)
 for the available configuration parameters.
 
-### Deployment
+#### Deployment
 
-Please follow these steps to configure the Istio Mixer to publish metrics to
-Wavefront using this adapter. These steps must be performed after
-deploying [Istio](https://istio.io/docs/setup/kubernetes/quick-start/).
+##### Installation
 
-1\. Deploy the `wavefront-adapter.yaml`.
-
-```shell
-kubectl apply -f config/wavefront-adapter.yaml
-```
-
-2\. Deploy your copy of `operatorconfig`.
+Execute the following command to configure the Istio Mixer to publish metrics to
+Wavefront using this adapter. This step must be performed after deploying
+[Istio](https://istio.io/docs/setup/kubernetes/quick-start/).
 
 ```shell
-kubectl apply -f YOUR/operatorconfig/
+kubectl apply -f config.yaml
 ```
 
-You should now be able to see Istio metrics on Wavefront with _cluster_ as source.
+You should now be able to see Istio metrics on Wavefront under your configured
+source (or `istio` by default).
+
+##### Uninstallation
+
+To uninstall this adapter, use the following command.
+
+```shell
+kubectl delete -f config.yaml
+```
 
 ## Contributing
 

@@ -41,10 +41,12 @@ option go_package="config";
 
 // Configuration format for the `wavefront` adapter.
 message Params {
+
   // One of the Wavefront service credentials must be supplied.
   oneof credentials {
     // The credentials for direct ingestion.
     WavefrontDirect direct = 1;
+
     // The credentials for ingestion via a Wavefront Proxy.
     WavefrontProxy proxy = 2;
   }
@@ -53,6 +55,7 @@ message Params {
   message WavefrontDirect {
     // The Wavefront server URL. Ex: https://mydomain.wavefront.com
     string server = 1;
+
     // The Wavefront API token.
     string token = 2;
   }
@@ -77,8 +80,12 @@ message Params {
 
   // Describes how a metric should be represented on Wavefront.
   message MetricInfo {
-    // The metric name.
+    // The metric name. (Optional)
     string name = 1;
+
+    // The fully qualified Istio metric instance name.
+    string instance_name = 4;
+
     // The metric type.
     Type type = 2;
 
@@ -105,6 +112,7 @@ message Params {
       oneof definition {
         // Definition of an exponentially decaying sample.
         ExpDecay exp_decay = 1;
+
         // Definition of a uniform sample.
         Uniform uniform = 2;
       }
@@ -113,6 +121,7 @@ message Params {
       message ExpDecay {
         // The reservoir size.
         int32 reservoir_size = 1;
+
         // The alpha.
         double alpha = 2;
       }

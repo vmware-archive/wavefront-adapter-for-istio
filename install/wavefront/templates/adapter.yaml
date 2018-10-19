@@ -36,8 +36,7 @@ spec:
     spec:
       containers:
       - name: wavefront
-        image: vmware/wavefront-adapter-for-istio:0.1.0
+        image: {{ .Values.adapter.image }}:{{ .Values.adapter.tag }}
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
----
