@@ -88,7 +88,7 @@ build: format
 # Usage: make docker-build
 .PHONY: docker-build
 docker-build: build
-	docker build -t vmware/wavefront-adapter-for-istio:latest .
+	docker build -t glaullon/wavefront-adapter-for-istio:latest .
 	@echo "Docker image was built successfully!"
 
 # Runs the docker container

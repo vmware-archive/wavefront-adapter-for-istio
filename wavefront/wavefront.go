@@ -25,11 +25,7 @@ import (
 	"context"
 	"fmt"
 	"net"
-	"os"
-	"runtime"
-	"time"
 
-	"github.com/mackerelio/go-osstat/cpu"
 	metrics "github.com/rcrowley/go-metrics"
 	"github.com/vmware/wavefront-adapter-for-istio/wavefront/config"
 	wf "github.com/wavefrontHQ/go-metrics-wavefront"
@@ -60,11 +56,10 @@ type (
 
 // ensure that WavefrontAdapter implements the HandleMetricServiceServer interface.
 var _ metric.HandleMetricServiceServer = &WavefrontAdapter{}
-var hostTags map[string]string
 
 // createWavefrontReporter creates a reporter that periodically flushes metrics to Wavefront.
 func createWavefrontReporter(cfg *config.Params) {
-	hostTags = map[string]string{"source": cfg.Source}
+	hostTags := map[string]string{"source": cfg.Source}
 	if direct := cfg.GetDirect(); direct != nil {
 		go wf.WavefrontDirect(metrics.DefaultRegistry, cfg.FlushInterval, hostTags, cfg.Prefix, direct.Server, direct.Token)
 	} else if proxy := cfg.GetProxy(); proxy != nil {
@@ -72,49 +67,7 @@ func createWavefrontReporter(cfg *config.Params) {
 		go wf.WavefrontProxy(metrics.DefaultRegistry, cfg.FlushInterval, hostTags, cfg.Prefix, addr)
 	}
 
-	fmt.Print("Preparing adapter metrics")
-	ticker := time.NewTicker(5 * time.Second)
-	go func() {
-		for t := range ticker.C {
-			fmt.Println("reporting memory stats -", t)
-			var m runtime.MemStats
-			runtime.ReadMemStats(&m)
-
-			gauge := wf.GetOrRegisterMetric("adapter.memory.alloc", metrics.NewGauge(), hostTags).(metrics.Gauge)
-			gauge.Update(int64(m.Alloc))
-
-			gauge = wf.GetOrRegisterMetric("adapter.memory.totalalloc", metrics.NewGauge(), hostTags).(metrics.Gauge)
-			gauge.Update(int64(m.TotalAlloc))
-
-			gauge = wf.GetOrRegisterMetric("adapter.memory.sys", metrics.NewGauge(), hostTags).(metrics.Gauge)
-			gauge.Update(int64(m.Sys))
-
-			gauge = wf.GetOrRegisterMetric("adapter.memory.numgc", metrics.NewGauge(), hostTags).(metrics.Gauge)
-			gauge.Update(int64(m.NumGC))
-
-			before, err := cpu.Get()
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "%s\n", err)
-				return
-			}
-			time.Sleep(time.Duration(1) * time.Second)
-			after, err := cpu.Get()
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "%s\n", err)
-				return
-			}
-			total := float64(after.Total - before.Total)
-
-			gaugeCPU := wf.GetOrRegisterMetric("adapter.cpu.user", metrics.NewGaugeFloat64(), hostTags).(metrics.GaugeFloat64)
-			gaugeCPU.Update(float64(after.User-before.User) / total)
-
-			gaugeCPU = wf.GetOrRegisterMetric("adapter.cpu.system", metrics.NewGaugeFloat64(), hostTags).(metrics.GaugeFloat64)
-			gaugeCPU.Update(float64(after.System-before.System) / total)
-
-			gaugeCPU = wf.GetOrRegisterMetric("adapter.cpu.idle", metrics.NewGaugeFloat64(), hostTags).(metrics.GaugeFloat64)
-			gaugeCPU.Update(float64(after.Idle-before.Idle) / total)
-		}
-	}()
+	CreateSystemStatsReporter(hostTags)
 }
 
 // verifyAndInitReporter checks if the Wavefront reporter is initialized, and if

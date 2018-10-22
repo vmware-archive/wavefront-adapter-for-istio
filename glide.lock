@@ -1,5 +1,5 @@
-hash: 0cf5998d7204bb08bea91682e5c089970b797a74c30fb9b9b6af4c93f67d332a
-updated: 2018-08-31T15:57:33.878488434-07:00
+hash: d3cc7d87d1269428b472ae48f3d51a6e2450c17afac5edf9f8c8517871bab45d
+updated: 2018-10-22T09:32:55.256041+02:00
 imports:
 - name: github.com/gogo/googleapis
   version: 8558fb44d2f1fc223118afc694129d2c2d2924d1
@@ -27,6 +27,10 @@ imports:
   version: 3d5d8f294aa03d8e98859feac328afbdf1ae0703
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
+- name: github.com/mackerelio/go-osstat
+  version: b878220919ec72c742318b3a1ee9713e83fc215c
+  subpackages:
+  - cpu
 - name: github.com/natefinch/lumberjack
   version: 7d6a1875575e09256dc552b4c0e450dcd02bd10e
 - name: github.com/rcrowley/go-metrics
@@ -109,7 +113,7 @@ imports:
   - mixer/adapter/model/v1beta1
   - policy/v1beta1
 - name: istio.io/istio
-  version: 42773aacced474d97159902d20579a25b1f98106
+  version: d639408fded355fb906ef2a1f9e8ffddc24c3d64
   subpackages:
   - mixer/pkg/adapter
   - mixer/pkg/pool
