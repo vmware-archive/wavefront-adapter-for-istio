@@ -78,6 +78,9 @@ func CreateSystemStatsReporter(hostTags map[string]string) {
 				gaugeCPU = wf.GetOrRegisterMetric("adapter.cpu.system", metrics.NewGaugeFloat64(), hostTags).(metrics.GaugeFloat64)
 				gaugeCPU.Update(float64(after.System-before.System) / total)
 
+				gaugeCPU = wf.GetOrRegisterMetric("adapter.cpu.nice", metrics.NewGaugeFloat64(), hostTags).(metrics.GaugeFloat64)
+				gaugeCPU.Update(float64(after.Nice-before.Nice) / total)
+
 				gaugeCPU = wf.GetOrRegisterMetric("adapter.cpu.idle", metrics.NewGaugeFloat64(), hostTags).(metrics.GaugeFloat64)
 				gaugeCPU.Update(float64(after.Idle-before.Idle) / total)
 
