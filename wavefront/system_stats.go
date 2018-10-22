@@ -32,6 +32,10 @@ import (
 
 const tickerDuration = 5 * time.Second
 
+var before *cpu.Stats
+var after *cpu.Stats
+var err error
+
 // CreateSystemStatsReporter creates a reporter that periodically flushes adpater system metrics to Wavefront.
 func CreateSystemStatsReporter(hostTags map[string]string) {
 	log.Info("Preparing adapter metrics")
@@ -54,27 +58,31 @@ func CreateSystemStatsReporter(hostTags map[string]string) {
 			gauge = wf.GetOrRegisterMetric("adapter.memory.numgc", metrics.NewGauge(), hostTags).(metrics.Gauge)
 			gauge.Update(int64(m.NumGC))
 
-			before, err := cpu.Get()
-			if err != nil {
-				log.Errorf("Error getting CPU stats - %s", err.Error())
-				return
+			if before == nil {
+				before, err = cpu.Get()
+				if err != nil {
+					log.Errorf("Error getting CPU stats - %s", err.Error())
+					return
+				}
+			} else {
+				after, err = cpu.Get()
+				if err != nil {
+					log.Errorf("Error getting CPU stats - %s", err.Error())
+					return
+				}
+				total := float64(after.Total - before.Total)
+
+				gaugeCPU := wf.GetOrRegisterMetric("adapter.cpu.user", metrics.NewGaugeFloat64(), hostTags).(metrics.GaugeFloat64)
+				gaugeCPU.Update(float64(after.User-before.User) / total)
+
+				gaugeCPU = wf.GetOrRegisterMetric("adapter.cpu.system", metrics.NewGaugeFloat64(), hostTags).(metrics.GaugeFloat64)
+				gaugeCPU.Update(float64(after.System-before.System) / total)
+
+				gaugeCPU = wf.GetOrRegisterMetric("adapter.cpu.idle", metrics.NewGaugeFloat64(), hostTags).(metrics.GaugeFloat64)
+				gaugeCPU.Update(float64(after.Idle-before.Idle) / total)
+
+				before = after
 			}
-			time.Sleep(time.Duration(1) * time.Second)
-			after, err := cpu.Get()
-			if err != nil {
-				log.Errorf("Error getting CPU stats - %s", err.Error())
-				return
-			}
-			total := float64(after.Total - before.Total)
-
-			gaugeCPU := wf.GetOrRegisterMetric("adapter.cpu.user", metrics.NewGaugeFloat64(), hostTags).(metrics.GaugeFloat64)
-			gaugeCPU.Update(float64(after.User-before.User) / total)
-
-			gaugeCPU = wf.GetOrRegisterMetric("adapter.cpu.system", metrics.NewGaugeFloat64(), hostTags).(metrics.GaugeFloat64)
-			gaugeCPU.Update(float64(after.System-before.System) / total)
-
-			gaugeCPU = wf.GetOrRegisterMetric("adapter.cpu.idle", metrics.NewGaugeFloat64(), hostTags).(metrics.GaugeFloat64)
-			gaugeCPU.Update(float64(after.Idle-before.Idle) / total)
 		}
 	}()
 }
