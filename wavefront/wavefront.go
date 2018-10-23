@@ -66,6 +66,8 @@ func createWavefrontReporter(cfg *config.Params) {
 		addr, _ := net.ResolveTCPAddr("tcp", proxy.Address)
 		go wf.WavefrontProxy(metrics.DefaultRegistry, cfg.FlushInterval, hostTags, cfg.Prefix, addr)
 	}
+
+	createSystemStatsReporter(hostTags)
 }
 
 // verifyAndInitReporter checks if the Wavefront reporter is initialized, and if
