@@ -13,11 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// nolint:lll
-// Generates the wavefront adapter's resource yaml. It contains the adapter's
-// configuration, name, supported template names (metric in this case), and
-// whether it is session or no-session based.
-
 package wavefront
 
 import (
@@ -30,17 +25,20 @@ import (
 	"istio.io/istio/pkg/log"
 )
 
-const tickerDuration = 5 * time.Second
+// delay between memory and cpu metrics sample
+const delay = 5 * time.Second
 
-var before *cpu.Stats
-var after *cpu.Stats
-var err error
-
-// CreateSystemStatsReporter creates a reporter that periodically flushes adpater system metrics to Wavefront.
-func CreateSystemStatsReporter(hostTags map[string]string) {
+// createSystemStatsReporter creates a reporter that periodically flushes adpater system metrics to Wavefront.
+func createSystemStatsReporter(hostTags map[string]string) {
 	log.Info("Preparing adapter metrics")
-	ticker := time.NewTicker(tickerDuration)
+	ticker := time.NewTicker(delay)
 	go func() {
+		previous, err := cpu.Get()
+		if err != nil {
+			log.Errorf("Error getting CPU stats - %s", err.Error())
+			return
+		}
+
 		for t := range ticker.C {
 			log.Infof("reporting memory stats - %s", t)
 			var m runtime.MemStats
@@ -58,34 +56,26 @@ func CreateSystemStatsReporter(hostTags map[string]string) {
 			gauge = wf.GetOrRegisterMetric("adapter.memory.numgc", metrics.NewGauge(), hostTags).(metrics.Gauge)
 			gauge.Update(int64(m.NumGC))
 
-			if before == nil {
-				before, err = cpu.Get()
-				if err != nil {
-					log.Errorf("Error getting CPU stats - %s", err.Error())
-					return
-				}
-			} else {
-				after, err = cpu.Get()
-				if err != nil {
-					log.Errorf("Error getting CPU stats - %s", err.Error())
-					return
-				}
-				total := float64(after.Total - before.Total)
-
-				gaugeCPU := wf.GetOrRegisterMetric("adapter.cpu.user", metrics.NewGaugeFloat64(), hostTags).(metrics.GaugeFloat64)
-				gaugeCPU.Update(float64(after.User-before.User) / total)
-
-				gaugeCPU = wf.GetOrRegisterMetric("adapter.cpu.system", metrics.NewGaugeFloat64(), hostTags).(metrics.GaugeFloat64)
-				gaugeCPU.Update(float64(after.System-before.System) / total)
-
-				gaugeCPU = wf.GetOrRegisterMetric("adapter.cpu.nice", metrics.NewGaugeFloat64(), hostTags).(metrics.GaugeFloat64)
-				gaugeCPU.Update(float64(after.Nice-before.Nice) / total)
-
-				gaugeCPU = wf.GetOrRegisterMetric("adapter.cpu.idle", metrics.NewGaugeFloat64(), hostTags).(metrics.GaugeFloat64)
-				gaugeCPU.Update(float64(after.Idle-before.Idle) / total)
-
-				before = after
+			current, err := cpu.Get()
+			if err != nil {
+				log.Errorf("Error getting CPU stats - %s", err.Error())
+				return
 			}
+			total := float64(current.Total - previous.Total)
+
+			gaugeCPU := wf.GetOrRegisterMetric("adapter.cpu.user", metrics.NewGaugeFloat64(), hostTags).(metrics.GaugeFloat64)
+			gaugeCPU.Update(float64(current.User-previous.User) / total)
+
+			gaugeCPU = wf.GetOrRegisterMetric("adapter.cpu.system", metrics.NewGaugeFloat64(), hostTags).(metrics.GaugeFloat64)
+			gaugeCPU.Update(float64(current.System-previous.System) / total)
+
+			gaugeCPU = wf.GetOrRegisterMetric("adapter.cpu.nice", metrics.NewGaugeFloat64(), hostTags).(metrics.GaugeFloat64)
+			gaugeCPU.Update(float64(current.Nice-previous.Nice) / total)
+
+			gaugeCPU = wf.GetOrRegisterMetric("adapter.cpu.idle", metrics.NewGaugeFloat64(), hostTags).(metrics.GaugeFloat64)
+			gaugeCPU.Update(float64(current.Idle-previous.Idle) / total)
+
+			previous = current
 		}
 	}()
 }
