@@ -418,15 +418,14 @@ func (ds *DiscoveryService) ClearCache() {
 func debouncePush(startDebounce time.Time) {
 	clearCacheMutex.Lock()
 	since := time.Since(lastClearCacheEvent)
-	events := clearCacheEvents
 	clearCacheMutex.Unlock()
 
 	if since > 2*DebounceAfter ||
 		time.Since(startDebounce) > DebounceMax {
 
 		log.Infof("Push debounce stable %d: %v since last change, %v since last push",
-			events,
-			since, time.Since(lastClearCache))
+			clearCacheEvents,
+			time.Since(lastClearCacheEvent), time.Since(lastClearCache))
 		clearCacheMutex.Lock()
 		clearCacheTimerSet = false
 		lastClearCache = time.Now()
@@ -434,8 +433,8 @@ func debouncePush(startDebounce time.Time) {
 		V2ClearCache()
 	} else {
 		log.Infof("Push debounce %d: %v since last change, %v since last push",
-			events,
-			since, time.Since(lastClearCache))
+			clearCacheEvents,
+			time.Since(lastClearCacheEvent), time.Since(lastClearCache))
 		time.AfterFunc(DebounceAfter, func() {
 			debouncePush(startDebounce)
 		})

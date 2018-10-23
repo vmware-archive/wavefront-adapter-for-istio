@@ -113,7 +113,7 @@ imports:
   - mixer/adapter/model/v1beta1
   - policy/v1beta1
 - name: istio.io/istio
-  version: d639408fded355fb906ef2a1f9e8ffddc24c3d64
+  version: 42773aacced474d97159902d20579a25b1f98106
   subpackages:
   - mixer/pkg/adapter
   - mixer/pkg/pool
