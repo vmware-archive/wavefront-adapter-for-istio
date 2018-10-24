@@ -11,14 +11,16 @@ import (
 type TimeUniformSample struct {
 	mutex    sync.Mutex
 	values   Queue
-	lifeTime time.Duration
+	lifetime time.Duration
 }
 
 var sampleList = make([]*TimeUniformSample, 0)
 var ticker *time.Ticker
 
-func NewTimeUniformSample(lifeTime time.Duration, recycleTime time.Duration) metrics.Sample {
-	sample := &TimeUniformSample{lifeTime: lifeTime, values: Queue{}}
+const recycleTime = time.Second * 5
+
+func NewTimeUniformSample(lifetime time.Duration) metrics.Sample {
+	sample := &TimeUniformSample{lifetime: lifetime, values: Queue{}}
 
 	if ticker == nil {
 		ticker = time.NewTicker(recycleTime)
@@ -127,7 +129,7 @@ func (s *TimeUniformSample) Update(v int64) {
 	if s.values.IsFull() {
 		s.values.Pop()
 	}
-	s.values.Push(&SampleValue{v: v, time: time.Now()})
+	s.values.Push(&sampleValue{v: v, time: time.Now()})
 }
 
 func (s *TimeUniformSample) cleanOldValues() {
@@ -138,7 +140,7 @@ func (s *TimeUniformSample) cleanOldValues() {
 		if empty {
 			needPop = false
 		} else {
-			needPop = (now.Sub(sample.(*SampleValue).time).Seconds() > s.lifeTime.Seconds())
+			needPop = (now.Sub(sample.(*sampleValue).time).Seconds() > s.lifetime.Seconds())
 			if needPop {
 				s.values.Pop()
 			}
@@ -158,7 +160,7 @@ func (s *TimeUniformSample) rawValues() []int64 {
 	idx := 0
 	for _, value := range s.values.content {
 		if value != nil {
-			values[idx] = value.(*SampleValue).v
+			values[idx] = value.(*sampleValue).v
 			idx++
 		}
 	}
@@ -172,7 +174,7 @@ func (s *TimeUniformSample) Variance() float64 {
 	return metrics.SampleVariance(s.rawValues())
 }
 
-type SampleValue struct {
+type sampleValue struct {
 	v    int64
 	time time.Time
 }
