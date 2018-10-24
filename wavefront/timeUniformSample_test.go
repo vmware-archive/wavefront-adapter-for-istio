@@ -7,7 +7,7 @@ import (
 )
 
 func TestTimeUniformSample(t *testing.T) {
-	sample := NewTimeUniformSample(time.Second)
+	sample := NewTimeUniformSample(time.Second, 1024)
 	sample.Update(1)
 	sample.Update(1)
 	sample.Update(1)
@@ -26,7 +26,7 @@ func TestTimeUniformSample(t *testing.T) {
 }
 
 func TestTimeUniformSampleAutoClean(t *testing.T) {
-	sample := NewTimeUniformSample(time.Second)
+	sample := NewTimeUniformSample(time.Second, 1024)
 	sample.Update(1)
 	sample.Update(1)
 	sample.Update(1)
@@ -44,7 +44,7 @@ func TestTimeUniformSampleAutoClean(t *testing.T) {
 }
 
 func TestTimeUniformSampleNoAutoClean(t *testing.T) {
-	sample := NewTimeUniformSample(time.Minute)
+	sample := NewTimeUniformSample(time.Minute, 1024)
 	sample.Update(1)
 	sample.Update(1)
 	sample.Update(1)

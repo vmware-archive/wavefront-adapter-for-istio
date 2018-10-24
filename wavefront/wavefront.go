@@ -173,7 +173,7 @@ func writeMetrics(cfg *config.Params, insts []*metric.InstanceMsg) {
 				histogram := wf.GetMetric(metricName, tags)
 				if histogram == nil {
 					// sample := translateSample(metric.Sample)
-					sample := NewTimeUniformSample(time.Minute)
+					sample := NewTimeUniformSample(time.Minute, 5120)
 					histogram = metrics.NewHistogram(sample)
 					wf.RegisterMetric(metricName, histogram, tags)
 				}

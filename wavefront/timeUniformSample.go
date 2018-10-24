@@ -19,8 +19,8 @@ var ticker *time.Ticker
 
 const recycleTime = time.Second * 5
 
-func NewTimeUniformSample(lifetime time.Duration) metrics.Sample {
-	sample := &TimeUniformSample{lifetime: lifetime, values: Queue{}}
+func NewTimeUniformSample(lifetime time.Duration, size int) metrics.Sample {
+	sample := &TimeUniformSample{lifetime: lifetime, values: newQueue(size)}
 
 	if ticker == nil {
 		ticker = time.NewTicker(recycleTime)
@@ -50,7 +50,7 @@ func (s *TimeUniformSample) Clear() {
 func (s *TimeUniformSample) Count() int64 {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
-	return s.values.len
+	return int64(s.values.len)
 }
 
 // Max returns the maximum value in the sample, which may not be the maximum
@@ -104,7 +104,7 @@ func (s *TimeUniformSample) Snapshot() metrics.Sample {
 	defer s.mutex.Unlock()
 	values := make([]int64, s.values.len)
 	copy(values, s.rawValues())
-	return metrics.NewSampleSnapshot(s.values.len, values)
+	return metrics.NewSampleSnapshot(int64(s.values.len), values)
 }
 
 // StdDev returns the standard deviation of the values in the sample.
@@ -179,25 +179,28 @@ type sampleValue struct {
 	time time.Time
 }
 
-const MAX_QUEUE_SIZE = 1024
+func newQueue(size int) Queue {
+	queue := Queue{content: make([]interface{}, size)}
+	return queue
+}
 
 type Queue struct {
-	content   [MAX_QUEUE_SIZE]interface{}
+	content   []interface{}
 	readHead  int
 	writeHead int
-	len       int64
+	len       int
 }
 
 func (q *Queue) IsFull() bool {
-	return q.len >= MAX_QUEUE_SIZE
+	return q.len >= len(q.content)
 }
 
 func (q *Queue) Push(e interface{}) bool {
-	if q.len >= MAX_QUEUE_SIZE {
+	if q.len >= len(q.content) {
 		return false
 	}
 	q.content[q.writeHead] = e
-	q.writeHead = (q.writeHead + 1) % MAX_QUEUE_SIZE
+	q.writeHead = (q.writeHead + 1) % len(q.content)
 	q.len++
 	// fmt.Println("[QUEUE] - Push - q.len:", q.len, "(", MAX_QUEUE_SIZE, ")")
 	return true
@@ -209,7 +212,7 @@ func (q *Queue) Pop() (interface{}, bool) {
 	}
 	result := q.content[q.readHead]
 	q.content[q.readHead] = nil
-	q.readHead = (q.readHead + 1) % MAX_QUEUE_SIZE
+	q.readHead = (q.readHead + 1) % len(q.content)
 	q.len--
 	// fmt.Println("[QUEUE] - Pop - q.len:", q.len, "(", MAX_QUEUE_SIZE, ")")
 	return result, true
