@@ -24,7 +24,7 @@ syntax = "proto3";
 // $source_link: https://github.com/vmware/wavefront-adapter-for-istio
 // $latest_release_link: https://github.com/vmware/wavefront-adapter-for-istio/releases/tag/0.1.0
 // $helm_chart_link:
-// $istio_versions: "1.0.1"
+// $istio_versions: "1.0.3"
 // $supported_templates: metric
 // $logo_link: https://github.com/vmware/wavefront-adapter-for-istio/raw/master/docs/images/logo.png
 
@@ -128,7 +128,7 @@ message Params {
 
       // Describes a uniform sample.
       message Uniform {
-        // The reservoir size
+        // The reservoir size.
         int32 reservoir_size = 1;
       }
     }
