@@ -24,11 +24,13 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 
 	"github.com/evanphx/json-patch"
 	"github.com/ghodss/yaml"
+	"github.com/gogo/protobuf/jsonpb"
 	"github.com/onsi/gomega"
 	"k8s.io/api/admission/v1beta1"
 	corev1 "k8s.io/api/core/v1"
@@ -41,8 +43,6 @@ import (
 	tversion "k8s.io/helm/pkg/proto/hapi/version"
 	"k8s.io/helm/pkg/timeconv"
 	"k8s.io/kubernetes/pkg/apis/core"
-
-	"github.com/gogo/protobuf/jsonpb"
 
 	"istio.io/istio/galley/pkg/crd/validation/testcerts"
 	"istio.io/istio/pilot/pkg/model"
@@ -153,7 +153,7 @@ func TestInjectRequired(t *testing.T) {
 			meta: &metav1.ObjectMeta{
 				Name:        "force-on-policy",
 				Namespace:   "test-namespace",
-				Annotations: map[string]string{sidecarAnnotationPolicyKey: "true"},
+				Annotations: map[string]string{annotationPolicy.name: "true"},
 			},
 			want: true,
 		},
@@ -163,7 +163,7 @@ func TestInjectRequired(t *testing.T) {
 			meta: &metav1.ObjectMeta{
 				Name:        "force-off-policy",
 				Namespace:   "test-namespace",
-				Annotations: map[string]string{sidecarAnnotationPolicyKey: "false"},
+				Annotations: map[string]string{annotationPolicy.name: "false"},
 			},
 			want: false,
 		},
@@ -192,7 +192,7 @@ func TestInjectRequired(t *testing.T) {
 			meta: &metav1.ObjectMeta{
 				Name:        "force-on-policy",
 				Namespace:   "test-namespace",
-				Annotations: map[string]string{sidecarAnnotationPolicyKey: "true"},
+				Annotations: map[string]string{annotationPolicy.name: "true"},
 			},
 			want: true,
 		},
@@ -202,7 +202,7 @@ func TestInjectRequired(t *testing.T) {
 			meta: &metav1.ObjectMeta{
 				Name:        "force-off-policy",
 				Namespace:   "test-namespace",
-				Annotations: map[string]string{sidecarAnnotationPolicyKey: "false"},
+				Annotations: map[string]string{annotationPolicy.name: "false"},
 			},
 			want: false,
 		},
@@ -418,15 +418,21 @@ func TestHelmInject(t *testing.T) {
 			inputFile: "traffic-annotations-empty-includes.yaml",
 			wantFile:  "traffic-annotations-empty-includes.yaml.injected",
 		},
+		{
+			// Verifies that the status port annotation overrides the default.
+			inputFile: "status_annotations.yaml",
+			wantFile:  "status_annotations.yaml.injected",
+		},
 	}
 
-	for _, c := range cases {
-		input := filepath.Join("testdata/webhook", c.inputFile)
-		want := filepath.Join("testdata/webhook", c.wantFile)
-		t.Run(c.inputFile, func(t *testing.T) {
+	for ci, c := range cases {
+		inputFile := filepath.Join("testdata/webhook", c.inputFile)
+		wantFile := filepath.Join("testdata/webhook", c.wantFile)
+		testName := fmt.Sprintf("[%02d] %s", ci, c.wantFile)
+		t.Run(testName, func(t *testing.T) {
 			// Split multi-part yaml documents. Input and output will have the same number of parts.
-			inputYAMLs := splitYamlDoc(input, t)
-			wantYAMLs := splitYamlDoc(want, t)
+			inputYAMLs := splitYamlFile(inputFile, t)
+			wantYAMLs := splitYamlFile(wantFile, t)
 
 			for i := 0; i < len(inputYAMLs); i++ {
 				t.Run(fmt.Sprintf("yamlPart[%d]", i), func(t *testing.T) {
@@ -555,13 +561,24 @@ func loadConfigMapWithHelm(t *testing.T) string {
 func getHelmValues(t *testing.T) string {
 	t.Helper()
 	valuesFile := filepath.Join(helmChartDirectory, helmValuesFile)
-	return string(util.ReadFile(valuesFile, t))
+	return filterHelmValues(string(util.ReadFile(valuesFile, t)))
 }
 
-func splitYamlDoc(yamlFile string, t *testing.T) [][]byte {
+func filterHelmValues(values string) string {
+	// TODO(nmittler): remove this once the statusPort is enabled by default.
+	pattern := regexp.MustCompile("statusPort: ([0-9]+)")
+	return pattern.ReplaceAllLiteralString(values, "statusPort: 15020")
+}
+
+func splitYamlFile(yamlFile string, t *testing.T) [][]byte {
 	t.Helper()
-	yamlDoc := util.ReadFile(yamlFile, t)
-	stringParts := strings.Split(string(yamlDoc), yamlSeparator)
+	yamlBytes := util.ReadFile(yamlFile, t)
+	return splitYamlBytes(yamlBytes, t)
+}
+
+func splitYamlBytes(yaml []byte, t *testing.T) [][]byte {
+	t.Helper()
+	stringParts := strings.Split(string(yaml), yamlSeparator)
 	byteParts := make([][]byte, 0)
 	for _, stringPart := range stringParts {
 		byteParts = append(byteParts, getInjectableYamlDocs(stringPart, t)...)
@@ -672,7 +689,7 @@ func jsonToDeployment(deploymentJSON []byte, t *testing.T) *extv1beta1.Deploymen
 func compareDeployments(got, want *extv1beta1.Deployment, name string, t *testing.T) {
 	t.Helper()
 	// Scrub unimportant fields that tend to differ.
-	annotations(got)[sidecarAnnotationStatusKey] = annotations(want)[sidecarAnnotationStatusKey]
+	annotations(got)[annotationStatus.name] = annotations(want)[annotationStatus.name]
 	gotIstioCerts := istioCerts(got)
 	wantIstioCerts := istioCerts(want)
 	gotIstioCerts.Secret.DefaultMode = wantIstioCerts.Secret.DefaultMode
@@ -683,14 +700,40 @@ func compareDeployments(got, want *extv1beta1.Deployment, name string, t *testin
 	gotIstioInit.TerminationMessagePolicy = wantIstioInit.TerminationMessagePolicy
 	gotIstioInit.SecurityContext.Privileged = wantIstioInit.SecurityContext.Privileged
 	gotIstioProxy := istioProxy(got, t)
+
+	// Fill in missing defaults in the expected proxy container.
 	wantIstioProxy := istioProxy(want, t)
+	wantIstioProxy.ReadinessProbe.HTTPGet.Scheme = corev1.URISchemeHTTP
+	wantIstioProxy.ReadinessProbe.TimeoutSeconds = 1
+	wantIstioProxy.ReadinessProbe.SuccessThreshold = 1
+
 	gotIstioProxy.Image = wantIstioProxy.Image
 	gotIstioProxy.TerminationMessagePath = wantIstioProxy.TerminationMessagePath
 	gotIstioProxy.TerminationMessagePolicy = wantIstioProxy.TerminationMessagePolicy
+
+	// collect automatically injected pod labels so that they can
+	// be adjusted later.
+	envNames := map[string]bool{}
+	for k := range got.Spec.Template.ObjectMeta.Labels {
+		envNames["ISTIO_META_"+k] = true
+	}
+
 	envVars := make([]corev1.EnvVar, 0)
 	for _, env := range gotIstioProxy.Env {
 		if env.ValueFrom != nil {
 			env.ValueFrom.FieldRef.APIVersion = ""
+		}
+		// check if metajson is encoded correctly
+		if strings.HasPrefix(env.Name, "ISTIO_METAJSON_") {
+			var mm map[string]string
+			if err := json.Unmarshal([]byte(env.Value), &mm); err != nil {
+				t.Fatalf("unable to unmarshal %s: %v", env.Value, err)
+			}
+			continue
+		}
+		// adjust for injected var names.
+		if _, found := envNames[env.Name]; found {
+			continue
 		}
 		envVars = append(envVars, env)
 	}
@@ -765,7 +808,7 @@ func makeTestData(t testing.TB, skip bool) []byte {
 	}
 
 	if skip {
-		pod.ObjectMeta.Annotations[sidecarAnnotationPolicyKey] = "false"
+		pod.ObjectMeta.Annotations[annotationPolicy.name] = "false"
 	}
 
 	raw, err := json.Marshal(&pod)
