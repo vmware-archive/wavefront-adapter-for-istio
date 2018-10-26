@@ -51,12 +51,13 @@ func (s *DiscoveryServer) pushLds(con *XdsConnection, push *model.PushContext, o
 	}
 	pushes.With(prometheus.Labels{"type": "lds"}).Add(1)
 
-	adsLog.Infof("LDS: PUSH for node:%s addr:%q listeners:%d", con.modelNode.ID, con.PeerAddr, len(rawListeners))
+	adsLog.Infof("LDS: PUSH for node:%s addr:%q listeners:%d %d", con.modelNode.ID, con.PeerAddr, len(rawListeners),
+		response.Size())
 	return nil
 }
 
 func (s *DiscoveryServer) generateRawListeners(con *XdsConnection, push *model.PushContext) ([]*xdsapi.Listener, error) {
-	rawListeners, err := s.ConfigGenerator.BuildListeners(s.env, con.modelNode, push)
+	rawListeners, err := s.ConfigGenerator.BuildListeners(s.Env, con.modelNode, push)
 	if err != nil {
 		adsLog.Warnf("LDS: Failed to generate listeners for node %s: %v", con.modelNode, err)
 		pushes.With(prometheus.Labels{"type": "lds_builderr"}).Add(1)
@@ -87,6 +88,7 @@ func ldsDiscoveryResponse(ls []*xdsapi.Listener, node model.Proxy, version strin
 	for _, ll := range ls {
 		if ll == nil {
 			adsLog.Errora("Nil listener ", ll)
+			totalXDSInternalErrors.Add(1)
 			continue
 		}
 		lr, _ := types.MarshalAny(ll)

@@ -1,5 +1,5 @@
-hash: d3cc7d87d1269428b472ae48f3d51a6e2450c17afac5edf9f8c8517871bab45d
-updated: 2018-10-22T09:32:55.256041+02:00
+hash: f68ed1fd6a6118f2e2e95418ea50d4dfa340ba2f5f49d2dd69ff90ba6f5a8930
+updated: 2018-10-26T10:30:11.823435426-07:00
 imports:
 - name: github.com/gogo/googleapis
   version: 8558fb44d2f1fc223118afc694129d2c2d2924d1
@@ -113,7 +113,7 @@ imports:
   - mixer/adapter/model/v1beta1
   - policy/v1beta1
 - name: istio.io/istio
-  version: 42773aacced474d97159902d20579a25b1f98106
+  version: a44d4c8bcb427db16ca4a439adfbd8d9361b8ed3
   subpackages:
   - mixer/pkg/adapter
   - mixer/pkg/pool
