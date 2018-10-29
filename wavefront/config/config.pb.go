@@ -489,7 +489,7 @@ func (m *Params_MetricInfo_Sample_ExpDecay) GetAlpha() float64 {
 
 // Describes a uniform sample.
 type Params_MetricInfo_Sample_Uniform struct {
-	// The reservoir size
+	// The reservoir size.
 	ReservoirSize int32 `protobuf:"varint,1,opt,name=reservoir_size,json=reservoirSize,proto3" json:"reservoir_size,omitempty"`
 }
 

@@ -34,6 +34,7 @@ type Environment struct {
 	ServiceDiscovery
 
 	// Accounts interface for listing service accounts
+	// Deprecated - use PushContext.ServiceAccounts
 	ServiceAccounts
 
 	// Config interface for listing routing rules
@@ -239,6 +240,7 @@ func DefaultMeshConfig() meshconfig.MeshConfig {
 		MixerCheckServer:      "",
 		MixerReportServer:     "",
 		DisablePolicyChecks:   false,
+		PolicyCheckFailOpen:   false,
 		ProxyListenPort:       15001,
 		ConnectTimeout:        ptypes.DurationProto(1 * time.Second),
 		IngressClass:          "istio",
