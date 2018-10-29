@@ -34,6 +34,7 @@ func createSystemStatsReporter(hostTags map[string]string) {
 	ticker := time.NewTicker(delay)
 	go func() {
 		previous, err := cpu.Get()
+		startTime := time.Now()
 		if err != nil {
 			log.Errorf("Error getting CPU stats - %s", err.Error())
 			return
@@ -74,6 +75,9 @@ func createSystemStatsReporter(hostTags map[string]string) {
 
 			gaugeCPU = wf.GetOrRegisterMetric("adapter.cpu.idle", metrics.NewGaugeFloat64(), hostTags).(metrics.GaugeFloat64)
 			gaugeCPU.Update(float64(current.Idle-previous.Idle) / total)
+
+			gaugeCPU = wf.GetOrRegisterMetric("adapter.uptime", metrics.NewGaugeFloat64(), hostTags).(metrics.GaugeFloat64)
+			gaugeCPU.Update(time.Since(startTime).Seconds())
 
 			previous = current
 		}
