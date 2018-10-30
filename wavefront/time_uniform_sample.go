@@ -1,24 +1,31 @@
 package wavefront
 
 import (
-	"fmt"
 	"sync"
 	"time"
 
 	metrics "github.com/rcrowley/go-metrics"
+	"istio.io/istio/pkg/log"
 )
 
+// TimeUniformSample is a Sample to store valuse only for a specific time
 type TimeUniformSample struct {
 	mutex    sync.Mutex
 	values   Queue
 	lifetime time.Duration
 }
 
+// list of all samples created to be cleaned periodically
 var sampleList = make([]*TimeUniformSample, 0)
+
+// recycle ticker that will fire a samples cleaning
 var ticker *time.Ticker
 
+// time delay for the recycle ticker
 const recycleTime = time.Second * 5
 
+// NewTimeUniformSample constructs and new TimeUniformSample with a specific lifetime for values and
+// a fixed size
 func NewTimeUniformSample(lifetime time.Duration, size int) metrics.Sample {
 	sample := &TimeUniformSample{lifetime: lifetime, values: newQueue(size)}
 
@@ -26,7 +33,7 @@ func NewTimeUniformSample(lifetime time.Duration, size int) metrics.Sample {
 		ticker = time.NewTicker(recycleTime)
 		go func() {
 			for t := range ticker.C {
-				fmt.Println("Tick at", t)
+				log.Infof("cleaning histograms old values - %s", t)
 				for _, sample := range sampleList {
 					sample.cleanOldValues()
 				}
@@ -123,16 +130,19 @@ func (s *TimeUniformSample) Sum() int64 {
 
 // Update samples a new value.
 func (s *TimeUniformSample) Update(v int64) {
+	s.cleanOldValues()
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
-	s.cleanOldValues()
 	if s.values.IsFull() {
 		s.values.Pop()
 	}
 	s.values.Push(&sampleValue{v: v, time: time.Now()})
 }
 
+// remove expired values
 func (s *TimeUniformSample) cleanOldValues() {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
 	now := time.Now()
 	var needPop bool
 	for more := true; more; more = needPop {
@@ -155,6 +165,7 @@ func (s *TimeUniformSample) Values() []int64 {
 	return s.rawValues()
 }
 
+// return a array with all values without any order
 func (s *TimeUniformSample) rawValues() []int64 {
 	values := make([]int64, s.values.len)
 	idx := 0
@@ -174,16 +185,19 @@ func (s *TimeUniformSample) Variance() float64 {
 	return metrics.SampleVariance(s.rawValues())
 }
 
+// store values with its creation time
 type sampleValue struct {
 	v    int64
 	time time.Time
 }
 
+// Construct a new Queue with a fiex size
 func newQueue(size int) Queue {
 	queue := Queue{content: make([]interface{}, size)}
 	return queue
 }
 
+// Queue is FIFO queue
 type Queue struct {
 	content   []interface{}
 	readHead  int
@@ -191,10 +205,13 @@ type Queue struct {
 	len       int
 }
 
+// IsFull return true if the queue is full, false otherwise
 func (q *Queue) IsFull() bool {
 	return q.len >= len(q.content)
 }
 
+// Push add a new element to the end of queue.
+// return true if the element is added correctly, false otherwise
 func (q *Queue) Push(e interface{}) bool {
 	if q.len >= len(q.content) {
 		return false
@@ -202,10 +219,12 @@ func (q *Queue) Push(e interface{}) bool {
 	q.content[q.writeHead] = e
 	q.writeHead = (q.writeHead + 1) % len(q.content)
 	q.len++
-	// fmt.Println("[QUEUE] - Push - q.len:", q.len, "(", MAX_QUEUE_SIZE, ")")
 	return true
 }
 
+// Pop return, and remove from the queue, the first queue element and true if there
+// is at least one element
+// return nil and false if the queue is empty
 func (q *Queue) Pop() (interface{}, bool) {
 	if q.len <= 0 {
 		return nil, false
@@ -214,10 +233,12 @@ func (q *Queue) Pop() (interface{}, bool) {
 	q.content[q.readHead] = nil
 	q.readHead = (q.readHead + 1) % len(q.content)
 	q.len--
-	// fmt.Println("[QUEUE] - Pop - q.len:", q.len, "(", MAX_QUEUE_SIZE, ")")
 	return result, true
 }
 
+// Peek return, without remove it from the queue, the first queue element and true if there
+// is at least one element
+// return nil and false if the queue is empty
 func (q *Queue) Peek() (interface{}, bool) {
 	if q.len <= 0 {
 		return nil, true
