@@ -1,6 +1,6 @@
 adapter:
   image: vmware/wavefront-adapter-for-istio
-  tag: 0.1.0
+  tag: 0.1.1
 
 credentials:
   direct:
