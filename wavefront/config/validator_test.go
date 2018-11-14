@@ -16,6 +16,7 @@
 package config_test
 
 import (
+	"errors"
 	"fmt"
 	"testing"
 
@@ -77,21 +78,32 @@ func TestValidateMetrics(t *testing.T) {
 		metric config.Params_MetricInfo
 		err    error
 	}{
-		{config.Params_MetricInfo{Type: config.GAUGE}, nil},
-		{config.Params_MetricInfo{Type: config.COUNTER}, nil},
-		{config.Params_MetricInfo{Type: config.DELTA_COUNTER}, nil},
+		{config.Params_MetricInfo{}, config.NoInstanceNameError},
+		{config.Params_MetricInfo{Type: config.GAUGE}, config.NoInstanceNameError},
 		{config.Params_MetricInfo{
-			Name: "metric-name",
-			Type: config.HISTOGRAM,
+			InstanceName: "instance",
+			Type:         config.GAUGE,
+		}, nil},
+		{config.Params_MetricInfo{
+			InstanceName: "instance",
+			Type:         config.COUNTER,
+		}, nil},
+		{config.Params_MetricInfo{
+			InstanceName: "instance",
+			Type:         config.DELTA_COUNTER,
+		}, nil},
+		{config.Params_MetricInfo{
+			InstanceName: "metric-name",
+			Type:         config.HISTOGRAM,
 		}, err},
 		{config.Params_MetricInfo{
-			Name:   "metric-name",
-			Type:   config.HISTOGRAM,
-			Sample: &config.Params_MetricInfo_Sample{},
+			InstanceName: "metric-name",
+			Type:         config.HISTOGRAM,
+			Sample:       &config.Params_MetricInfo_Sample{},
 		}, err},
 		{config.Params_MetricInfo{
-			Name: "metric-name",
-			Type: config.HISTOGRAM,
+			InstanceName: "metric-name",
+			Type:         config.HISTOGRAM,
 			Sample: &config.Params_MetricInfo_Sample{
 				Definition: &config.Params_MetricInfo_Sample_ExpDecay_{
 					ExpDecay: &config.Params_MetricInfo_Sample_ExpDecay{
@@ -102,8 +114,8 @@ func TestValidateMetrics(t *testing.T) {
 			},
 		}, nil},
 		{config.Params_MetricInfo{
-			Name: "metric-name",
-			Type: config.HISTOGRAM,
+			InstanceName: "metric-name",
+			Type:         config.HISTOGRAM,
 			Sample: &config.Params_MetricInfo_Sample{
 				Definition: &config.Params_MetricInfo_Sample_Uniform_{
 					Uniform: &config.Params_MetricInfo_Sample_Uniform{
@@ -118,6 +130,57 @@ func TestValidateMetrics(t *testing.T) {
 		cfg := &config.Params{Metrics: []*config.Params_MetricInfo{&entry.metric}}
 		if err := config.ValidateMetrics(cfg); fmt.Sprint(err) != fmt.Sprint(entry.err) {
 			t.Errorf("Validation failed for %v, got: %v, want: %v.", entry.metric, err, entry.err)
+		}
+	}
+}
+
+func TestValidateMetricsDuplicate(t *testing.T) {
+	gaugeErr := errors.New("duplicate metric gauge found, please supply or change the metric name")
+	table := []struct {
+		metrics []*config.Params_MetricInfo
+		err     error
+	}{
+		{
+			[]*config.Params_MetricInfo{
+				&config.Params_MetricInfo{InstanceName: "instance", Type: config.GAUGE},
+			}, nil,
+		},
+		{
+			[]*config.Params_MetricInfo{
+				&config.Params_MetricInfo{Name: "gauge1", InstanceName: "gauge1", Type: config.GAUGE},
+				&config.Params_MetricInfo{Name: "gauge2", InstanceName: "gauge2", Type: config.GAUGE},
+			}, nil,
+		},
+		{
+			[]*config.Params_MetricInfo{
+				&config.Params_MetricInfo{Name: "gauge1", InstanceName: "instance", Type: config.GAUGE},
+				&config.Params_MetricInfo{InstanceName: "gauge2", Type: config.GAUGE},
+			}, nil,
+		},
+		{
+			[]*config.Params_MetricInfo{
+				&config.Params_MetricInfo{Name: "gauge", InstanceName: "instance1", Type: config.GAUGE},
+				&config.Params_MetricInfo{Name: "gauge", InstanceName: "instance2", Type: config.GAUGE},
+			}, gaugeErr,
+		},
+		{
+			[]*config.Params_MetricInfo{
+				&config.Params_MetricInfo{Name: "gauge", InstanceName: "instance1", Type: config.GAUGE},
+				&config.Params_MetricInfo{InstanceName: "gauge", Type: config.GAUGE},
+			}, gaugeErr,
+		},
+		{
+			[]*config.Params_MetricInfo{
+				&config.Params_MetricInfo{Name: "gauge1", InstanceName: "gauge", Type: config.GAUGE},
+				&config.Params_MetricInfo{Name: "gauge2", InstanceName: "gauge", Type: config.GAUGE},
+			}, errors.New("duplicate metrics found for instance gauge"),
+		},
+	}
+
+	for _, entry := range table {
+		cfg := &config.Params{Metrics: entry.metrics}
+		if err := config.ValidateMetrics(cfg); fmt.Sprint(err) != fmt.Sprint(entry.err) {
+			t.Errorf("Validation failed for %v, got: %v, want: %v.", entry.metrics, err, entry.err)
 		}
 	}
 }

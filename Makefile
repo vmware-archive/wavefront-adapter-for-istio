@@ -34,6 +34,9 @@ help:
 	@echo "    docker-build       Build the docker image for the project."
 	@echo "    docker-run         Run the docker container."
 	@echo "    format             Fix imports and format files."
+	@echo "    helm-pack          Create a Helm configuration package."
+	@echo "    helm-print         Dry run and print the Helm manifest."
+	@echo "    helm-generate      Generate the manifest from Helm configuration."
 	@echo "    help               Show this help message."
 	@echo "    setup              Set up the development environment."
 	@echo "    test               Run all unit tests."
@@ -74,25 +77,44 @@ $(GOIMPORTS):
 	@echo "goimports installed!"
 
 # Fixes imports, formats files and builds the project
-# # Usage: make build
+# Usage: make build
 .PHONY: build
 build: format
 	go build -v ./...
-	cp wavefront/config/wavefront.yaml config/operatorconfig/
+	cp wavefront/config/wavefront.yaml install/wavefront/templates/
 	@echo "Build was successful!"
 
 # Builds the docker image for the project
-# # Usage: make docker-build
+# Usage: make docker-build
 .PHONY: docker-build
 docker-build: build
 	docker build -t vmware/wavefront-adapter-for-istio:latest .
 	@echo "Docker image was built successfully!"
 
 # Runs the docker container
-# # Usage: make docker-run
+# Usage: make docker-run
 .PHONY: docker-run
 docker-run: setup
 	docker run -it -p 8000:8000 vmware/wavefront-adapter-for-istio:latest
+
+# Dry-runs and prints the Helm manifest
+# Usage: make helm-print
+.PHONY: helm-print
+helm-print:
+	helm install --dry-run --debug install/wavefront/
+
+# Creates a Helm configuration package
+# Usage: make helm-pack
+.PHONY: helm-pack
+helm-pack:
+	helm package install/wavefront/
+
+# Generates the manifest from Helm configuration
+# Usage: make helm-generate
+.PHONY: helm-generate
+helm-generate:
+	@rm -f install/config.yaml
+	helm template install/wavefront > install/config.yaml
 
 # Fixes imports and formats files
 # Usage: make format

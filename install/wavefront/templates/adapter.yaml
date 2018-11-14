@@ -1,0 +1,42 @@
+# service for adapter wavefront
+apiVersion: v1
+kind: Service
+metadata:
+  name: wavefront
+  namespace: istio-system
+  labels:
+    app: wavefront
+spec:
+  type: ClusterIP
+  ports:
+  - name: grpc
+    protocol: TCP
+    port: 8000
+    targetPort: 8000
+  selector:
+    app: wavefront
+---
+# deployment for adapter wavefront
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: wavefront
+  namespace: istio-system
+  labels:
+    app: wavefront
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: wavefront
+      annotations:
+        sidecar.istio.io/inject: "false"
+        scheduler.alpha.kubernetes.io/critical-pod: ""
+    spec:
+      containers:
+      - name: wavefront
+        image: {{ .Values.adapter.image }}:{{ .Values.adapter.tag }}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
