@@ -14,8 +14,8 @@ This adapter is currently experimental. Therefore, caution should be taken
 before using it in production environments.
 
 **Note:** The `master` branch is used for active development and can become
-unstable. Please refer to the [Quick Start](https://github.com/vmware/wavefront-adapter-for-istio/tree/0.1.0#quick-start)
-from version [0.1.0](https://github.com/vmware/wavefront-adapter-for-istio/releases/tag/0.1.0)
+unstable. Please refer to the [Quick Start](https://github.com/vmware/wavefront-adapter-for-istio/tree/0.1.1#quick-start)
+from version [0.1.1](https://github.com/vmware/wavefront-adapter-for-istio/releases/tag/0.1.1)
 to install a stable version of the adapter.
 
 ## Quick Start
