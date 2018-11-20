@@ -31,6 +31,13 @@ this adapter using Helm.
 
 ### Standard Installation
 
+#### Prerequisites
+
+To deploy this adapter, you will need a cluster with the following minimum setup.
+
+* Kubernetes v1.10.0
+* Istio v1.0.3
+
 #### Configuration
 
 1\. Download the configuration.
