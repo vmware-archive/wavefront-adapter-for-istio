@@ -7,6 +7,14 @@ for installing the Wavefront by VMware adapter on your Kubernetes deployment.
 
 ### Prerequisites
 
+To deploy this adapter, you will need a cluster with the following minimum setup.
+
+* Kubernetes v1.10.0
+* Istio v1.0.3
+* Helm v2.10.0
+
+### Helm Setup
+
 1. Install [Helm](https://docs.helm.sh/using_helm/#installing-helm).
 
 2. Install Tiller via Helm.
