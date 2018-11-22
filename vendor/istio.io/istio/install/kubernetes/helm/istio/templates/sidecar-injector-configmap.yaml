@@ -87,7 +87,7 @@ data:
         - --parentShutdownDuration
         - {{ "[[ formatDuration .ProxyConfig.ParentShutdownDuration ]]" }}
         - --discoveryAddress
-        - {{ "[[ .ProxyConfig.DiscoveryAddress ]]" }}
+        - {{ "[[ annotation .ObjectMeta `sidecar.istio.io/discoveryAddress` .ProxyConfig.DiscoveryAddress ]]" }}
         - --discoveryRefreshDelay
         - {{ "[[ formatDuration .ProxyConfig.DiscoveryRefreshDelay ]]" }}
         - --zipkinAddress
@@ -136,9 +136,10 @@ data:
           value: |
                  {{ "[[ toJson .ObjectMeta.Annotations ]]" }}
         {{ "[[ end ]]" }}
-        {{ "[[ range $k,$v := .ObjectMeta.Labels ]]" }}
-        - name: ISTIO_META_{{ "[[ $k ]]" }}
-          value: "{{ "[[ $v ]]" }}"
+        {{ "[[ if .ObjectMeta.Labels ]]" }}
+        - name: ISTIO_METAJSON_LABELS
+          value: |
+                 {{ "[[ toJson .ObjectMeta.Labels ]]" }}
         {{ "[[ end ]]" }}
         imagePullPolicy: {{ .Values.global.imagePullPolicy }}
         {{ "[[ if (ne (annotation .ObjectMeta `status.sidecar.istio.io/port` " }} {{ .Values.global.proxy.statusPort }} {{ ") \"0\") ]]" }}

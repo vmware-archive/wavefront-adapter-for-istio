@@ -324,6 +324,7 @@ func TestCriticalCrdsAreReady(t *testing.T) {
 		return fakeDiscovery, nil
 	}
 	s.criticalKinds = []string{"Handler", "Action"}
+	s.bgRetryInterval = 1 * time.Millisecond
 	err := s.Init([]string{"Handler", "Action", "Whatever"})
 	if err != nil {
 		t.Errorf("Got error %v from Init", err)
@@ -499,8 +500,11 @@ func TestCrdsRetryAsynchronouslyStoreClose(t *testing.T) {
 		},
 	}
 	callCount := 0
+	mutex := sync.RWMutex{}
 	fakeDiscovery.AddReactor("get", "resource", func(k8stesting.Action) (bool, runtime.Object, error) {
+		mutex.Lock()
 		callCount++
+		mutex.Unlock()
 		return true, nil, nil
 	})
 
@@ -516,7 +520,9 @@ func TestCrdsRetryAsynchronouslyStoreClose(t *testing.T) {
 	time.Sleep(30 * time.Millisecond)
 	s.Stop()
 	time.Sleep(30 * time.Millisecond)
+	mutex.RLock()
 	if callCount > 4 {
 		t.Errorf("got %v, want no more than 4 calls", callCount)
 	}
+	mutex.RUnlock()
 }
