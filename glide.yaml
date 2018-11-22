@@ -5,7 +5,7 @@ owners:
   email: veniln@vmware.com
 import:
 - package: istio.io/istio
-  version: ~1.0.3
+  version: ~1.0.4
 - package: github.com/golang/protobuf
   version: ~v1.1.0
 - package: github.com/gogo/protobuf
