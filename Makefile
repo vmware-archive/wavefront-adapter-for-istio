@@ -17,7 +17,6 @@
 SHELL := /bin/bash
 GO := $(shell command -v go 2> /dev/null)
 DOCKER := $(shell command -v docker 2> /dev/null)
-GLIDE := $(GOBIN)/glide
 GOIMPORTS := $(GOBIN)/goimports
 PATH := $(GOBIN):$(PATH)
 FILES := $(shell find . -type f -name '*.go' -not -path "./vendor/*")
@@ -63,13 +62,8 @@ endif
 # Configures the development environment
 # Usage: make setup
 .PHONY: setup
-setup: env $(GLIDE) $(GOIMPORTS)
+setup: env $(GOIMPORTS)
 	@echo > /dev/null
-
-# Installs Glide
-$(GLIDE):
-	curl https://glide.sh/get | sh
-	@echo "Glide installed!"
 
 # Installs goimports
 $(GOIMPORTS):
@@ -121,19 +115,6 @@ helm-generate:
 .PHONY: format
 format: setup
 	@$(GOIMPORTS) -w -l $(FILES)
-
-# Adds a new dependency to glide.yaml, glide.lock and to the vendor directory
-# Usage: make vendor-get <pkg>
-# Example: make vendor-get pkg=github.com/foo/bar
-.PHONY: vendor-get
-vendor-get: setup
-	@$(GLIDE) get $(pkg) --strip-vendor
-
-# Updates all dependencies in vendor directory
-# Usage: make vendor-update
-.PHONY: vendor-update
-vendor-update: setup
-	@$(GLIDE) update --strip-vendor
 
 # Runs unit tests
 # Usage: make test
