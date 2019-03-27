@@ -21,20 +21,6 @@ make setup
 
 Run `make help` to get a list of all available targets.
 
-## Adding Dependencies
-
-To add a dependency, use the following command:
-
-```shell
-make vendor-get pkg=<package-uri>
-```
-
-For example, you could add a dependency on `istio.io/istio` like so:
-
-```shell
-make vendor-get pkg=istio.io/istio
-```
-
 ## Formatting Code
 
 You could format your code using the following command:
