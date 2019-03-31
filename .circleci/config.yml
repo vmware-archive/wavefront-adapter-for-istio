@@ -17,6 +17,8 @@ jobs:
   build:
     docker:
       - image: circleci/golang:1.12.1
+        environment:
+          GO111MODULE: "ON"
     working_directory: /go/src/github.com/vmware/wavefront-adapter-for-istio/
     steps:
       - checkout
@@ -24,6 +26,8 @@ jobs:
   test:
     docker:
       - image: circleci/golang:1.12.1
+        environment:
+          GO111MODULE: "ON"
     working_directory: /go/src/github.com/vmware/wavefront-adapter-for-istio/
     steps:
       - checkout
