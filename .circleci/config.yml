@@ -2,7 +2,7 @@ version: 2
 jobs:
   lint:
     docker:
-      - image: circleci/golang:1.10
+      - image: circleci/golang:1.12.1
     working_directory: /go/src/github.com/vmware/wavefront-adapter-for-istio/
     steps:
       - checkout
@@ -16,14 +16,18 @@ jobs:
           --enable=misspell ./...
   build:
     docker:
-      - image: circleci/golang:1.10
+      - image: circleci/golang:1.12.1
+        environment:
+          GO111MODULE: "on"
     working_directory: /go/src/github.com/vmware/wavefront-adapter-for-istio/
     steps:
       - checkout
       - run: go build -v ./...
   test:
     docker:
-      - image: circleci/golang:1.10
+      - image: circleci/golang:1.12.1
+        environment:
+          GO111MODULE: "on"
     working_directory: /go/src/github.com/vmware/wavefront-adapter-for-istio/
     steps:
       - checkout
