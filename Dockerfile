@@ -1,9 +1,10 @@
 FROM photon:2.0 as builder
 MAINTAINER Venil Noronha <veniln@vmware.com>
+
 RUN tdnf --refresh install -y wget tar gzip git && \
-  wget -P /tmp -q https://dl.google.com/go/go1.12.1.linux-amd64.tar.gz && \
-  tar -C /usr/local -xzf /tmp/go1.12.1.linux-amd64.tar.gz && \
-  mkdir -p /root/go/src /root/go/bin
+    wget -P /tmp -q https://dl.google.com/go/go1.12.1.linux-amd64.tar.gz && \
+    tar -C /usr/local -xzf /tmp/go1.12.1.linux-amd64.tar.gz && \
+    mkdir -p /root/go/src /root/go/bin
 ENV GOPATH=/root/go
 ENV GOBIN=/root/go/bin
 ENV GO111MODULE=on

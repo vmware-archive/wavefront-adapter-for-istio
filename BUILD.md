@@ -13,12 +13,13 @@ export GOPATH=~/go
 export GOBIN=$GOPATH/bin
 ```
 
-4\. Enable Go Modules
+4\. Enable [Go Modules](https://github.com/golang/go/wiki/Modules).
 
 ```shell
 export GO111MODULE=on
 ```
-**NOTE:** This step applies only if the code is under GOPATH
+
+**NOTE:** This step applies only if the code is under `$GOPATH`.
 
 5\. Install the development tools like so:
 
