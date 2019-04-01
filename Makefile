@@ -122,15 +122,14 @@ format: setup
 test: build
 	go test -v ./...
 
-#
-# go mod targets
-#
+# Allow for adding a dependent package to go.mod
 # Usage: make add-dep pkg=istio.io/istio@1.0.4
 .PHONY: add-dep
 add-dep:
 	go mod edit -require $(pkg)
 
 # Cleanup unused dependencies
+# Usage: make tidy
 .PHONY: tidy
 tidy:
 	go mod tidy

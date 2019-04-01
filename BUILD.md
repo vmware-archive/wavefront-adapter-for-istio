@@ -13,13 +13,41 @@ export GOPATH=~/go
 export GOBIN=$GOPATH/bin
 ```
 
-4\. Install the development tools like so:
+4\. Enable Go Modules
+```shell
+export GO111MODULE=on
+```
+`NOTE: This step applies only if the code is under GOPATH`
+
+5\. Install the development tools like so:
 
 ```shell
 make setup
 ```
 
 Run `make help` to get a list of all available targets.
+
+## Adding Dependencies
+
+To add a dependency, use the following command:
+
+```shell
+make add-dep pkg=<package-uri[@version]>
+```
+
+For example, you could add a dependency on `istio.io/istio` like so:
+
+ ```shell
+make add-dep pkg=istio.io/istio@1.0.4
+```
+
+## Removing Unwanted Dependencies
+
+To remove dependencies those are not needed, use the following:
+
+```shell
+make tidy
+```
 
 ## Formatting Code
 
