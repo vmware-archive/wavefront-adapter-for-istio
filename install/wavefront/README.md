@@ -40,7 +40,14 @@ $ curl -LO https://github.com/vmware/wavefront-adapter-for-istio/releases/downlo
 $ tar -zxvf wavefront-0.1.1.tgz
 ```
 
-2\. If you want the metrics to be published to the Wavefront instance directly,
+2\. The configuration used per helm deployment is specified in the `wavefront/values.yaml`
+
+**Note:** Helm will pick the `direct` credentials by default. If you wish to
+ingest metrics via a Proxy, please ensure that the `direct` credentials are
+either deleted or commented before deploying.
+
+
+3\. If you want the metrics to be published to the Wavefront instance directly,
 supply the `direct` params in `values.yaml` like so:
 
 ```yaml
@@ -62,11 +69,7 @@ credentials:
     address: YOUR-PROXY-IP:YOUR-PROXY-PORT
 ```
 
-**Note:** Helm will pick the `direct` credentials by default. If you wish to
-ingest metrics via a Proxy, please ensure that the `direct` credentials are
-either deleted or commented before deploying.
-
-3\. It is recommended that you update the `source` attribute to a reasonable
+4\. It is recommended that you update the `source` attribute to a reasonable
 value, for example, to your cluster name.
 
 ```yaml

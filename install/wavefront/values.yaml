@@ -2,12 +2,13 @@ adapter:
   image: vmware/wavefront-adapter-for-istio
   tag: 0.1.1
 
-credentials:
-  direct:
-    server: https://YOUR-INSTANCE.wavefront.com
-    token: YOUR-API-TOKEN
-  proxy:
-    address: YOUR-PROXY-IP:YOUR-PROXY-PORT
+credentials:  # Define either direct or proxy in the credentials node:
+#  direct:
+#    server: https://YOUR-INSTANCE.wavefront.com
+#    token: YOUR-API-TOKEN
+
+#  proxy:
+#    address: YOUR-PROXY-IP:YOUR-PROXY-PORT
 
 metrics:
   flushInterval: 5s
