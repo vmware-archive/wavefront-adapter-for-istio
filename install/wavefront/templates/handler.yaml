@@ -24,20 +24,20 @@ spec:
     prefix: {{ .Values.metrics.prefix }}
     metrics:
     {{- if eq .Values.metrics.http true }}
-      {{- template "metrics.http" }}
+      {{- template "metrics.http" . }}
     {{- end }}
     {{- if eq .Values.metrics.tcp true }}
-      {{- template "metrics.tcp" }}
+      {{- template "metrics.tcp" . }}
     {{- end }}
 ---
 {{- if eq .Values.metrics.http true }}
-  {{- template "instances.http" }}
+  {{- template "instances.http" . }}
 ---
-  {{- template "rule.http" }}
+  {{- template "rule.http" . }}
 {{- end }}
 ---
 {{- if eq .Values.metrics.tcp true }}
-  {{- template "instances.tcp" }}
+  {{- template "instances.tcp" . }}
 ---
-  {{- template "rule.tcp" }}
+  {{- template "rule.tcp" . }}
 {{- end }}
