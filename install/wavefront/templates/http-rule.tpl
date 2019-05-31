@@ -5,13 +5,13 @@ apiVersion: "config.istio.io/v1alpha2"
 kind: rule
 metadata:
   name: wavefront-http-rule
-  namespace: {{ .Values.istioNamespace }}
+  namespace: {{ .Values.namespaces.istio }}
 spec:
   actions:
-  - handler: wavefront-handler.{{ .Values.istioNamespace }}
+  - handler: wavefront-handler.{{ .Values.namespaces.istio }}
     instances:
-    - requestsize.instance.{{ .Values.adapterNamespace }}
-    - requestcount.instance.{{ .Values.adapterNamespace }}
-    - requestduration.instance.{{ .Values.adapterNamespace }}
-    - responsesize.instance.{{ .Values.adapterNamespace }}
+    - requestsize.instance.{{ .Values.namespaces.adapter }}
+    - requestcount.instance.{{ .Values.namespaces.adapter }}
+    - requestduration.instance.{{ .Values.namespaces.adapter }}
+    - responsesize.instance.{{ .Values.namespaces.adapter }}
 {{- end }}

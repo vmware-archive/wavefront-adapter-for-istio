@@ -3,11 +3,11 @@ apiVersion: "config.istio.io/v1alpha2"
 kind: handler
 metadata:
   name: wavefront-handler
-  namespace: {{ .Values.istioNamespace }}
+  namespace: {{ .Values.namespaces.istio }}
 spec:
   adapter: wavefront
   connection:
-    address: "wavefront.{{ .Values.adapterNamespace }}:8000"
+    address: "wavefront.{{ .Values.namespaces.adapter }}:8000"
   params:
     {{- if .Values.credentials.direct }}
     direct:

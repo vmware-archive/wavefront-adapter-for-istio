@@ -5,7 +5,7 @@ apiVersion: "config.istio.io/v1alpha2"
 kind: instance
 metadata:
   name: requestsize
-  namespace: {{ .Values.adapterNamespace }}
+  namespace: {{ .Values.namespaces.adapter }}
 spec:
   template: metric
   params:
@@ -20,7 +20,7 @@ apiVersion: "config.istio.io/v1alpha2"
 kind: instance
 metadata:
   name: requestcount
-  namespace: {{ .Values.adapterNamespace }}
+  namespace: {{ .Values.namespaces.adapter }}
 spec:
   template: metric
   params:
@@ -35,7 +35,7 @@ apiVersion: "config.istio.io/v1alpha2"
 kind: instance
 metadata:
   name: requestduration
-  namespace: {{ .Values.adapterNamespace }}
+  namespace: {{ .Values.namespaces.adapter }}
 spec:
   template: metric
   params:
@@ -50,7 +50,7 @@ apiVersion: "config.istio.io/v1alpha2"
 kind: instance
 metadata:
   name: responsesize
-  namespace: {{ .Values.adapterNamespace }}
+  namespace: {{ .Values.namespaces.adapter }}
 spec:
   template: metric
   params:

@@ -12,8 +12,9 @@ credentials:
 #  proxy:
 #    address: YOUR-PROXY-IP:YOUR-PROXY-PORT
 
-istioNamespace: istio-system
-adapterNamespace: wavefront-istio
+namespaces:
+  istio: istio-system
+  adapter: wavefront-istio
 
 metrics:
   flushInterval: 5s

@@ -5,12 +5,12 @@ apiVersion: "config.istio.io/v1alpha2"
 kind: rule
 metadata:
   name: wavefront-tcp-rule
-  namespace: {{ .Values.istioNamespace }}
+  namespace: {{ .Values.namespaces.istio }}
 spec:
   match: context.protocol == "tcp"
   actions:
-  - handler: wavefront-handler.{{ .Values.istioNamespace }}
+  - handler: wavefront-handler.{{ .Values.namespaces.istio }}
     instances:
-    - tcpsentbytes.instance.{{ .Values.adapterNamespace }}
-    - tcpreceivedbytes.instance.{{ .Values.adapterNamespace }}
+    - tcpsentbytes.instance.{{ .Values.namespaces.adapter }}
+    - tcpreceivedbytes.instance.{{ .Values.namespaces.adapter }}
 {{- end }}
