@@ -3,11 +3,11 @@ apiVersion: "config.istio.io/v1alpha2"
 kind: handler
 metadata:
   name: wavefront-handler
-  namespace: istio-system
+  namespace: {{ .Values.namespaces.istio }}
 spec:
   adapter: wavefront
   connection:
-    address: "wavefront:8000"
+    address: "wavefront.{{ .Values.namespaces.adapter }}:8000"
   params:
     {{- if .Values.credentials.direct }}
     direct:
@@ -24,20 +24,20 @@ spec:
     prefix: {{ .Values.metrics.prefix }}
     metrics:
     {{- if eq .Values.metrics.http true }}
-      {{- template "metrics.http" }}
+      {{- template "metrics.http" . }}
     {{- end }}
     {{- if eq .Values.metrics.tcp true }}
-      {{- template "metrics.tcp" }}
+      {{- template "metrics.tcp" . }}
     {{- end }}
 ---
 {{- if eq .Values.metrics.http true }}
-  {{- template "instances.http" }}
+  {{- template "instances.http" . }}
 ---
-  {{- template "rule.http" }}
+  {{- template "rule.http" . }}
 {{- end }}
 ---
 {{- if eq .Values.metrics.tcp true }}
-  {{- template "instances.tcp" }}
+  {{- template "instances.tcp" . }}
 ---
-  {{- template "rule.tcp" }}
+  {{- template "rule.tcp" . }}
 {{- end }}

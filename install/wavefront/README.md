@@ -95,6 +95,8 @@ See below for the list of available configuration parameters.
 |             | prefix        | The prefix to prepend all metrics with             |
 |             | http          | Specify whether HTTP metrics should be captured    |
 |             | tcp           | Specify whether TCP metrics should be captured     |
+| namespaces  | adapter       | The namespace to create adapter objects in         |
+|             | istio         | The namespace Istio has been installed to          |
 
 ### Deployment
 
