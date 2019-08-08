@@ -21,7 +21,7 @@ to install a stable version of the adapter.
 ## Quick Start
 
 This adapter could be installed either via [Helm](#helm-installation) or via the
-[Standard](#standard-installation) method.
+[standard](#standard-installation) method.
 
 ### Helm Installation
 
