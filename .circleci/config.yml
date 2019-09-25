@@ -3,17 +3,13 @@ jobs:
   lint:
     docker:
       - image: circleci/golang:1.12.1
+        environment:
+          GO111MODULE: "on"
     working_directory: /go/src/github.com/vmware/wavefront-adapter-for-istio/
     steps:
       - checkout
-      - run: go get -u github.com/alecthomas/gometalinter
-      - run: gometalinter --install
-      - run: |
-          gometalinter            \
-          --vendor                \
-          --disable-all           \
-          --enable=goimports      \
-          --enable=misspell ./...
+      - run: curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.19.1
+      - run: golangci-lint run --disable-all -E goimports -E misspell
   build:
     docker:
       - image: circleci/golang:1.12.1
