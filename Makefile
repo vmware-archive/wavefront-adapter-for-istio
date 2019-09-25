@@ -76,6 +76,8 @@ $(GOIMPORTS):
 build: format
 	go build -v ./...
 	cp wavefront/config/wavefront.yaml install/wavefront/templates/
+	sed -i '' -E 's/namespace: istio-system/namespace: {{ .Values.namespaces.istio }}/' install/wavefront/templates/wavefront.yaml
+	sed -i '' -E 's/- metric/- metric.{{ .Values.namespaces.adapter }}/' install/wavefront/templates/wavefront.yaml
 	@echo "Build was successful!"
 
 # Builds the docker image for the project

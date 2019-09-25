@@ -4,11 +4,9 @@ adapter:
 
 credentials:
 # Define either direct or proxy credentials.
-#
-#  direct:
-#    server: https://YOUR-INSTANCE.wavefront.com
-#    token: YOUR-API-TOKEN
-#
+  direct:
+    server: https://YOUR-INSTANCE.wavefront.com
+    token: YOUR-API-TOKEN
 #  proxy:
 #    address: YOUR-PROXY-IP:YOUR-PROXY-PORT
 
@@ -22,3 +20,6 @@ metrics:
   prefix: istio
   http: true
   tcp: true
+
+logs:
+  level: info
