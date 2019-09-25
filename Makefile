@@ -30,6 +30,8 @@ help:
 	@echo "Available targets are:"
 	@echo ""
 	@echo "    build              Fix imports, formats files and builds the project locally."
+	@echo "    dep-add <pkg>      Add a package to go.mod."
+	@echo "    dep-tidy           Clean up unused dependencies."
 	@echo "    docker-build       Build the docker image for the project."
 	@echo "    docker-run         Run the docker container."
 	@echo "    format             Fix imports and format files."
@@ -39,8 +41,6 @@ help:
 	@echo "    help               Show this help message."
 	@echo "    setup              Set up the development environment."
 	@echo "    test               Run all unit tests."
-	@echo "    vendor-get <pkg>   Add a new dependency to the vendor directory."
-	@echo "    vendor-update      Update all dependencies in vendor directory."
 	@echo ""
 
 # Checks for necessary variables
@@ -124,14 +124,14 @@ format: setup
 test: build
 	go test -v ./...
 
-# Allow for adding a dependent package to go.mod
-# Usage: make add-dep pkg=istio.io/istio@1.0.4
-.PHONY: add-dep
-add-dep:
+# Adds a package to go.mod
+# Usage: make dep-add pkg=istio.io/istio@1.0.4
+.PHONY: dep-add
+dep-add:
 	go mod edit -require $(pkg)
 
-# Cleanup unused dependencies
-# Usage: make tidy
-.PHONY: tidy
-tidy:
+# Cleans up unused dependencies
+# Usage: make dep-tidy
+.PHONY: dep-tidy
+dep-tidy:
 	go mod tidy
