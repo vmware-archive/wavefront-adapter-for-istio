@@ -133,4 +133,13 @@ message Params {
       }
     }
   }
+
+  // Describes the logging configuration.
+  message Logs {
+    // The log level (one of error, warn, info, debug, or none). Ex: info
+    string level = 1;
+  }
+
+  // The log configuration.
+  Logs logs = 7;
 }

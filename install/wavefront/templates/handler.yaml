@@ -29,6 +29,10 @@ spec:
     {{- if eq .Values.metrics.tcp true }}
       {{- template "metrics.tcp" . }}
     {{- end }}
+    {{- if .Values.logs }}
+    logs:
+      level: {{ .Values.logs.level }}
+    {{- end }}
 ---
 {{- if eq .Values.metrics.http true }}
   {{- template "instances.http" . }}

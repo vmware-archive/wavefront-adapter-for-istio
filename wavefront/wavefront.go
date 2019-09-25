@@ -70,11 +70,42 @@ func createWavefrontReporter(cfg *config.Params) {
 	createSystemStatsReporter(hostTags)
 }
 
+// setLogLevel sets the adapter log level.
+func (wa *WavefrontAdapter) setLogLevel(cfg *config.Params) {
+	if logs := cfg.GetLogs(); logs != nil {
+		var level log.Level
+		switch logs.Level {
+		case "error":
+			level = log.ErrorLevel
+		case "warn":
+			level = log.WarnLevel
+		case "info":
+			level = log.InfoLevel
+		case "debug":
+			level = log.DebugLevel
+		case "none":
+			level = log.NoneLevel
+		default:
+			log.Warnf("log level was not recognized, falling back to info level, config: %s", cfg.String())
+			level = log.InfoLevel
+		}
+
+		options := log.DefaultOptions()
+		options.SetOutputLevel(log.DefaultScopeName, level)
+		if err := log.Configure(options); err != nil {
+			log.Warnf("couldn't set the log level, err: %s, config: %s", err.Error(), cfg.String())
+		}
+	}
+}
+
 // verifyAndInitReporter checks if the Wavefront reporter is initialized, and if
 // not, initializes it.
 func (wa *WavefrontAdapter) verifyAndInitReporter(cfg *config.Params) {
 	if !wa.reporterInitialized {
 		log.Infof("trying to init wavefront reporter, config: %s", cfg.String())
+
+		wa.setLogLevel(cfg)
+
 		if err := config.ValidateCredentials(cfg); err != nil {
 			log.Errorf("failed to create wavefront reporter, err: %s, config: %s", err.Error(), cfg.String())
 		} else {
