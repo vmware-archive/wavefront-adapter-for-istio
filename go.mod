@@ -24,3 +24,5 @@ require (
 	istio.io/api v0.0.0-20190416154520-4a9a2a12a700 // v1.1.15
 	istio.io/istio v0.0.0-20190913154610-b12614cbfb7a // v1.1.15
 )
+
+go 1.13
