@@ -69,7 +69,7 @@ gopkg.in/natefinch/lumberjack.v2 v2.0.0/go.mod h1:l0ndWWf7gzL7RNwBG7wST/UCcT4T24
 gopkg.in/yaml.v2 v2.2.2 h1:ZCJp+EgiOT7lHqUV2J862kp8Qj64Jo6az82+3Td9dZw=
 gopkg.in/yaml.v2 v2.2.2/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
 honnef.co/go/tools v0.0.0-20180728063816-88497007e858/go.mod h1:rf3lG4BRIbNafJWhAfAdb/ePZxsR/4RtNHQocxwk9r4=
-istio.io/api v0.0.0-20190416154520-4a9a2a12a700 h1:L7XTFapXB3oQyW2+5UwMJ6alba/GKON2PM8YsPn027A=
-istio.io/api v0.0.0-20190416154520-4a9a2a12a700/go.mod h1:hhLFQmpHia8zgaM37vb2ml9iS5NfNfqZGRt1pS9aVEo=
-istio.io/istio v0.0.0-20190913154610-b12614cbfb7a h1:7wxVxWFgQZgPwW3LfHbH0kDxEXd1/Me5M5Q+IqXGgD0=
-istio.io/istio v0.0.0-20190913154610-b12614cbfb7a/go.mod h1:OWBySrQjjk549IhxWCt7DTl9ZSsXdvbgm+SmgGVRsGA=
+istio.io/api v0.0.0-20180730173215-123b0a79a4db h1:tJr6kUSwplvWjubZo77W8r641oE186qSqdnfxfF+PY8=
+istio.io/api v0.0.0-20180730173215-123b0a79a4db/go.mod h1:hhLFQmpHia8zgaM37vb2ml9iS5NfNfqZGRt1pS9aVEo=
+istio.io/istio v0.0.0-20181119195336-d5cb99f479ad h1:TVKuCWhCXnEsZDqM5YKT1I9r1OosU4iMJACC0XPu7dw=
+istio.io/istio v0.0.0-20181119195336-d5cb99f479ad/go.mod h1:OWBySrQjjk549IhxWCt7DTl9ZSsXdvbgm+SmgGVRsGA=
