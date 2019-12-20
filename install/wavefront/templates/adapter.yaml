@@ -1,3 +1,10 @@
+---
+# namespace for adapter wavefront
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.namespaces.adapter }}
+---
 # service for adapter wavefront
 apiVersion: v1
 kind: Service
