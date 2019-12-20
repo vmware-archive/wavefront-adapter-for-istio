@@ -1,4 +1,10 @@
 ---
+# namespace for adapter wavefront
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: wavefront-istio
+---
 # Source: wavefront/templates/adapter.yaml
 # service for adapter wavefront
 apiVersion: v1
