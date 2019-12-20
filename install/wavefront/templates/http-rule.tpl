@@ -7,6 +7,10 @@ metadata:
   name: wavefront-http-rule
   namespace: {{ .Values.namespaces.istio }}
 spec:
+  match: >-
+    (context.protocol == "http" || context.protocol == "grpc") &&
+    (match((request.useragent | "-"), "kube-probe*") == false) &&
+    (match((request.useragent | "-"), "Prometheus*") == false)
   actions:
   - handler: wavefront-handler.{{ .Values.namespaces.istio }}
     instances:
