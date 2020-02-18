@@ -14,4 +14,18 @@
         expDecay:
           reservoirSize: 1024
           alpha: 0.015
+    - name: tcpconnectionsopened
+      instanceName: tcpconnectionsopened.instance.{{ .Values.namespaces.adapter }}
+      type: HISTOGRAM
+      sample:
+        expDecay:
+          reservoirSize: 1024
+          alpha: 0.015
+    - name: tcpconnectionsclosed
+      instanceName: tcpconnectionsclosed.instance.{{ .Values.namespaces.adapter }}
+      type: HISTOGRAM
+      sample:
+        expDecay:
+          reservoirSize: 1024
+          alpha: 0.015
 {{- end }}

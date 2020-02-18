@@ -7,6 +7,7 @@ metadata:
   name: wavefront-http-rule
   namespace: {{ .Values.namespaces.istio }}
 spec:
+  match: context.protocol == "http"
   actions:
   - handler: wavefront-handler.{{ .Values.namespaces.istio }}
     instances:

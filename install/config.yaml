@@ -1,11 +1,12 @@
 ---
+# Source: wavefront/templates/adapter.yaml
+---
 # namespace for adapter wavefront
 apiVersion: v1
 kind: Namespace
 metadata:
   name: wavefront-istio
 ---
-# Source: wavefront/templates/adapter.yaml
 # service for adapter wavefront
 apiVersion: v1
 kind: Service
@@ -44,7 +45,7 @@ spec:
     spec:
       containers:
       - name: wavefront
-        image: vmware/wavefront-adapter-for-istio:0.1.1
+        image: vmware/wavefront-adapter-for-istio:0.1.2
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
@@ -75,6 +76,7 @@ spec:
 
 ---
 # Source: wavefront/templates/tcp-rule.tpl
+
 
 
 ---
@@ -322,6 +324,20 @@ spec:
         expDecay:
           reservoirSize: 1024
           alpha: 0.015
+    - name: tcpconnectionsopened
+      instanceName: tcpconnectionsopened.instance.wavefront-istio
+      type: HISTOGRAM
+      sample:
+        expDecay:
+          reservoirSize: 1024
+          alpha: 0.015
+    - name: tcpconnectionsclosed
+      instanceName: tcpconnectionsclosed.instance.wavefront-istio
+      type: HISTOGRAM
+      sample:
+        expDecay:
+          reservoirSize: 1024
+          alpha: 0.015
     logs:
       level: info
 ---
@@ -416,6 +432,7 @@ metadata:
   name: wavefront-http-rule
   namespace: istio-system
 spec:
+  match: context.protocol == "http"
   actions:
   - handler: wavefront-handler.istio-system
     instances:
@@ -464,6 +481,46 @@ spec:
       destination_version: destination.labels["version"] | "unknown"
     monitored_resource_type: '"UNSPECIFIED"'
 ---
+# tcpconnectionsopened instance for template metric
+apiVersion: "config.istio.io/v1alpha2"
+kind: instance
+metadata:
+  name: tcpconnectionsopened
+  namespace: wavefront-istio
+spec:
+  template: metric
+  params:
+    value: 1
+    dimensions:
+      reporter: conditional((context.reporter.kind | "inbound") == "outbound", "client", "server")
+      source_service: source.workload.name | "unknown"
+      source_service_namespace: source.workload.namespace | "unknown"
+      source_version: source.labels["version"] | "unknown"
+      destination_service: destination.service.name | "unknown"
+      destination_service_namespace: destination.service.namespace | "unknown"
+      destination_version: destination.labels["version"] | "unknown"
+    monitored_resource_type: '"UNSPECIFIED"'
+---
+# tcpconnectionsclosed instance for template metric
+apiVersion: "config.istio.io/v1alpha2"
+kind: instance
+metadata:
+  name: tcpconnectionsclosed
+  namespace: wavefront-istio
+spec:
+  template: metric
+  params:
+    value: 1
+    dimensions:
+      reporter: conditional((context.reporter.kind | "inbound") == "outbound", "client", "server")
+      source_service: source.workload.name | "unknown"
+      source_service_namespace: source.workload.namespace | "unknown"
+      source_version: source.labels["version"] | "unknown"
+      destination_service: destination.service.name | "unknown"
+      destination_service_namespace: destination.service.namespace | "unknown"
+      destination_version: destination.labels["version"] | "unknown"
+    monitored_resource_type: '"UNSPECIFIED"'
+---
 # rule to dispatch tcp metrics to handler wavefront-handler
 apiVersion: "config.istio.io/v1alpha2"
 kind: rule
@@ -477,6 +534,32 @@ spec:
     instances:
     - tcpsentbytes.instance.wavefront-istio
     - tcpreceivedbytes.instance.wavefront-istio
+---
+# rule to dispatch tcp connection open metric to handler wavefront-handler
+apiVersion: "config.istio.io/v1alpha2"
+kind: rule
+metadata:
+  name: wavefront-tcp-connection-open-rule
+  namespace: istio-system
+spec:
+  match: context.protocol == "tcp" && connection.event == "open"
+  actions:
+  - handler: wavefront-handler.istio-system
+    instances:
+    - tcpconnectionsopened.instance.wavefront-istio
+---
+# rule to dispatch tcp connection close metric to handler wavefront-handler
+apiVersion: "config.istio.io/v1alpha2"
+kind: rule
+metadata:
+  name: wavefront-tcp-connection-close-rule
+  namespace: istio-system
+spec:
+  match: context.protocol == "tcp" && connection.event == "close"
+  actions:
+  - handler: wavefront-handler.istio-system
+    instances:
+    - tcpconnectionsclosed.instance.wavefront-istio
 
 ---
 # Source: wavefront/templates/metrictemplate.yaml
