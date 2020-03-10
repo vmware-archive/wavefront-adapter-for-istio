@@ -21,7 +21,7 @@ import (
 
 	"github.com/mackerelio/go-osstat/cpu"
 	metrics "github.com/rcrowley/go-metrics"
-	wf "github.com/wavefrontHQ/go-metrics-wavefront"
+	wf "github.com/wavefronthq/go-metrics-wavefront/reporting"
 	"istio.io/istio/pkg/log"
 )
 
