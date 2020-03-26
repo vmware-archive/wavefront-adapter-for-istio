@@ -52,10 +52,9 @@ type (
 
 	// WavefrontAdapter supports metric template.
 	WavefrontAdapter struct {
-		listener            net.Listener
-		server              *grpc.Server
-		reporterInitialized bool
-		reporter            wf.WavefrontMetricsReporter
+		listener net.Listener
+		server   *grpc.Server
+		reporter wf.WavefrontMetricsReporter
 	}
 )
 
@@ -155,7 +154,7 @@ func (wa *WavefrontAdapter) setLogLevel(cfg *config.Params) {
 // verifyAndInitReporter checks if the Wavefront reporter is initialized, and if
 // not, initializes it.
 func (wa *WavefrontAdapter) verifyAndInitReporter(cfg *config.Params) {
-	if !wa.reporterInitialized {
+	if wa.reporter == nil {
 		log.Infof("trying to init wavefront reporter, config: %s", cfg.String())
 
 		wa.setLogLevel(cfg)
@@ -164,7 +163,6 @@ func (wa *WavefrontAdapter) verifyAndInitReporter(cfg *config.Params) {
 			log.Errorf("failed to create wavefront reporter, err: %s, config: %s", err.Error(), cfg.String())
 		} else {
 			wa.createWavefrontReporter(cfg)
-			wa.reporterInitialized = true
 			log.Infof("wavefront reporter successfully initialized, config: %s", cfg.String())
 		}
 	}
@@ -235,8 +233,7 @@ func (wa *WavefrontAdapter) writeMetrics(cfg *config.Params, insts []*metric.Ins
 			if float64Val, err := translateToFloat64(value); err != nil {
 				log.Warnf("couldn't translate metric value: %s %v, err: %v", metricName, value, err)
 			} else {
-				gauge := metrics.NewGaugeFloat64()
-				wa.reporter.RegisterMetric(metricName, gauge, tags)
+				gauge := wa.reporter.GetOrRegisterMetric(metricName, metrics.NewGaugeFloat64(), tags).(metrics.GaugeFloat64)
 				gauge.Update(float64Val)
 
 				log.Debugf("updated gauge metric %s with %v, tags: %v", metricName, float64Val, tags)
@@ -247,8 +244,7 @@ func (wa *WavefrontAdapter) writeMetrics(cfg *config.Params, insts []*metric.Ins
 				log.Warnf("couldn't translate metric value: %s %v, err: %v", metricName, value, err)
 			} else {
 				deltaMetricName := wf.DeltaCounterName(metricName)
-				counter := metrics.NewCounter()
-				wa.reporter.RegisterMetric(deltaMetricName, counter, tags)
+				counter := wa.reporter.GetOrRegisterMetric(deltaMetricName, metrics.NewCounter(), tags).(metrics.Counter)
 				counter.Inc(int64Val)
 				log.Debugf("updated delta counter metric %s with %v, tags: %v", deltaMetricName, int64Val, tags)
 			}
@@ -376,10 +372,9 @@ func NewWavefrontAdapter(addr string) (Server, error) {
 	}
 
 	adapter := &WavefrontAdapter{
-		listener:            listener,
-		server:              grpc.NewServer(),
-		reporter:            nil,
-		reporterInitialized: false,
+		listener: listener,
+		server:   grpc.NewServer(),
+		reporter: nil,
 	}
 	metric.RegisterHandleMetricServiceServer(adapter.server, adapter)
 	fmt.Printf("listening on \"%v\"\n", adapter.Addr())
