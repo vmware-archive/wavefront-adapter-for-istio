@@ -58,6 +58,13 @@ message Params {
 
     // The Wavefront API token.
     string token = 2;
+
+    // The Batch size.
+    int32 batch_size = 3;
+
+    // The Max Buffer size.
+    int32 max_buffer_size = 4;
+
   }
 
   // Describes Wavefront Proxy credentials.

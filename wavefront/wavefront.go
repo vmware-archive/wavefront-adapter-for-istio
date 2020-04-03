@@ -63,13 +63,14 @@ var _ metric.HandleMetricServiceServer = &WavefrontAdapter{}
 
 // createWavefrontReporter creates a reporter that periodically flushes metrics to Wavefront.
 func (wa *WavefrontAdapter) createWavefrontReporter(cfg *config.Params) {
-	hostTags := map[string]string{"source": cfg.Source}
 
 	if direct := cfg.GetDirect(); direct != nil {
 		directCfg := &senders.DirectConfiguration{
 			Server:               direct.Server,
 			Token:                direct.Token,
 			FlushIntervalSeconds: int(cfg.FlushInterval),
+			BatchSize:            int(direct.BatchSize),
+			MaxBufferSize:        int(direct.MaxBufferSize),
 		}
 		sender, err := senders.NewDirectSender(directCfg)
 		if err != nil {
@@ -78,7 +79,7 @@ func (wa *WavefrontAdapter) createWavefrontReporter(cfg *config.Params) {
 
 		wa.reporter = wf.NewReporter(
 			sender,
-			application.New("istio", "istio"),
+			application.New("wavefront-istio-adapter", "wavefront-istio-adapter"),
 			wf.Source(cfg.Source),
 			wf.Prefix(cfg.Prefix),
 			wf.LogErrors(true),
@@ -91,7 +92,7 @@ func (wa *WavefrontAdapter) createWavefrontReporter(cfg *config.Params) {
 
 		// address must be in the form <proxyhost:port>
 		if len(proxyInfo) != 2 {
-			panic("Proxy Address and/or port number is mising")
+			panic("Proxy Address and/or port number is mising.")
 		}
 
 		// numeric port number expected
@@ -113,12 +114,14 @@ func (wa *WavefrontAdapter) createWavefrontReporter(cfg *config.Params) {
 
 		wa.reporter = wf.NewReporter(
 			sender,
-			application.New("istio", "istio"),
+			application.New("wavefront-istio-adapter", "wavefront-istio-adapter"),
 			wf.Source(cfg.Source),
 			wf.Prefix(cfg.Prefix),
 			wf.LogErrors(true),
 		)
 	}
+
+	hostTags := map[string]string{"source": cfg.Source}
 
 	createSystemStatsReporter(hostTags)
 }
