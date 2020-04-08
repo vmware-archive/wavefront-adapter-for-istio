@@ -69,14 +69,13 @@ func (wa *WavefrontAdapter) createWavefrontReporter(cfg *config.Params) {
 			Server:               direct.Server,
 			Token:                direct.Token,
 			FlushIntervalSeconds: int(cfg.FlushInterval),
-			BatchSize:            int(direct.BatchSize),
-			MaxBufferSize:        int(direct.MaxBufferSize),
+			BatchSize:            10000,
+			MaxBufferSize:        50000,
 		}
 		sender, err := senders.NewDirectSender(directCfg)
 		if err != nil {
 			panic(err)
 		}
-
 		wa.reporter = wf.NewReporter(
 			sender,
 			application.New("wavefront-istio-adapter", "wavefront-istio-adapter"),
@@ -92,7 +91,7 @@ func (wa *WavefrontAdapter) createWavefrontReporter(cfg *config.Params) {
 
 		// address must be in the form <proxyhost:port>
 		if len(proxyInfo) != 2 {
-			panic("Proxy Address and/or port number is mising.")
+			panic("Proxy Address and/or port number is missing.")
 		}
 
 		// numeric port number expected
@@ -120,9 +119,7 @@ func (wa *WavefrontAdapter) createWavefrontReporter(cfg *config.Params) {
 			wf.LogErrors(true),
 		)
 	}
-
 	hostTags := map[string]string{"source": cfg.Source}
-
 	createSystemStatsReporter(hostTags)
 }
 
@@ -159,7 +156,6 @@ func (wa *WavefrontAdapter) setLogLevel(cfg *config.Params) {
 func (wa *WavefrontAdapter) verifyAndInitReporter(cfg *config.Params) {
 	if wa.reporter == nil {
 		log.Infof("trying to init wavefront reporter, config: %s", cfg.String())
-
 		wa.setLogLevel(cfg)
 
 		if err := config.ValidateCredentials(cfg); err != nil {
@@ -275,7 +271,6 @@ func (wa *WavefrontAdapter) writeMetrics(cfg *config.Params, insts []*metric.Ins
 // HandleMetric records metric entries.
 func (wa *WavefrontAdapter) HandleMetric(ctx context.Context, r *metric.HandleMetricRequest) (*v1beta1.ReportResult, error) {
 	log.Infof("received request %v\n", *r)
-
 	// unmarshal configuration
 	cfg := &config.Params{}
 	if r.AdapterConfig != nil {
@@ -284,10 +279,8 @@ func (wa *WavefrontAdapter) HandleMetric(ctx context.Context, r *metric.HandleMe
 			return nil, err
 		}
 	}
-
 	// init the Wavefront reporter if not initialized already
 	wa.verifyAndInitReporter(cfg)
-
 	// validate the metrics configuration
 	if err := config.ValidateMetrics(cfg); err != nil {
 		log.Errorf("error validating metrics config: %v %s", err, cfg.String())
@@ -296,7 +289,6 @@ func (wa *WavefrontAdapter) HandleMetric(ctx context.Context, r *metric.HandleMe
 
 	// write metrics
 	wa.writeMetrics(cfg, r.Instances)
-
 	log.Infof("metrics were processed successfully!")
 	return &v1beta1.ReportResult{}, nil
 }

@@ -18,7 +18,9 @@ require (
 	go.uber.org/atomic v1.3.2 // indirect
 	go.uber.org/multierr v1.1.0 // indirect
 	go.uber.org/zap v1.9.1 // indirect
+	golang.org/x/tools v0.0.0-20200402223321-bcf690261a44 // indirect
 	google.golang.org/grpc v1.16.0
+	google.golang.org/protobuf v1.20.1 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 	istio.io/api v0.0.0-20190416154520-4a9a2a12a700 // v1.1.15
 	istio.io/istio v0.0.0-20190913154610-b12614cbfb7a // v1.1.15
