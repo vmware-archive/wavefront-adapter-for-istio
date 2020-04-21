@@ -68,7 +68,7 @@ func (wa *WavefrontAdapter) createWavefrontReporter(cfg *config.Params) {
 		directCfg := &senders.DirectConfiguration{
 			Server:               direct.Server,
 			Token:                direct.Token,
-			FlushIntervalSeconds: int(cfg.FlushInterval),
+			FlushIntervalSeconds: int(cfg.FlushInterval.Seconds()),
 			BatchSize:            10000,
 			MaxBufferSize:        50000,
 		}
@@ -103,7 +103,7 @@ func (wa *WavefrontAdapter) createWavefrontReporter(cfg *config.Params) {
 		proxyCfg := &senders.ProxyConfiguration{
 			Host:                 proxyInfo[0],
 			MetricsPort:          portNum,
-			FlushIntervalSeconds: int(cfg.FlushInterval),
+			FlushIntervalSeconds: int(cfg.FlushInterval.Seconds()),
 		}
 
 		sender, err := senders.NewProxySender(proxyCfg)

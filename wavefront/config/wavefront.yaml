@@ -1,5 +1,5 @@
 # this config is created through command
-# mixgen adapter -c $GOPATHsrc/istio.io/istio/mixer/adapter/wavefront/config/config.proto_descriptor -o $GOPATHsrc/istio.io/istio/mixer/adapter/wavefront/config -s=false -n wavefront -t metric
+# mixgen adapter -c $GOPATH/src/istio.io/istio/mixer/adapter/wavefront/config/config.proto_descriptor -o $GOPATH/src/istio.io/istio/mixer/adapter/wavefront/config -s=false -n wavefront -t metric
 apiVersion: "config.istio.io/v1alpha2"
 kind: adapter
 metadata:
