@@ -58,7 +58,6 @@ message Params {
 
     // The Wavefront API token.
     string token = 2;
-
   }
 
   // Describes Wavefront Proxy credentials.

@@ -64,53 +64,15 @@ var _ metric.HandleMetricServiceServer = &WavefrontAdapter{}
 // createWavefrontReporter creates a reporter that periodically flushes metrics to Wavefront.
 func (wa *WavefrontAdapter) createWavefrontReporter(cfg *config.Params) {
 
+	var sender senders.Sender
+	flushInterval := int(cfg.FlushInterval.Seconds())
 	if direct := cfg.GetDirect(); direct != nil {
-		directCfg := &senders.DirectConfiguration{
-			Server:               direct.Server,
-			Token:                direct.Token,
-			FlushIntervalSeconds: int(cfg.FlushInterval.Seconds()),
-			BatchSize:            10000,
-			MaxBufferSize:        50000,
-		}
-		sender, err := senders.NewDirectSender(directCfg)
-		if err != nil {
-			panic(err)
-		}
-		wa.reporter = wf.NewReporter(
-			sender,
-			application.New("wavefront-istio-adapter", "wavefront-istio-adapter"),
-			wf.Source(cfg.Source),
-			wf.Prefix(cfg.Prefix),
-			wf.LogErrors(true),
-		)
+		sender = createDirectSender(direct, flushInterval)
 	} else if proxy := cfg.GetProxy(); proxy != nil {
-		addr, _ := net.ResolveTCPAddr("tcp", proxy.Address)
+		sender = createProxySender(proxy, flushInterval)
+	}
 
-		// extract proxy ip and port from address
-		proxyInfo := strings.Split(addr.String(), ":")
-
-		// address must be in the form <proxyhost:port>
-		if len(proxyInfo) != 2 {
-			panic("Proxy Address and/or port number is missing.")
-		}
-
-		// numeric port number expected
-		portNum, err := strconv.Atoi(proxyInfo[1])
-		if err != nil {
-			panic(err)
-		}
-
-		proxyCfg := &senders.ProxyConfiguration{
-			Host:                 proxyInfo[0],
-			MetricsPort:          portNum,
-			FlushIntervalSeconds: int(cfg.FlushInterval.Seconds()),
-		}
-
-		sender, err := senders.NewProxySender(proxyCfg)
-		if err != nil {
-			panic(err)
-		}
-
+	if sender != nil {
 		wa.reporter = wf.NewReporter(
 			sender,
 			application.New("wavefront-istio-adapter", "wavefront-istio-adapter"),
@@ -118,7 +80,10 @@ func (wa *WavefrontAdapter) createWavefrontReporter(cfg *config.Params) {
 			wf.Prefix(cfg.Prefix),
 			wf.LogErrors(true),
 		)
+	} else {
+		log.Fatalf("Wavefront sender is not initialized.")
 	}
+
 	hostTags := map[string]string{"source": cfg.Source}
 	createSystemStatsReporter(hostTags)
 }
@@ -165,6 +130,57 @@ func (wa *WavefrontAdapter) verifyAndInitReporter(cfg *config.Params) {
 			log.Infof("wavefront reporter successfully initialized, config: %s", cfg.String())
 		}
 	}
+}
+
+// creates wavefront direct sender
+func createDirectSender(direct *config.Params_WavefrontDirect, flushInterval int) senders.Sender {
+	directCfg := &senders.DirectConfiguration{
+		Server:               direct.Server,
+		Token:                direct.Token,
+		FlushIntervalSeconds: flushInterval,
+		BatchSize:            10000,
+		MaxBufferSize:        50000,
+	}
+	sender, err := senders.NewDirectSender(directCfg)
+	if err != nil {
+		log.Fatalf("Error creating direct sender: %v", err)
+		return nil
+	}
+	return sender
+}
+
+// creates wavefront proxy sender
+func createProxySender(proxy *config.Params_WavefrontProxy, flushInterval int) senders.Sender {
+	addr, _ := net.ResolveTCPAddr("tcp", proxy.Address)
+
+	// extract proxy ip and port from address
+	proxyInfo := strings.Split(addr.String(), ":")
+
+	// address must be in the form <proxyhost:port>
+	if len(proxyInfo) != 2 {
+		log.Fatalf("Proxy address and/or port number is missing.")
+		return nil
+	}
+
+	// numeric port number expected
+	portNum, err := strconv.Atoi(proxyInfo[1])
+	if err != nil {
+		log.Fatalf("Invalid port number %v", err)
+		return nil
+	}
+
+	proxyCfg := &senders.ProxyConfiguration{
+		Host:                 proxyInfo[0],
+		MetricsPort:          portNum,
+		FlushIntervalSeconds: flushInterval,
+	}
+
+	sender, err := senders.NewProxySender(proxyCfg)
+	if err != nil {
+		log.Fatalf("Error creating proxy sender: %v", err)
+		return nil
+	}
+	return sender
 }
 
 // createMetricMap creates a map of metric names and the corresponding MetricInfo objects.
@@ -234,7 +250,6 @@ func (wa *WavefrontAdapter) writeMetrics(cfg *config.Params, insts []*metric.Ins
 			} else {
 				gauge := wa.reporter.GetOrRegisterMetric(metricName, metrics.NewGaugeFloat64(), tags).(metrics.GaugeFloat64)
 				gauge.Update(float64Val)
-
 				log.Debugf("updated gauge metric %s with %v, tags: %v", metricName, float64Val, tags)
 			}
 
@@ -270,6 +285,7 @@ func (wa *WavefrontAdapter) writeMetrics(cfg *config.Params, insts []*metric.Ins
 
 // HandleMetric records metric entries.
 func (wa *WavefrontAdapter) HandleMetric(ctx context.Context, r *metric.HandleMetricRequest) (*v1beta1.ReportResult, error) {
+
 	log.Infof("received request %v\n", *r)
 	// unmarshal configuration
 	cfg := &config.Params{}
@@ -279,8 +295,10 @@ func (wa *WavefrontAdapter) HandleMetric(ctx context.Context, r *metric.HandleMe
 			return nil, err
 		}
 	}
+
 	// init the Wavefront reporter if not initialized already
 	wa.verifyAndInitReporter(cfg)
+
 	// validate the metrics configuration
 	if err := config.ValidateMetrics(cfg); err != nil {
 		log.Errorf("error validating metrics config: %v %s", err, cfg.String())
@@ -289,6 +307,7 @@ func (wa *WavefrontAdapter) HandleMetric(ctx context.Context, r *metric.HandleMe
 
 	// write metrics
 	wa.writeMetrics(cfg, r.Instances)
+
 	log.Infof("metrics were processed successfully!")
 	return &v1beta1.ReportResult{}, nil
 }
