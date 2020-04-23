@@ -285,8 +285,8 @@ func (wa *WavefrontAdapter) writeMetrics(cfg *config.Params, insts []*metric.Ins
 
 // HandleMetric records metric entries.
 func (wa *WavefrontAdapter) HandleMetric(ctx context.Context, r *metric.HandleMetricRequest) (*v1beta1.ReportResult, error) {
-
 	log.Infof("received request %v\n", *r)
+
 	// unmarshal configuration
 	cfg := &config.Params{}
 	if r.AdapterConfig != nil {
