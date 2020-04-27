@@ -151,7 +151,11 @@ func createDirectSender(direct *config.Params_WavefrontDirect, flushInterval int
 
 // creates wavefront proxy sender
 func createProxySender(proxy *config.Params_WavefrontProxy, flushInterval int) senders.Sender {
-	addr, _ := net.ResolveTCPAddr("tcp", proxy.Address)
+	addr, err := net.ResolveTCPAddr("tcp", proxy.Address)
+	if err != nil {
+		log.Fatalf("Cannot resolve proxy address %v", err)
+		return nil
+	}
 
 	// extract proxy ip and port from address
 	proxyInfo := strings.Split(addr.String(), ":")
