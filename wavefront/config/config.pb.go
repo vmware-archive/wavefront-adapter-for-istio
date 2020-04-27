@@ -17,31 +17,23 @@
 */
 package config
 
-import (
-	fmt "fmt"
+import proto "github.com/gogo/protobuf/proto"
+import fmt "fmt"
+import math "math"
+import _ "github.com/gogo/protobuf/gogoproto"
+import _ "github.com/gogo/protobuf/types"
 
-	proto "github.com/gogo/protobuf/proto"
+import time "time"
 
-	math "math"
+import strconv "strconv"
 
-	_ "github.com/gogo/protobuf/gogoproto"
+import strings "strings"
+import reflect "reflect"
 
-	_ "github.com/gogo/protobuf/types"
+import binary "encoding/binary"
+import types "github.com/gogo/protobuf/types"
 
-	time "time"
-
-	strconv "strconv"
-
-	strings "strings"
-
-	reflect "reflect"
-
-	binary "encoding/binary"
-
-	types "github.com/gogo/protobuf/types"
-
-	io "io"
-)
+import io "io"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
