@@ -63,7 +63,6 @@ var _ metric.HandleMetricServiceServer = &WavefrontAdapter{}
 
 // createWavefrontReporter creates a reporter that periodically flushes metrics to Wavefront.
 func (wa *WavefrontAdapter) createWavefrontReporter(cfg *config.Params) {
-
 	var sender senders.Sender
 	flushInterval := int(cfg.FlushInterval.Seconds())
 	if direct := cfg.GetDirect(); direct != nil {
