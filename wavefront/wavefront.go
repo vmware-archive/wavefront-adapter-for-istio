@@ -25,10 +25,14 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"strconv"
+	"strings"
 
 	metrics "github.com/rcrowley/go-metrics"
 	"github.com/vmware/wavefront-adapter-for-istio/wavefront/config"
-	wf "github.com/wavefrontHQ/go-metrics-wavefront"
+	wf "github.com/wavefronthq/go-metrics-wavefront/reporting"
+	"github.com/wavefronthq/wavefront-sdk-go/application"
+	"github.com/wavefronthq/wavefront-sdk-go/senders"
 
 	"google.golang.org/grpc"
 
@@ -48,9 +52,9 @@ type (
 
 	// WavefrontAdapter supports metric template.
 	WavefrontAdapter struct {
-		listener            net.Listener
-		server              *grpc.Server
-		reporterInitialized bool
+		listener net.Listener
+		server   *grpc.Server
+		reporter wf.WavefrontMetricsReporter
 	}
 )
 
@@ -58,15 +62,28 @@ type (
 var _ metric.HandleMetricServiceServer = &WavefrontAdapter{}
 
 // createWavefrontReporter creates a reporter that periodically flushes metrics to Wavefront.
-func createWavefrontReporter(cfg *config.Params) {
-	hostTags := map[string]string{"source": cfg.Source}
+func (wa *WavefrontAdapter) createWavefrontReporter(cfg *config.Params) {
+	var sender senders.Sender
+	flushInterval := int(cfg.FlushInterval.Seconds())
 	if direct := cfg.GetDirect(); direct != nil {
-		go wf.WavefrontDirect(metrics.DefaultRegistry, cfg.FlushInterval, hostTags, cfg.Prefix, direct.Server, direct.Token)
+		sender = createDirectSender(direct, flushInterval)
 	} else if proxy := cfg.GetProxy(); proxy != nil {
-		addr, _ := net.ResolveTCPAddr("tcp", proxy.Address)
-		go wf.WavefrontProxy(metrics.DefaultRegistry, cfg.FlushInterval, hostTags, cfg.Prefix, addr)
+		sender = createProxySender(proxy, flushInterval)
 	}
 
+	if sender != nil {
+		wa.reporter = wf.NewReporter(
+			sender,
+			application.New("wavefront-istio-adapter", "wavefront-istio-adapter"),
+			wf.Source(cfg.Source),
+			wf.Prefix(cfg.Prefix),
+			wf.LogErrors(true),
+		)
+	} else {
+		log.Fatalf("Wavefront sender is not initialized.")
+	}
+
+	hostTags := map[string]string{"source": cfg.Source}
 	createSystemStatsReporter(hostTags)
 }
 
@@ -101,19 +118,72 @@ func (wa *WavefrontAdapter) setLogLevel(cfg *config.Params) {
 // verifyAndInitReporter checks if the Wavefront reporter is initialized, and if
 // not, initializes it.
 func (wa *WavefrontAdapter) verifyAndInitReporter(cfg *config.Params) {
-	if !wa.reporterInitialized {
+	if wa.reporter == nil {
 		log.Infof("trying to init wavefront reporter, config: %s", cfg.String())
-
 		wa.setLogLevel(cfg)
 
 		if err := config.ValidateCredentials(cfg); err != nil {
 			log.Errorf("failed to create wavefront reporter, err: %s, config: %s", err.Error(), cfg.String())
 		} else {
-			createWavefrontReporter(cfg)
-			wa.reporterInitialized = true
+			wa.createWavefrontReporter(cfg)
 			log.Infof("wavefront reporter successfully initialized, config: %s", cfg.String())
 		}
 	}
+}
+
+// creates wavefront direct sender
+func createDirectSender(direct *config.Params_WavefrontDirect, flushInterval int) senders.Sender {
+	directCfg := &senders.DirectConfiguration{
+		Server:               direct.Server,
+		Token:                direct.Token,
+		FlushIntervalSeconds: flushInterval,
+		BatchSize:            10000,
+		MaxBufferSize:        50000,
+	}
+	sender, err := senders.NewDirectSender(directCfg)
+	if err != nil {
+		log.Fatalf("Error creating direct sender: %v", err)
+		return nil
+	}
+	return sender
+}
+
+// creates wavefront proxy sender
+func createProxySender(proxy *config.Params_WavefrontProxy, flushInterval int) senders.Sender {
+	addr, err := net.ResolveTCPAddr("tcp", proxy.Address)
+	if err != nil {
+		log.Fatalf("Cannot resolve proxy address %v", err)
+		return nil
+	}
+
+	// extract proxy ip and port from address
+	proxyInfo := strings.Split(addr.String(), ":")
+
+	// address must be in the form <proxyhost:port>
+	if len(proxyInfo) != 2 {
+		log.Fatalf("Proxy address and/or port number is missing.")
+		return nil
+	}
+
+	// numeric port number expected
+	portNum, err := strconv.Atoi(proxyInfo[1])
+	if err != nil {
+		log.Fatalf("Invalid port number %v", err)
+		return nil
+	}
+
+	proxyCfg := &senders.ProxyConfiguration{
+		Host:                 proxyInfo[0],
+		MetricsPort:          portNum,
+		FlushIntervalSeconds: flushInterval,
+	}
+
+	sender, err := senders.NewProxySender(proxyCfg)
+	if err != nil {
+		log.Fatalf("Error creating proxy sender: %v", err)
+		return nil
+	}
+	return sender
 }
 
 // createMetricMap creates a map of metric names and the corresponding MetricInfo objects.
@@ -163,7 +233,7 @@ func translateSample(s *config.Params_MetricInfo_Sample) metrics.Sample {
 
 // writeMetrics extracts metric information from metric.InstanceMsgs and writes
 // it to the Wavefront metric registry.
-func writeMetrics(cfg *config.Params, insts []*metric.InstanceMsg) {
+func (wa *WavefrontAdapter) writeMetrics(cfg *config.Params, insts []*metric.InstanceMsg) {
 	metricMap := createMetricMap(cfg.Metrics)
 	for _, inst := range insts {
 		metric, metricFound := metricMap[inst.Name]
@@ -181,7 +251,7 @@ func writeMetrics(cfg *config.Params, insts []*metric.InstanceMsg) {
 			if float64Val, err := translateToFloat64(value); err != nil {
 				log.Warnf("couldn't translate metric value: %s %v, err: %v", metricName, value, err)
 			} else {
-				gauge := wf.GetOrRegisterMetric(metricName, metrics.NewGaugeFloat64(), tags).(metrics.GaugeFloat64)
+				gauge := wa.reporter.GetOrRegisterMetric(metricName, metrics.NewGaugeFloat64(), tags).(metrics.GaugeFloat64)
 				gauge.Update(float64Val)
 				log.Debugf("updated gauge metric %s with %v, tags: %v", metricName, float64Val, tags)
 			}
@@ -191,7 +261,7 @@ func writeMetrics(cfg *config.Params, insts []*metric.InstanceMsg) {
 				log.Warnf("couldn't translate metric value: %s %v, err: %v", metricName, value, err)
 			} else {
 				deltaMetricName := wf.DeltaCounterName(metricName)
-				counter := wf.GetOrRegisterMetric(deltaMetricName, metrics.NewCounter(), tags).(metrics.Counter)
+				counter := wa.reporter.GetOrRegisterMetric(deltaMetricName, metrics.NewCounter(), tags).(metrics.Counter)
 				counter.Inc(int64Val)
 				log.Debugf("updated delta counter metric %s with %v, tags: %v", deltaMetricName, int64Val, tags)
 			}
@@ -204,7 +274,7 @@ func writeMetrics(cfg *config.Params, insts []*metric.InstanceMsg) {
 				if histogram == nil {
 					sample := translateSample(metric.Sample)
 					histogram = metrics.NewHistogram(sample)
-					wf.RegisterMetric(metricName, histogram, tags)
+					wa.reporter.RegisterMetric(metricName, histogram, tags)
 				}
 				histogram.(metrics.Histogram).Update(int64Val)
 				log.Debugf("updated histogram metric %s with %v, tags: %v", metricName, int64Val, tags)
@@ -239,7 +309,7 @@ func (wa *WavefrontAdapter) HandleMetric(ctx context.Context, r *metric.HandleMe
 	}
 
 	// write metrics
-	writeMetrics(cfg, r.Instances)
+	wa.writeMetrics(cfg, r.Instances)
 
 	log.Infof("metrics were processed successfully!")
 	return &v1beta1.ReportResult{}, nil
@@ -300,6 +370,10 @@ func (wa *WavefrontAdapter) Close() error {
 	if wa.listener != nil {
 		_ = wa.listener.Close()
 	}
+	if wa.reporter != nil {
+		wa.reporter.Close()
+	}
+
 	return nil
 }
 
@@ -315,9 +389,9 @@ func NewWavefrontAdapter(addr string) (Server, error) {
 	}
 
 	adapter := &WavefrontAdapter{
-		listener:            listener,
-		server:              grpc.NewServer(),
-		reporterInitialized: false,
+		listener: listener,
+		server:   grpc.NewServer(),
+		reporter: nil,
 	}
 	metric.RegisterHandleMetricServiceServer(adapter.server, adapter)
 	fmt.Printf("listening on \"%v\"\n", adapter.Addr())

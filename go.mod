@@ -10,17 +10,16 @@ require (
 	github.com/mackerelio/go-osstat v0.0.0-20181013165219-b878220919ec
 	github.com/natefinch/lumberjack v2.0.0+incompatible // indirect
 	github.com/pkg/errors v0.8.1 // indirect
-	github.com/rcrowley/go-metrics v0.0.0-20180503174638-e2704e165165
+	github.com/rcrowley/go-metrics v0.0.0-20190706150252-9beb055b7962
 	github.com/spf13/cobra v0.0.0-20180821161202-6fd8e29b07d8 // indirect
 	github.com/spf13/pflag v1.0.1 // indirect
-	github.com/stretchr/testify v1.3.0 // indirect
-	github.com/wavefrontHQ/go-metrics-wavefront v0.9.0
+	github.com/wavefronthq/go-metrics-wavefront v1.0.2
+	github.com/wavefronthq/wavefront-sdk-go v0.9.5
 	go.uber.org/atomic v1.3.2 // indirect
 	go.uber.org/multierr v1.1.0 // indirect
 	go.uber.org/zap v1.9.1 // indirect
 	google.golang.org/grpc v1.16.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
-	gopkg.in/yaml.v2 v2.2.2 // indirect
 	istio.io/api v0.0.0-20190416154520-4a9a2a12a700 // v1.1.15
 	istio.io/istio v0.0.0-20190913154610-b12614cbfb7a // v1.1.15
 )
