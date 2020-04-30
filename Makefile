@@ -76,15 +76,13 @@ $(GOIMPORTS):
 build: format
 	go build -v ./...
 	cp wavefront/config/wavefront.yaml install/wavefront/templates/
-	sed -i '' -E 's/namespace: istio-system/namespace: {{ .Values.namespaces.istio }}/' install/wavefront/templates/wavefront.yaml
-	sed -i '' -E 's/- metric/- metric.{{ .Values.namespaces.adapter }}/' install/wavefront/templates/wavefront.yaml
 	@echo "Build was successful!"
 
 # Builds the docker image for the project
 # Usage: make docker-build
 .PHONY: docker-build
 docker-build: build
-	docker build -t vmware/wavefront-adapter-for-istio:latest .
+	docker build --network=host -t vmware/wavefront-adapter-for-istio:latest .
 	@echo "Docker image was built successfully!"
 
 # Runs the docker container
@@ -97,7 +95,7 @@ docker-run: setup
 # Usage: make helm-print
 .PHONY: helm-print
 helm-print:
-	helm install --dry-run --debug install/wavefront/
+	helm install --dry-run --debug install/wavefront/ --generate-name
 
 # Creates a Helm configuration package
 # Usage: make helm-pack

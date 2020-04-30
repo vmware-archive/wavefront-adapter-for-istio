@@ -14,8 +14,8 @@ This adapter is currently experimental. Therefore, caution should be taken
 before using it in production environments.
 
 **Note:** The `master` branch is used for active development and can become
-unstable. Please refer to the [Quick Start](https://github.com/vmware/wavefront-adapter-for-istio/tree/0.1.1#quick-start)
-from version [0.1.1](https://github.com/vmware/wavefront-adapter-for-istio/releases/tag/0.1.1)
+unstable. Please refer to the [Quick Start](https://github.com/vmware/wavefront-adapter-for-istio/tree/0.1.3#quick-start)
+from version [0.1.3](https://github.com/vmware/wavefront-adapter-for-istio/releases/tag/0.1.3)
 to install a stable version of the adapter.
 
 ## Quick Start
@@ -35,15 +35,15 @@ this adapter using Helm.
 
 To deploy this adapter, you will need a cluster with the following minimum setup.
 
-* Kubernetes v1.10.0
-* Istio v1.0.3
+* Kubernetes v1.15.0
+* Istio v1.4, v1.5
 
 #### Configuration
 
 1\. Download the configuration.
 
 ```console
-$ curl -LO https://raw.githubusercontent.com/vmware/wavefront-adapter-for-istio/0.1.1/install/config.yaml
+$ curl -LO https://raw.githubusercontent.com/vmware/wavefront-adapter-for-istio/0.1.3/install/config.yaml
 ```
 
 2\. If you want the metrics to be published to the Wavefront instance directly,
