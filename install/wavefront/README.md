@@ -10,7 +10,7 @@ for installing the Wavefront by VMware adapter on your Kubernetes deployment.
 To deploy this adapter, you will need a cluster with the following minimum setup.
 
 * Kubernetes v1.15.0
-* Istio v1.4
+* Istio v1.4 or v1.5
 * Helm v3.2.0
 
 ### Helm Setup
@@ -21,9 +21,9 @@ To deploy this adapter, you will need a cluster with the following minimum setup
 $ helm init
 ```
 
-3. Download and extract [Istio](https://istio.io/docs/setup/kubernetes/download-release/).
+2. Download and extract [Istio](https://istio.io/docs/setup/kubernetes/download-release/).
 
-4. Install Istio CRDs (Custom Resource Definitions).
+3. Install Istio CRDs (Custom Resource Definitions).
 
 ```console
 $ kubectl apply -f install/kubernetes/helm/istio/templates/crds.yaml
