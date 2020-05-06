@@ -8,5 +8,7 @@ sources:
 maintainers:
   - name: Venil Noronha
     email: veniln@vmware.com
+  - name: Srinivas Kandula
+    email: skandula@vmware.com
 engine: gotpl
 icon: https://raw.githubusercontent.com/vmware/wavefront-adapter-for-istio/master/docs/images/logo.png

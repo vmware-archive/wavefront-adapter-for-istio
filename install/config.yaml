@@ -36,6 +36,9 @@ metadata:
     app: wavefront
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: wavefront
   template:
     metadata:
       labels:

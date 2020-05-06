@@ -76,13 +76,16 @@ $(GOIMPORTS):
 build: format
 	go build -v ./...
 	cp wavefront/config/wavefront.yaml install/wavefront/templates/
+	sed -i '' -E 's/namespace: istio-system/namespace: {{ .Values.namespaces.istio }}/' install/wavefront/templates/wavefront.yaml
+	sed -i '' -E 's/- metric/- metric.{{ .Values.namespaces.adapter }}/' install/wavefront/templates/wavefront.yaml
 	@echo "Build was successful!"
 
 # Builds the docker image for the project
 # Usage: make docker-build
 .PHONY: docker-build
 docker-build: build
-	docker build --network=host -t vmware/wavefront-adapter-for-istio:latest .
+	# Sometimes docker build may fail in ubuntu due to network driver issue, in that case pass --network=host to docker build command.
+	docker build -t vmware/wavefront-adapter-for-istio:latest .
 	@echo "Docker image was built successfully!"
 
 # Runs the docker container
