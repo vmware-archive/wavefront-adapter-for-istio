@@ -1,6 +1,6 @@
 adapter:
   image: vmware/wavefront-adapter-for-istio
-  tag: 0.1.2
+  tag: 0.1.3
 
 credentials:
 # Define either direct or proxy credentials.

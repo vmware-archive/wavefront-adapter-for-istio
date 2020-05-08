@@ -9,23 +9,21 @@ for installing the Wavefront by VMware adapter on your Kubernetes deployment.
 
 To deploy this adapter, you will need a cluster with the following minimum setup.
 
-* Kubernetes v1.10.0
-* Istio v1.0.3
-* Helm v2.10.0
+* Kubernetes v1.15.0
+* Istio v1.4 or v1.5
+* Helm v3.2.0
 
 ### Helm Setup
 
 1. Install [Helm](https://docs.helm.sh/using_helm/#installing-helm).
 
-2. Install Tiller via Helm.
-
 ```console
 $ helm init
 ```
 
-3. Download and extract [Istio](https://istio.io/docs/setup/kubernetes/download-release/).
+2. Download and extract [Istio](https://istio.io/docs/setup/kubernetes/download-release/).
 
-4. Install Istio CRDs (Custom Resource Definitions).
+3. Install Istio CRDs (Custom Resource Definitions).
 
 ```console
 $ kubectl apply -f install/kubernetes/helm/istio/templates/crds.yaml
@@ -36,8 +34,8 @@ $ kubectl apply -f install/kubernetes/helm/istio/templates/crds.yaml
 1\. Download the Helm chart configuration and extract it.
 
 ```console
-$ curl -LO https://github.com/vmware/wavefront-adapter-for-istio/releases/download/0.1.1/wavefront-0.1.1.tgz
-$ tar -zxvf wavefront-0.1.1.tgz
+$ curl -LO https://github.com/vmware/wavefront-adapter-for-istio/releases/download/0.1.3/wavefront-0.1.3.tgz
+$ tar -zxvf wavefront-0.1.3.tgz
 ```
 
 2\. The configuration used per Helm deployment is specified in the `values.yaml`
@@ -106,71 +104,11 @@ See below for the list of available configuration parameters.
 To install the adapter via Helm, execute the following command.
 
 ```console
-$ helm install wavefront/
+$ helm install <release-name> wavefront/
 ```
 
 You should now be able to see Istio metrics on Wavefront under your configured
 source (or `istio` by default).
-
-##### RBAC Issues On Helm
-
-On Kubernetes 1.6+, you may encounter the following error if Helm experiences a
-problem with RBAC.
-
-```console
-$ helm install wavefront/
-Error: no available release name found
-```
-
-To fix the issue, create a Kubernetes Service Account with appropriate
-privileges as described in [the Helm documentation](https://docs.helm.sh/using_helm/#tiller-and-role-based-access-control)
-and re-install Tiller.
-
-The following example configuration was taken from the [Helm repository](https://github.com/helm/helm/blob/master/docs/rbac.md).
-
-1\. Create a file named `rbac-config.yaml` with the following configuration.
-
-```yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: tiller
-  namespace: kube-system
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: tiller
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: cluster-admin
-subjects:
-  - kind: ServiceAccount
-    name: tiller
-    namespace: kube-system
-```
-
-2\. Install the RBAC configuration.
-
-```console
-$ kubectl create -f rbac-config.yaml
-serviceaccount "tiller" created
-clusterrolebinding "tiller" created
-```
-
-3\. Reinstall Tiller.
-
-```console
-$ helm reset
-$ helm init --service-account tiller
-```
-
-4\. Install the adapter.
-
-```console
-$ helm install wavefront/
-```
 
 #### Uninstallation
 
@@ -183,5 +121,5 @@ $ helm list
 Then uninstall it using the following command.
 
 ```console
-$ helm delete <release-name>
+$ helm uninstall <release-name>
 ```

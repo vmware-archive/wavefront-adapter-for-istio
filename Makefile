@@ -84,6 +84,7 @@ build: format
 # Usage: make docker-build
 .PHONY: docker-build
 docker-build: build
+	# Sometimes docker build may fail in ubuntu due to network driver issue, in that case pass --network=host to docker build command.
 	docker build -t vmware/wavefront-adapter-for-istio:latest .
 	@echo "Docker image was built successfully!"
 
@@ -97,7 +98,7 @@ docker-run: setup
 # Usage: make helm-print
 .PHONY: helm-print
 helm-print:
-	helm install --dry-run --debug install/wavefront/
+	helm install --dry-run --debug install/wavefront/ --generate-name
 
 # Creates a Helm configuration package
 # Usage: make helm-pack
