@@ -7,26 +7,45 @@ for installing the Wavefront by VMware adapter on your Kubernetes deployment.
 
 ### Prerequisites
 
-To deploy this adapter, you will need a cluster with the following minimum setup.
+To deploy this adapter, you will need a cluster with the following setup.
 
 * Kubernetes v1.15.0
-* Istio v1.4 or v1.5
+* Istio v1.4 or v1.5 or v1.6
 * Helm v3.2.0
 
 ### Helm Setup
 
 1. Install [Helm](https://docs.helm.sh/using_helm/#installing-helm).
 
-```console
-$ helm init
-```
-
 2. Download and extract [Istio](https://istio.io/docs/setup/kubernetes/download-release/).
 
 3. Install Istio CRDs (Custom Resource Definitions).
 
+##### Istio v1.4.x
 ```console
 $ kubectl apply -f install/kubernetes/helm/istio/templates/crds.yaml
+```
+
+##### Istio v1.5.x
+```console
+$ istioctl manifest apply --set profile=demo
+```
+
+##### Istio v1.6.x
+```console
+$ istioctl install --set profile=demo
+```
+
+**Note:** From Istio v1.5.x onwards `Mixer` is disabled by default. Enable `Mixer` with the following step:
+
+##### Istio v1.5.x
+```console
+istioctl manifest apply --set values.prometheus.enabled=true --set values.telemetry.v1.enabled=true --set values.telemetry.v2.enabled=false --set components.citadel.enabled=true --set components.telemetry.enabled=true
+```
+
+##### Istio v1.6.x
+```console
+istioctl install --set values.prometheus.enabled=true --set values.telemetry.v1.enabled=true --set values.telemetry.v2.enabled=false --set components.citadel.enabled=true --set components.telemetry.enabled=true
 ```
 
 ### Configuration

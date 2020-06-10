@@ -10,8 +10,6 @@
 Wavefront by VMware Adapter for Istio is an adapter for [Istio](https://istio.io)
 to publish metrics to [Wavefront by VMware](https://www.wavefront.com/).
 
-This adapter is currently experimental. Therefore, caution should be taken
-before using it in production environments.
 
 **Note:** The `master` branch is used for active development and can become
 unstable. Please refer to the [Quick Start](https://github.com/vmware/wavefront-adapter-for-istio/tree/0.1.3#quick-start)
@@ -33,10 +31,22 @@ this adapter using Helm.
 
 #### Prerequisites
 
-To deploy this adapter, you will need a cluster with the following minimum setup.
+To deploy this adapter, you will need a cluster with the following setup.
 
 * Kubernetes v1.15.0
-* Istio v1.4, v1.5
+* Istio v1.4 or v1.5 or v1.6
+
+**Note:** From Istio v1.5.x onwards `Mixer` is disabled by default. Enable `Mixer` with the following step:
+
+##### Istio v1.5.x
+```console
+istioctl manifest apply --set values.prometheus.enabled=true --set values.telemetry.v1.enabled=true --set values.telemetry.v2.enabled=false --set components.citadel.enabled=true --set components.telemetry.enabled=true
+```
+
+##### Istio v1.6.x
+```console
+istioctl install --set values.prometheus.enabled=true --set values.telemetry.v1.enabled=true --set values.telemetry.v2.enabled=false --set components.citadel.enabled=true --set components.telemetry.enabled=true
+```
 
 #### Configuration
 
@@ -106,6 +116,13 @@ $ kubectl delete -f config.yaml
 ## Contributing
 
 Please see [CONTRIBUTING.md](CONTRIBUTING.md) if you'd like to contribute.
+
+
+## Troubleshooting
+
+- Check Istio adapter logs for errors `kubectl logs wavefront-xxxxxxx-xxxx -n wavefront-istio`.
+- Check if `Mixer` is running `kubectl -n istio-system get service istio-telemetry`. If the pod `istio-telemetry` is not running then enable the `Mixer`.
+- If Wavefront proxy is configured with the adapter then check proxy logs for errors `kubectl logs wavefront-adapter-for-istio-proxy-xxxxxxx-xxxx -n wavefront-istio`.
 
 ## License
 
