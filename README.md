@@ -24,7 +24,7 @@ This adapter could be installed either via [Helm](#helm-installation) or via the
 ### Helm Installation
 
 [Helm](https://helm.sh/) is the preferred way of installing this adapter. Please
-see the [Helm Quick Start](install/wavefront#quick-start) to learn to install
+see the [Helm chart](https://github.com/wavefrontHQ/helm/blob/master/wavefront-adapter-for-istio/README.md) to learn to install
 this adapter using Helm.
 
 ### Standard Installation
