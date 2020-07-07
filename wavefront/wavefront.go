@@ -79,7 +79,7 @@ func (wa *WavefrontAdapter) createWavefrontReporter(cfg *config.Params) {
 			wf.Source(cfg.Source),
 			wf.Prefix(cfg.Prefix),
 			wf.LogErrors(true),
-			wf.Interval(time.Minute * 1),
+			wf.Interval(time.Minute*1),
 		)
 	} else {
 		log.Fatalf("Wavefront sender is not initialized.")
