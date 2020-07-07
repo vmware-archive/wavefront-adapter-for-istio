@@ -27,15 +27,14 @@ import (
 	"net"
 	"strconv"
 	"strings"
+	"time"
 
 	metrics "github.com/rcrowley/go-metrics"
 	"github.com/vmware/wavefront-adapter-for-istio/wavefront/config"
 	wf "github.com/wavefronthq/go-metrics-wavefront/reporting"
 	"github.com/wavefronthq/wavefront-sdk-go/application"
 	"github.com/wavefronthq/wavefront-sdk-go/senders"
-
 	"google.golang.org/grpc"
-
 	"istio.io/api/mixer/adapter/model/v1beta1"
 	policy "istio.io/api/policy/v1beta1"
 	"istio.io/istio/mixer/template/metric"
@@ -78,6 +77,7 @@ func (wa *WavefrontAdapter) createWavefrontReporter(cfg *config.Params) {
 			wf.Source(cfg.Source),
 			wf.Prefix(cfg.Prefix),
 			wf.LogErrors(true),
+			wf.Interval(time.Minute*1),
 		)
 	} else {
 		log.Fatalf("Wavefront sender is not initialized.")
