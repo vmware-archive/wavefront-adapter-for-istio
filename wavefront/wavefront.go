@@ -40,6 +40,7 @@ import (
 	policy "istio.io/api/policy/v1beta1"
 	"istio.io/istio/mixer/template/metric"
 	"istio.io/istio/pkg/log"
+	"time"
 )
 
 type (
@@ -78,6 +79,7 @@ func (wa *WavefrontAdapter) createWavefrontReporter(cfg *config.Params) {
 			wf.Source(cfg.Source),
 			wf.Prefix(cfg.Prefix),
 			wf.LogErrors(true),
+			wf.Interval(time.Minute*1),
 		)
 	} else {
 		log.Fatalf("Wavefront sender is not initialized.")
