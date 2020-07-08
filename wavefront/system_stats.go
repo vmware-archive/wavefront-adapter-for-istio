@@ -26,7 +26,7 @@ import (
 )
 
 // delay between memory and cpu metrics sample
-const delay = 5 * time.Second
+const delay = 60 * time.Second
 
 // createSystemStatsReporter creates a reporter that periodically flushes adapter system metrics to Wavefront.
 func createSystemStatsReporter(hostTags map[string]string) {
