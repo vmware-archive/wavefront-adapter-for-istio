@@ -52,6 +52,12 @@ istioctl install --set values.prometheus.enabled=true --set values.telemetry.v1.
 
 1\. Download the configuration.
 
+For Kubernetes v1.17.0 or later
+```console
+$ curl -LO https://raw.githubusercontent.com/vmware/wavefront-adapter-for-istio/0.1.5/install/config.yaml
+```
+
+For Kubernetes v1.15.0 to v1.16.x
 ```console
 $ curl -LO https://raw.githubusercontent.com/vmware/wavefront-adapter-for-istio/0.1.4/install/config.yaml
 ```
