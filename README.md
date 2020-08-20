@@ -33,7 +33,7 @@ this adapter using Helm.
 
 To deploy this adapter, you will need a cluster with the following setup.
 
-* Kubernetes v1.15.0
+* Kubernetes v1.17.0
 * Istio v1.4 or v1.5 or v1.6
 
 **Note:** From Istio v1.5.x onwards `Mixer` is disabled by default. Enable `Mixer` with the following step:
