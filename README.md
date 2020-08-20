@@ -12,8 +12,8 @@ to publish metrics to [Wavefront by VMware](https://www.wavefront.com/).
 
 
 **Note:** The `master` branch is used for active development and can become
-unstable. Please refer to the [Quick Start](https://github.com/vmware/wavefront-adapter-for-istio/tree/0.1.4#quick-start)
-from version [0.1.4](https://github.com/vmware/wavefront-adapter-for-istio/releases/tag/0.1.4)
+unstable. Please refer to the [Quick Start](https://github.com/vmware/wavefront-adapter-for-istio/tree/0.1.5#quick-start)
+from version [0.1.5](https://github.com/vmware/wavefront-adapter-for-istio/releases/tag/0.1.5)
 to install a stable version of the adapter.
 
 ## Quick Start
