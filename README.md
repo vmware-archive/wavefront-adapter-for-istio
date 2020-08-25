@@ -12,8 +12,8 @@ to publish metrics to [Wavefront by VMware](https://www.wavefront.com/).
 
 
 **Note:** The `master` branch is used for active development and can become
-unstable. Please refer to the [Quick Start](https://github.com/vmware/wavefront-adapter-for-istio/tree/0.1.4#quick-start)
-from version [0.1.4](https://github.com/vmware/wavefront-adapter-for-istio/releases/tag/0.1.4)
+unstable. Please refer to the [Quick Start](https://github.com/vmware/wavefront-adapter-for-istio/tree/0.1.5#quick-start)
+from version [0.1.5](https://github.com/vmware/wavefront-adapter-for-istio/releases/tag/0.1.5)
 to install a stable version of the adapter.
 
 ## Quick Start
@@ -33,7 +33,7 @@ this adapter using Helm.
 
 To deploy this adapter, you will need a cluster with the following setup.
 
-* Kubernetes v1.15.0
+* Kubernetes v1.15+
 * Istio v1.4 or v1.5 or v1.6
 
 **Note:** From Istio v1.5.x onwards `Mixer` is disabled by default. Enable `Mixer` with the following step:
@@ -53,7 +53,7 @@ istioctl install --set values.prometheus.enabled=true --set values.telemetry.v1.
 1\. Download the configuration.
 
 ```console
-$ curl -LO https://raw.githubusercontent.com/vmware/wavefront-adapter-for-istio/0.1.4/install/config.yaml
+$ curl -LO https://raw.githubusercontent.com/vmware/wavefront-adapter-for-istio/0.1.5/install/config.yaml
 ```
 
 2\. If you want the metrics to be published to the Wavefront instance directly,

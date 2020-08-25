@@ -24,7 +24,7 @@ spec:
     app: wavefront
 ---
 # deployment for adapter wavefront
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: wavefront
