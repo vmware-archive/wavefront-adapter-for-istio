@@ -40,14 +40,14 @@ To deploy this adapter, you will need a cluster with the following setup.
 
 ##### Istio v1.5.x
 ```console
-istioctl manifest apply --set values.telemetry.v1.enabled=true --set values.telemetry.v2.enabled=false --set components.telemetry.enabled=true
+istioctl manifest apply --set values.telemetry.v1.enabled=true --set values.telemetry.v2.enabled=false --set components.telemetry.enabled=true --set components.citadel.enabled=true
 ```
 
 ##### Istio v1.6.x or v1.7.x
 ```console
 istioctl install --set values.telemetry.v1.enabled=true --set values.telemetry.v2.enabled=false --set components.telemetry.enabled=true
 
-#Use below command if Istio is deployed in non default namespace, replace <NAMESPACE> with namespace name into which Istio is deployed.
+# Use below command if Istio is deployed in non default namespace, replace <NAMESPACE> with namespace name into which Istio is deployed.
 istioctl install --set values.telemetry.v1.enabled=true --set values.telemetry.v2.enabled=false --set components.telemetry.enabled=true --set values.global.istioNamespace=<NAMESPACE>
 ```
 
