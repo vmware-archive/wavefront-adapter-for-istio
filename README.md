@@ -34,18 +34,21 @@ this adapter using Helm.
 To deploy this adapter, you will need a cluster with the following setup.
 
 * Kubernetes v1.15+
-* Istio v1.4 or v1.5 or v1.6
+* Istio v1.4 or v1.5 or v1.6 or v1.7
 
 **Note:** From Istio v1.5.x onwards `Mixer` is disabled by default. Enable `Mixer` with the following step:
 
 ##### Istio v1.5.x
 ```console
-istioctl manifest apply --set values.prometheus.enabled=true --set values.telemetry.v1.enabled=true --set values.telemetry.v2.enabled=false --set components.citadel.enabled=true --set components.telemetry.enabled=true
+istioctl manifest apply --set values.telemetry.v1.enabled=true --set values.telemetry.v2.enabled=false --set components.telemetry.enabled=true --set components.citadel.enabled=true
 ```
 
-##### Istio v1.6.x
+##### Istio v1.6.x or v1.7.x
 ```console
-istioctl install --set values.prometheus.enabled=true --set values.telemetry.v1.enabled=true --set values.telemetry.v2.enabled=false --set components.citadel.enabled=true --set components.telemetry.enabled=true
+istioctl install --set values.telemetry.v1.enabled=true --set values.telemetry.v2.enabled=false --set components.telemetry.enabled=true
+
+# Use below command if Istio is deployed in non default namespace, replace <NAMESPACE> with namespace name into which Istio is deployed.
+istioctl install --set values.telemetry.v1.enabled=true --set values.telemetry.v2.enabled=false --set components.telemetry.enabled=true --set values.global.istioNamespace=<NAMESPACE>
 ```
 
 #### Configuration
@@ -86,6 +89,10 @@ params:
   ...
   source: my-cluster
 ```
+
+4(Optional)\. If Istio is deployed in non default namespace replace `istio-system` with namespace name into which Istio is deployed.
+
+**Example:** Change `namespace: istio-system` to `namespace: istio-demo`, `handler: wavefront-handler.istio-system` to `handler: wavefront-handler.istio-demo`
 
 See the [reference docs](https://istio.io/docs/reference/config/policy-and-telemetry/adapters/wavefront/)
 for the available configuration parameters.
